@@ -6,4 +6,4 @@ This is the repository for project 1 of CS323 Compilers in SUSTech.
 
 - https://cmake.org/cmake/help/latest/module/FindFLEX.html
 - https://github.com/black13/flex_bison_cmake/blob/master/CMakeLists.txt
-- 
+- https://www.toptal.com/developers/gitignore
