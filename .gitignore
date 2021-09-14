@@ -1,0 +1,20 @@
+# OS
+.DS_Store
+
+# cmake
+cmake-build-debug
+
+# make
+Makefile
+
+# flex
+src/lexer.c
+src/lexer.cc
+src/lexer.cpp
+
+# bison
+src/parser.c
+src/parser.cc
+src/parser.cpp
+src/parser.h
+src/parser.hpp
