@@ -23,6 +23,7 @@ jobs:
     
     - name: Install Dependencies
       run: |
+        sudo apt autoremove -y
         sudo apt update -y
         sudo apt upgrade -y
         sudo apt install flex bison -y
