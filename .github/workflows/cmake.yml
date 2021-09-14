@@ -23,9 +23,6 @@ jobs:
     
     - name: Install Dependencies
       run: |
-        sudo apt autoremove -y
-        sudo apt update -y
-        sudo apt upgrade -y
         sudo apt install flex bison -y
 
 #     - name: Configure CMake
@@ -40,7 +37,7 @@ jobs:
         mkdir cmake-build-debug
         cd cmake-build-debug
         cmake ..
-        make
+        make VERBOSE=1
 
 #     - name: Test
 #       working-directory: ${{github.workspace}}/build
