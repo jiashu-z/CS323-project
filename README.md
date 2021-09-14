@@ -2,6 +2,8 @@
 
 This is the repository for project 1 of CS323 Compilers in SUSTech.
 
+[![CMake](https://github.com/wateryloo/CS323-project1/actions/workflows/cmake.yml/badge.svg)](https://github.com/wateryloo/CS323-project1/actions/workflows/cmake.yml)
+
 ## References
 
 - https://cmake.org/cmake/help/latest/module/FindFLEX.html
