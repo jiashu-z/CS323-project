@@ -14,6 +14,22 @@ class Token {
    * 
    */
   enum Type {
+    TYPE,
+    STRUCT,
+    IF,
+    ELSE,
+    WHILE,
+    RETURN,
+    DOT,
+    SEMI,
+    COMMA,
+    ASSIGN,
+    LT,
+    LE,
+    GT,
+    GE,
+    NE,
+    EQ,
     reserved,
     identifier,
     op
@@ -34,6 +50,8 @@ class Token {
 
  public:
   Token(const Token::Type& token_type, const std::string& literal);
+
+  Token(const Token::Type& token_type, const char*& literal);
 
   ~Token();
 

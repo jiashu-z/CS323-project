@@ -1,12 +1,32 @@
 #include "token.h"
 
-const std::string Token::type_names[] = {"reserved", "identifier", "op"};
+const std::string Token::type_names[] = {"TYPE", 
+"STRUCT", 
+"IF", 
+"ELSE", 
+"WHILE", 
+"RETURN", 
+"DOT", 
+"SEMI", 
+"COMMA", 
+"ASSIGN", 
+"LT", 
+"LE", 
+"GT", 
+"GE", 
+"NE", 
+"EQ", 
+"reserved", 
+"identifier", 
+"op"};
 
 std::string Token::TypeToString(const Token::Type& token_type) {
   return type_names[token_type];
 }
 
 Token::Token(const Token::Type& token_type, const std::string& literal) : token_type(token_type), literal(literal) {}
+
+Token::Token(const Token::Type& token_type, const char*& literal): token_type(token_type), literal(std::string(literal)) {}
 
 Token::~Token() {}
 
