@@ -30,9 +30,20 @@ class Token {
     GE,
     NE,
     EQ,
-    reserved,
-    identifier,
-    op
+    PLUS,
+    MINUS,
+    MUL,
+    DIV,
+    AND,
+    OR,
+    NOT,
+    LP,
+    RP,
+    LB,
+    RB,
+    LC,
+    RC,
+    ID,
   };
 
   /**

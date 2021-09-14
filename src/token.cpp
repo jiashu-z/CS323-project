@@ -16,9 +16,20 @@ const std::string Token::type_names[] = {"TYPE",
 "GE", 
 "NE", 
 "EQ", 
-"reserved", 
-"identifier", 
-"op"};
+"PLUS",
+"MINUS",
+"MUL",
+"DIV",
+"AND",
+"OR",
+"NOT",
+"LP",
+"RP",
+"LB",
+"RB",
+"LC",
+"RC",
+"ID",};
 
 std::string Token::TypeToString(const Token::Type& token_type) {
   return type_names[token_type];
@@ -31,7 +42,7 @@ Token::Token(const Token::Type& token_type, const char*& literal): token_type(to
 Token::~Token() {}
 
 std::string Token::ToString() const {
-  return "{type :" + this->TypeToString(this->token_type) + ", literal: " + this->literal + "}";
+  return this->TypeToString(this->token_type) + ": " + this->literal;
 }
 
 Token::Type Token::GetType() const {

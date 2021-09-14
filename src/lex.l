@@ -31,6 +31,19 @@ GT >
 GE >=
 NE !=
 EQ ==
+PLUS \+
+MINUS -
+MUL \*
+DIV \/
+AND &&
+OR \|\|
+NOT !
+LP \(
+RP \)
+LB \[
+RB \]
+LC \{
+RC \}
 letter [a-zA-Z]
 letter_ {letter}|_
 digit [0-9]
@@ -84,15 +97,61 @@ digit [0-9]
 {EQ} {
   tokens_ptr->push_back(Token(Token::Type::EQ, yytext));
 }
+{PLUS} {
+  tokens_ptr->push_back(Token(Token::Type::PLUS, yytext));
+}
+{MINUS} {
+  tokens_ptr->push_back(Token(Token::Type::MINUS, yytext));
+}
+{MUL} {
+  tokens_ptr->push_back(Token(Token::Type::MUL, yytext));
+}
+{DIV} {
+  tokens_ptr->push_back(Token(Token::Type::DIV, yytext));
+}
+{AND} {
+  tokens_ptr->push_back(Token(Token::Type::AND, yytext));
+}
+{OR} {
+  tokens_ptr->push_back(Token(Token::Type::OR, yytext));
+}
+{NOT} {
+  tokens_ptr->push_back(Token(Token::Type::NOT, yytext));
+}
+{LP} {
+  tokens_ptr->push_back(Token(Token::Type::LP, yytext));
+}
+{RP} {
+  tokens_ptr->push_back(Token(Token::Type::RP, yytext));
+}
+{LB} {
+  tokens_ptr->push_back(Token(Token::Type::LB, yytext));
+}
+{RB} {
+  tokens_ptr->push_back(Token(Token::Type::RB, yytext));
+}
+{LC} {
+  tokens_ptr->push_back(Token(Token::Type::LC, yytext));
+}
+{RC} {
+  tokens_ptr->push_back(Token(Token::Type::RC, yytext));
+}
 '([^'\\\n]|\\.)' {}
-{letter_}({letter_}|{digit})* { identifiers++; 
-printf("line %d: %s\n", lines, yytext); 
-tokens_ptr->push_back(Token(Token::Type::identifier, yytext));
+{letter_}({letter_}|{digit})* {
+  identifiers++;
+  tokens_ptr->push_back(Token(Token::Type::ID, yytext));
 } 
-\n { lines += 1;  }
-[\t\r ]+ { /* does nothing when seeing white spaces except new line */ }
+\n {
+  lines += 1;
+}
+[\t\r ]+ { 
+  /* does nothing when seeing white spaces except new line */ 
+}
 . { std::cout << "fallback: " << yytext << std::endl; }
-<<EOF>> { printf("There are %d occurrences of valid identifiers\n", identifiers); yyterminate(); }
+<<EOF>> {
+  printf("There are %d occurrences of valid identifiers\n", identifiers);
+  yyterminate();
+}
 
 %%
 std::vector<Token> GetTokens(const std::string& file_path) {
