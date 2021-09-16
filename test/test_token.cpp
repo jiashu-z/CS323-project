@@ -3,12 +3,12 @@
 #include <cassert>
 
 void test_ToString() {
-  Token token(Token::Type::AND, "&&");
-  assert("AND: &&" == token.ToString());
+  Token token(Token::Type::AND, "&&", 0);
+  assert("AND: && @0" == token.ToString());
 }
 
 void test_GetLiteral() {
-  Token token(Token::Type::AND, "&&");
+  Token token(Token::Type::AND, "&&", 0);
   assert("&&" == token.GetLiteral());
 }
 
