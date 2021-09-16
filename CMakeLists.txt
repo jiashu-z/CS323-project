@@ -4,7 +4,8 @@ project(CS323-project1 C CXX)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
-enable_testing()
+include(CTest)
+set($ENV{CTEST_OUTPUT_ON_FAILURE} TRUE)
 
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
@@ -30,11 +31,19 @@ target_link_libraries(CS323-project1
 PUBLIC lexer
 )
 
-add_executable(test_lexer test/text_lexer.cpp)
+add_executable(test_lexer test/test_lexer.cpp)
 target_include_directories(test_lexer
 PUBLIC src)
 
 add_test(test_lexer test_lexer)
+
+add_executable(test_token
+test/test_token.cpp
+src/token.cpp)
+target_include_directories(test_token
+PUBLIC src)
+
+add_test(test_token test_token)
 
 # add_executable(parser
 # ${BISON_parser_OUTPUTS})
