@@ -5,6 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 include_directories(src)
 include(CTest)
+set(CMAKE_CXX_STANDARD 17)
 set($ENV{CTEST_OUTPUT_ON_FAILURE} TRUE)
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
@@ -16,9 +17,6 @@ find_package(FLEX)
 message("maozunyao:" ${CMAKE_CURRENT_SOURCE_DIR})
 FLEX_TARGET(scanner src/lexer.l src/lexer.cpp)
 add_library(lexer SHARED ${FLEX_scanner_OUTPUTS})
-
-
-
 BISON_TARGET(parser src/parser.y ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
         COMPILE_FLAGS  --debug
         DEFINES_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.hpp
@@ -46,24 +44,24 @@ PUBLIC fl)
 
 
 
-#add_executable(test_lexer test/test_lexer.cpp)
+#add_executable(test_lexer demo_test/test_lexer.cpp)
 #target_include_directories(test_lexer
 #PUBLIC src)
 
 #add_test(test_lexer test_lexer)
 
 add_executable(test_token
-test/test_token.cpp
+        demo_test/test_token.cpp
 src/token.cpp)
 target_include_directories(test_token
 PUBLIC src)
 
 add_test(test_token test_token)
 
-add_executable(test_tree test/test_syntaxTree.cpp
+add_executable(test_syntaxTree demo_test/test_syntaxTree.cpp
         src/SyntaxTreeNode.cc
         )
-target_include_directories(test_tree
+target_include_directories(test_syntaxTree
         PUBLIC src)
 add_test(test_tree test_syntaxTree)
 

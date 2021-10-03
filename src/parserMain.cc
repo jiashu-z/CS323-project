@@ -6,7 +6,6 @@
 #include <iostream>
 #include "SyntaxTreeNode.hh"
 #include "parser.hpp"
-
 void yyrestart(FILE *pFile);
 int yyparse (void);
 extern SyntaxTreeNode* root_node;
@@ -28,7 +27,9 @@ int main(int argc, char **argv) {
         }
         yyrestart(f);
         yyparse();
-        root_node->preOrderPrint(root_node,0);
+        if(root_node!= nullptr) {
+            root_node->preOrderPrint(root_node, 0);
+        }
     }
     return 0;
 }

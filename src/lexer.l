@@ -7,19 +7,17 @@
         yylloc.last_line = yylineno; \
         yylloc.first_column = yycolumn; \
         yylloc.last_column = yycolumn + yyleng;\
-        yycolumn += yyleng;\
+        yycolumn += yyleng;
 
-#include <iostream>
-#include <vector>
-#include "token.h"
-#include "SyntaxTreeNode.hh"
-#define LEXER_ERROR_OUTPUT stdout
-std::vector<Token> *tokens_ptr =new std::vector<Token>;;
-int line_number = 1;
-extern "C" int yylex();
-%}
-%{
-#include "parser.hpp"
+    #include <iostream>
+    #include <vector>
+    #include "token.h"
+    #include "SyntaxTreeNode.hh"
+    #define LEXER_ERROR_OUTPUT stdout
+    std::vector<Token> *tokens_ptr =new std::vector<Token>;;
+    int line_number = 1;
+    extern "C" int yylex();
+    #include "parser.hpp"
 %}
 %option yylineno
 CHAR '.'
@@ -221,7 +219,7 @@ return GT;
 {letter_}({letter_}|{digit})* {
   tokens_ptr->push_back(Token(Token::Type::ID, yytext, line_number));
   yylval.node_type=new SyntaxTreeNode("ID",yytext,line_number,TreeNodeType::ID);
-return ID;
+    return ID;
 }
 
 \n {

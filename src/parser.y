@@ -4,9 +4,9 @@
 int isError=0;
 SyntaxTreeNode* root_node;
 #define PARSER_error_OUTPUT stdout
-#ifndef YYDEBUG
-# define YYDEBUG 1
-#endif
+//#ifndef YYDEBUG
+//# define YYDEBUG 1
+//#endif
 void yyerror(const char* s){
 std::cout<<s<<std::endl;
 }

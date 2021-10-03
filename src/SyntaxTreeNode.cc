@@ -38,6 +38,10 @@ void SyntaxTreeNode::insert(SyntaxTreeNode* newChild){
 }
 
 void SyntaxTreeNode::preOrderPrint(SyntaxTreeNode *node,int level){
+    if(node== nullptr){
+        std::cout<<"Unhandled error, tree node should not be null!"<<std::endl;
+        return;
+    }
         if(node->nodeType==TreeNodeType::EMPTY){
             return;
         }
