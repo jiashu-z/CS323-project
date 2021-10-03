@@ -14,29 +14,25 @@ find_package(BISON)
 find_package(FLEX)
 
 message("maozunyao:" ${CMAKE_CURRENT_SOURCE_DIR})
-FLEX_TARGET(scanner src/lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.cpp)
+FLEX_TARGET(scanner src/lexer.l src/lexer.cpp)
+add_library(lexer SHARED ${FLEX_scanner_OUTPUTS})
+
+
 
 BISON_TARGET(parser src/parser.y ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
-        DEFINES_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.hpp)
-ADD_FLEX_BISON_DEPENDENCY(scanner parser)
-
-add_library(lexer SHARED ${FLEX_scanner_OUTPUTS})
+        COMPILE_FLAGS  --debug
+        DEFINES_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.hpp
+        VERBOSE
+        )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-message("maozunyao:${FLEX_parser_OUTPUTS},${BISON_scanner_OUTPUTS}")
 add_executable(main
         src/parserMain.cc
         src/token.cpp
         src/SyntaxTreeNode.cc
-#        ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
+        src/parser.cpp
         )
 target_link_libraries(main
 PUBLIC fl)
-#target_link_libraries(main ${FLEX_LIBRARIES})
-
-target_link_libraries(lexer
-        PUBLIC fl
-        )
 
 
 #

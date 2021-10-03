@@ -10,18 +10,35 @@
 #include <iostream>
 #include <initializer_list>
 
-//TODO: node's parent is not used and handled
+
+enum class TreeNodeType {
+    Non_Terminal=1,
+    TYPE=2,
+    CHAR=3,
+    INT=4,
+    FLOAT=5,
+    ID=6,
+    OTHER=7
+};
 class SyntaxTreeNode{
     public:
+    TreeNodeType nodeType=TreeNodeType::OTHER;
     SyntaxTreeNode * parent{};
     std::vector<SyntaxTreeNode*> children;
     std::string attribute_name;
     std::string attribute_value;
-    int firstLine;
-    int firstColumn;
+    int firstLine=0;
+    int firstColumn=0;
     public:
     explicit SyntaxTreeNode(const std::string &attributeName);
-    SyntaxTreeNode(const std::string &attributeName,const std::string &attribute_value);
+
+    SyntaxTreeNode(const std::string &attributeName, const std::string &attributeValue,
+                   int firstLine, int firstColumn, TreeNodeType nodeType);
+
+    SyntaxTreeNode(const std::string &attributeName, const std::string &attributeValue,
+                   int firstLine,TreeNodeType nodeType);
+
+    SyntaxTreeNode(const std::string &attributeName,const std::string &attribute_value,int firstLine);
 
     SyntaxTreeNode(const std::string &attributeName,int firstLine, int firstColumn);
         ~SyntaxTreeNode();
@@ -38,6 +55,27 @@ class SyntaxTreeNode{
     void preOrderPrint(SyntaxTreeNode *node,int level);
 
     void insert(std::initializer_list<SyntaxTreeNode*> nodes);
+    
+    std::string enumToString(int enumValue){
+        switch (enumValue) {
+            case (int)TreeNodeType::Non_Terminal:
+                return "non-terminal";
+            case (int)TreeNodeType::TYPE:
+                return "type";
+            case (int)TreeNodeType::INT:
+                return "int";
+            case (int)TreeNodeType::FLOAT:
+                return "float";
+            case (int)TreeNodeType::CHAR:
+                return "char";
+            case (int)TreeNodeType::ID:
+                return "ID";
+            case (int)TreeNodeType::OTHER:
+                return "other";
+            default:
+                return "unknown";
+        }
+    }
 
 };
 

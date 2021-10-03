@@ -4,14 +4,14 @@
 
 #include "SyntaxTreeNode.hh"
 #include "token.h"
-
+#define DEBUG 0
 
 SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName) {
     this->parent=nullptr;
     this->children = std::vector<SyntaxTreeNode*>();
     this->attribute_name= attributeName;
 }
-SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName, const std::string &attribute_value) {
+SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName, const std::string &attribute_value,int firstLine) {
     this->parent=nullptr;
     this->children = std::vector<SyntaxTreeNode*>();
     this->attribute_name=attributeName;
@@ -43,7 +43,39 @@ void SyntaxTreeNode::preOrderPrint(SyntaxTreeNode *node,int level){
     for (int i = 0; i < level; ++i) {
         std::cout << "  ";
     }
-    std::cout << node->attribute_name << std::endl;
+    if(DEBUG) {
+        std::cout<<node->attribute_name<<std::endl;
+//        std::cout << node->attribute_name << ", line: " << node->firstLine << ", text value:" << node->attribute_value
+//                  << ", type:" << enumToString((int) node->nodeType) << std::endl;
+    }
+    else{
+        switch (node->nodeType) {
+
+            case TreeNodeType::Non_Terminal:
+                std::cout<<node->attribute_name<<" "<<"("<<node->firstLine<<")"<<std::endl;
+                break;
+            case TreeNodeType::TYPE:
+                std::cout<<"TYPE: "<<node->attribute_value<<std::endl;
+                break;
+            case TreeNodeType::CHAR:
+                std::cout<<"CHAR: "<<node->attribute_value<<std::endl;
+                break;
+            case TreeNodeType::INT: //TODO: hex value not handled
+                std::cout<<"INT: "<<node->attribute_value<<std::endl;
+                break;
+            case TreeNodeType::FLOAT:
+                std::cout<<"FLOAT: "<<node->attribute_value<<std::endl;
+                break;
+            case TreeNodeType::ID:
+                std::cout<<"ID: "<<node->attribute_value<<std::endl;
+                break;
+            case TreeNodeType::OTHER:
+                std::cout<<node->attribute_name<<std::endl;
+                break;
+            default:
+                std::cout<<"superrise mother fucker!!!!!!!!"<<std::endl;
+        }
+    }
     int size = node->children.size();
     for (int i = 0; i < size; i++) {
         SyntaxTreeNode *child = node->children[i];
@@ -65,4 +97,17 @@ SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName,int firstLine, i
     this->firstLine=firstLine;
     this->firstColumn=firstColumn;
 }
+
+SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName, const std::string &attributeValue,
+                               int firstLine, int firstColumn, TreeNodeType nodeType) : nodeType(nodeType), attribute_name(attributeName),
+                                                                                        attribute_value(attributeValue), firstLine(firstLine),
+                                                                                        firstColumn(firstColumn) {
+    this->parent=nullptr;
+    this->children = std::vector<SyntaxTreeNode*>();}
+
+SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName,
+                               const std::string &attributeValue, int firstLine,TreeNodeType nodeType) : nodeType(nodeType),
+                                                                                   attribute_name(attributeName),
+                                                                                   attribute_value(attributeValue),
+                                                                                   firstLine(firstLine) {}
 

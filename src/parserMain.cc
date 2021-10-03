@@ -10,8 +10,9 @@
 void yyrestart(FILE *pFile);
 int yyparse (void);
 extern SyntaxTreeNode* root_node;
-
+extern int yydebug;
 int main(int argc, char **argv) {
+    yydebug=1;
     if (argc <= 1) {
         std::cout<<"PARSER_error_OUTPUT, no input path";
         return 1;
@@ -19,6 +20,7 @@ int main(int argc, char **argv) {
         std::cout<<"too much input path";
         return 1;
     } else {
+        std::cout<<"reading:"<<argv[1]<<std::endl;
         FILE *f = fopen(argv[1], "r");
         if (!f) {
             std::cout<<"error of path %s";
