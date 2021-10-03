@@ -18,7 +18,8 @@ enum class TreeNodeType {
     INT=4,
     FLOAT=5,
     ID=6,
-    OTHER=7
+    OTHER=7,
+            EMPTY=8
 };
 class SyntaxTreeNode{
     public:
@@ -72,6 +73,8 @@ class SyntaxTreeNode{
                 return "ID";
             case (int)TreeNodeType::OTHER:
                 return "other";
+            case (int)TreeNodeType::EMPTY:
+                return "empty";
             default:
                 return "unknown";
         }

@@ -1,8 +1,14 @@
 /*https://stackoverflow.com/questions/15550553/flex-regular-expression-literal-char*/
 
 %{
-#define EXIT_OK 0
-#define EXIT_FAIL 1
+    int yycolumn = 1;
+    #define YY_USER_ACTION \
+        yylloc.first_line = yylineno; \
+        yylloc.last_line = yylineno; \
+        yylloc.first_column = yycolumn; \
+        yylloc.last_column = yycolumn + yyleng;\
+        yycolumn += yyleng;\
+
 #include <iostream>
 #include <vector>
 #include "token.h"
@@ -14,15 +20,8 @@ extern "C" int yylex();
 %}
 %{
 #include "parser.hpp"
-    int yycolumn = 1;
-    #define YY_USER_ACTION \
-        yylloc.first_line = yylineno; \
-        yylloc.last_line = yylineno; \
-        yylloc.first_column = yycolumn; \
-        yylloc.last_column = yycolumn + yyleng;\
-        yycolumn += yyleng;
 %}
-
+%option yylineno
 CHAR '.'
 INT ([+-]?[0-9]+)|([+-]?0(x|X)[0-9a-fA-F]+)
 FLOAT {digit}+\.{digit}+
@@ -96,7 +95,7 @@ digit [0-9]
 {WHILE} {
   tokens_ptr->push_back(Token(Token::Type::WHILE, yytext, line_number));
       yylval.node_type=new SyntaxTreeNode("WHILE",yytext,line_number);
-      return ELSE;
+      return WHILE;
 }
 {RETURN} {
   tokens_ptr->push_back(Token(Token::Type::RETURN, yytext, line_number));
@@ -106,7 +105,7 @@ return RETURN;
 {DOT} {
  tokens_ptr->push_back(Token(Token::Type::DOT, yytext, line_number));
  yylval.node_type=new SyntaxTreeNode("DOT",yytext,line_number);
- return RETURN;
+ return DOT;
 }
 {SEMI} {
  tokens_ptr->push_back(Token(Token::Type::SEMI, yytext, line_number));
@@ -226,13 +225,14 @@ return ID;
 }
 
 \n {
-   //yycolumn=1;
+   yycolumn=1;
   line_number += 1;
 }
 [\t\r ]+ { 
   /* does nothing when seeing white spaces except new line */ 
 }
-. { std::cout << "fallback: " << yytext << std::endl; }
+. { //std::cout << "fallback: " << yytext << std::endl;
+}
 <<EOF>> {
   yyterminate();
 }

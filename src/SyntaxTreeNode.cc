@@ -38,7 +38,9 @@ void SyntaxTreeNode::insert(SyntaxTreeNode* newChild){
 }
 
 void SyntaxTreeNode::preOrderPrint(SyntaxTreeNode *node,int level){
-
+        if(node->nodeType==TreeNodeType::EMPTY){
+            return;
+        }
     //std::cout << "level:" << level << std::endl;
     for (int i = 0; i < level; ++i) {
         std::cout << "  ";
@@ -71,6 +73,8 @@ void SyntaxTreeNode::preOrderPrint(SyntaxTreeNode *node,int level){
                 break;
             case TreeNodeType::OTHER:
                 std::cout<<node->attribute_name<<std::endl;
+                break;
+            case TreeNodeType::EMPTY:
                 break;
             default:
                 std::cout<<"superrise mother fucker!!!!!!!!"<<std::endl;
