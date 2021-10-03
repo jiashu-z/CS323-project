@@ -60,10 +60,10 @@ PUBLIC src)
 
 add_test(test_token test_token)
 
-add_executable(test_tree test/test_syntaxTree.cpp
+add_executable(test_syntaxTree test/test_syntaxTree.cpp
         src/SyntaxTreeNode.cc
         )
-target_include_directories(test_tree
+target_include_directories(test_syntaxTree
         PUBLIC src)
 add_test(test_tree test_syntaxTree)
 
