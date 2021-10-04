@@ -3,6 +3,8 @@
 #include <string>
 
 const std::string Token::type_names[] = {
+        "CHAR",
+        "FLOAT",
   "INT",
   "TYPE", 
   "STRUCT", 
@@ -33,7 +35,7 @@ const std::string Token::type_names[] = {
   "RB",
   "LC",
   "RC",
-  "ID",
+  "ID"
   };
 
 std::string Token::TypeToString(const Token::Type& token_type) {
@@ -44,7 +46,7 @@ Token::Token(const Token::Type& token_type, const std::string& literal, const in
   literal(literal),
   line_number(line_number) {}
 
-Token::Token(const Token::Type& token_type, const char*& literal, const int& line_number): token_type(token_type), 
+Token::Token(const Token::Type& token_type, const char*& literal, const int& line_number): token_type(token_type),
   literal(std::string(literal)),
   line_number(line_number) {}
 

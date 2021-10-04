@@ -14,6 +14,8 @@ class Token {
    * 
    */
   enum Type {
+      CHAR,
+      FLOAT,
     INT,
     TYPE,
     STRUCT,
@@ -58,7 +60,7 @@ class Token {
 
  private:
   const Type token_type;
-  const std::string literal;
+  const std::string literal="";
   const int line_number;
 
  public:

@@ -9,7 +9,6 @@ set(CMAKE_CXX_STANDARD 17)
 set($ENV{CTEST_OUTPUT_ON_FAILURE} TRUE)
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -ldl")
 
 find_package(BISON)
 find_package(FLEX)
@@ -36,22 +35,24 @@ target_link_libraries(main
 PUBLIC fl)
 
 
-#
-#add_executable(CS323-project1
-#src/token.cpp
-#src/main.cpp
-#        src/SyntaxTreeNode.hh
-#        src/SyntaxTreeNode.cc)
-#target_link_libraries(CS323-project1 PUBLIC fl)
+
+add_executable(CS323-project1
+src/token.cpp
+src/main.cpp
+        src/SyntaxTreeNode.hh
+        src/SyntaxTreeNode.cc
+        src/parser.cpp
+        )
+target_link_libraries(CS323-project1 PUBLIC fl)
 
 
 
 
-#add_executable(test_lexer demo_test/test_lexer.cpp)
-#target_include_directories(test_lexer
-#PUBLIC src)
+add_executable(test_lexer demo_test/test_lexer.cpp)
+target_include_directories(test_lexer
+PUBLIC src)
 
-#add_test(test_lexer test_lexer)
+add_test(test_lexer test_lexer)
 
 add_executable(test_token
         demo_test/test_token.cpp
