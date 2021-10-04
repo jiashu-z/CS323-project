@@ -12,12 +12,12 @@
     #include <iostream>
     #include <vector>
     #include "token.h"
-    #include "SyntaxTreeNode.hh"
+    #include "SyntaxTreeNode.h"
     #define LEXER_ERROR_OUTPUT stdout
     std::vector<Token> *tokens_ptr =new std::vector<Token>;
     int line_number = 1;
     extern "C" int yylex();
-    #include "parser.hpp"
+    #include "parser.h"
 %}
 %option yylineno
 CHAR '.'

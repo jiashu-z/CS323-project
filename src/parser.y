@@ -1,6 +1,6 @@
 %{
 #include "lexer.cpp"
-#include "SyntaxTreeNode.hh"
+#include "SyntaxTreeNode.h"
 int isError=0;
 SyntaxTreeNode* root_node;
 #define PARSER_error_OUTPUT stdout

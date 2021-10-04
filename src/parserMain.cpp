@@ -4,14 +4,13 @@
 
 #include <cstdio>
 #include <iostream>
-#include "SyntaxTreeNode.hh"
-#include "parser.hpp"
+#include "SyntaxTreeNode.h"
 void yyrestart(FILE *pFile);
 int yyparse (void);
 extern SyntaxTreeNode* root_node;
 extern int yydebug;
 int main(int argc, char **argv) {
-    yydebug=1;
+    yydebug=0;
     if (argc <= 1) {
         std::cout<<"PARSER_error_OUTPUT, no input path";
         return 1;

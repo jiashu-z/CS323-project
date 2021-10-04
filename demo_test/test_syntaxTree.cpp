@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include "SyntaxTreeNode.hh"
+#include "SyntaxTreeNode.h"
 #include <cassert>
 
 void test_print();

@@ -2,7 +2,7 @@
 // Created by maozunyao on 2021/9/29.
 //
 
-#include "SyntaxTreeNode.hh"
+#include "SyntaxTreeNode.h"
 #include "token.h"
 #define DEBUG 0
 

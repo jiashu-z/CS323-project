@@ -2,8 +2,8 @@
 // Created by maozunyao on 2021/9/29.
 //
 
-#ifndef CS323_PROJECT1_SYNTAXTREENODE_HH
-#define CS323_PROJECT1_SYNTAXTREENODE_HH
+#ifndef CS323_PROJECT1_SYNTAXTREENODE_H
+#define CS323_PROJECT1_SYNTAXTREENODE_H
 
 #include <vector>
 #include <string>
@@ -82,4 +82,4 @@ class SyntaxTreeNode{
 
 };
 
-#endif //CS323_PROJECT1_SYNTAXTREENODE_HH
+#endif //CS323_PROJECT1_SYNTAXTREENODE_H
