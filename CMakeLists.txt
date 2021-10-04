@@ -21,7 +21,7 @@ BISON_TARGET(parser
   VERBOSE)
 FLEX_TARGET(scanner
   src/lexer.l
-  src/lexer.cpp)
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.cpp)
 ADD_FLEX_BISON_DEPENDENCY(scanner parser)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
