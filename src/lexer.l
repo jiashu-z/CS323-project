@@ -20,8 +20,9 @@
     #include "parser.h"
 %}
 %option yylineno
-CHAR '.'
-INT ([+-]?[0-9]+)|([+-]?0(x|X)[0-9a-fA-F]+)
+CHAR '.'|'\\x[0-9a-fA-F][0-9a-fA-F]'
+INT [+-]?[0-9]+
+HEX_INT [+-]?0[xX](0|[1-9a-fA-F][0-9a-fA-F]*)
 FLOAT {digit}+\.{digit}+
 TYPE int|float|char
 STRUCT struct
@@ -64,6 +65,11 @@ digit [0-9]
 {INT} {
   tokens_ptr->push_back(Token(Token::Type::INT, yytext, line_number));
   yylval.node_type=new SyntaxTreeNode("TYPE",yytext,line_number,TreeNodeType::INT);
+  return INT;
+}
+{HEX_INT} {
+  tokens_ptr->push_back(Token(Token::Type::INT, yytext, line_number));
+  yylval.node_type=new SyntaxTreeNode("TYPE",strtol(yytext, NULL, 16),line_number,TreeNodeType::INT);
   return INT;
 }
 {FLOAT} {

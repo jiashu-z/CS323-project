@@ -36,8 +36,8 @@ class SyntaxTreeNode{
     SyntaxTreeNode(const std::string &attributeName, const std::string &attributeValue,
                    int firstLine, int firstColumn, TreeNodeType nodeType);
 
-    SyntaxTreeNode(const std::string &attributeName, const std::string &attributeValue,
-                   int firstLine,TreeNodeType nodeType);
+    SyntaxTreeNode(const std::string &attributeName, const std::string &attributeValue,int firstLine,TreeNodeType nodeType);
+    SyntaxTreeNode(const std::string &attributeName, int intAttributeValue,int firstLine,TreeNodeType nodeType);
 
     SyntaxTreeNode(const std::string &attributeName,const std::string &attribute_value,int firstLine);
 

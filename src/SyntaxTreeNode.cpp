@@ -119,3 +119,11 @@ SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName,
                                                                                    attribute_value(attributeValue),
                                                                                    firstLine(firstLine) {}
 
+SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName, int intAttributeValue, int firstLine,
+                               TreeNodeType nodeType) {
+        this->attribute_name=attributeName;
+        this->attribute_value=std::to_string(intAttributeValue);
+        this->firstLine=firstLine;
+        this->nodeType=nodeType;
+}
+

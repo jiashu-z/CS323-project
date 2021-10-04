@@ -9,9 +9,11 @@
 void test_print();
 void test_insert();
 int main() {
-
-
-//test_print();
+    int   lTemp   =   strtol("0x10", NULL, 16);
+    std::cout<<lTemp<<std::endl;
+    char c = '\x55';
+    std::cout<<c<<std::endl;
+test_print();
 test_insert();
     return 0;
 }

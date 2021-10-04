@@ -15,42 +15,30 @@ set(CMAKE_CXX_COMPILER g++)
 find_package(FLEX  REQUIRED)
 SET(FlexOutput ${CMAKE_SOURCE_DIR}/src/lexer.cpp)
 IF(FLEX_FOUND)
-    ADD_CUSTOM_COMMAND(
-            OUTPUT ${FlexOutput}
+    ADD_CUSTOM_TARGET(lexer
+            BYPRODUCTS ${FlexOutput}
             COMMAND ${FLEX_EXECUTABLE}
             --outfile=${FlexOutput}
             ${CMAKE_SOURCE_DIR}/src/lexer.l
-            COMMENT "Generating lexer.cpp"
+            COMMENT "Building lexer.cpp"
     )
 ENDIF()
 
 find_package(BISON REQUIRED)
 SET(BisonOutput ${CMAKE_SOURCE_DIR}/src/parser.cpp)
 IF(BISON_FOUND)
-    ADD_CUSTOM_COMMAND(
-            OUTPUT ${BisonOutput}
+    ADD_CUSTOM_TARGET(parser
+            BYPRODUCTS ${BisonOutput} ${CMAKE_SOURCE_DIR}/src/parser.h ${CMAKE_SOURCE_DIR}/src/parser.output
             COMMAND ${BISON_EXECUTABLE}
             -t -v
             --defines=${CMAKE_SOURCE_DIR}/src/parser.h
             --output=${BisonOutput}
             ${CMAKE_SOURCE_DIR}/src/parser.y
-            COMMENT "Generating parser.cpp"
-            DEPENDS ${FlexOutput}
+            COMMENT "Building parser.cpp"
     )
 ENDIF()
 
 
-#FLEX_TARGET(scanner src/lexer.l src/lexer.cpp)
-#
-#BISON_TARGET(parser src/parser.y ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
-#        COMPILE_FLAGS  --debug
-#        DEFINES_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.h
-#        VERBOSE
-#        )
-
-
-#ADD_FLEX_BISON_DEPENDENCY(scanner parser)
-#add_library(lexer SHARED ${FLEX_scanner_OUTPUTS})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(main
@@ -59,18 +47,20 @@ add_executable(main
         src/SyntaxTreeNode.cpp
         ${BisonOutput}
         )
+add_dependencies(main lexer parser)
 target_link_libraries(main
 PUBLIC fl)
 
 
 
 add_executable(CS323-project1
-        src/parser.cpp
+        ${BisonOutput}
 src/token.cpp
 src/main.cpp
         src/SyntaxTreeNode.h
         src/SyntaxTreeNode.cpp
         )
+add_dependencies(CS323-project1 lexer parser)
 target_link_libraries(CS323-project1 PUBLIC fl)
 
 add_executable(test_token
