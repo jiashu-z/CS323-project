@@ -12,18 +12,18 @@ CPP = $(GPP) $(CXX_FLAGS)
 .lex:$(SRC_PATH)/lexer.l
 	$(FLEX) --outfile=$(SRC_PATH)/lexer.cpp $(SRC_PATH)/lexer.l
 .syntax:$(SRC_PATH)/parser.y
-	$(BISON) -t -v --defines=$(SRC_PATH)/parser.hpp --output=$(SRC_PATH)/parser.cpp $(SRC_PATH)/parser.y
+	$(BISON) -t -v --defines=$(SRC_PATH)/parser.h --output=$(SRC_PATH)/parser.cpp $(SRC_PATH)/parser.y
 splc: .lex  .syntax
-	$(CPP) $(SRC_PATH)/parserMain.cc \
+	$(CPP) $(SRC_PATH)/parserMain.cpp \
     $(SRC_PATH)/token.cpp \
-    $(SRC_PATH)/SyntaxTreeNode.cc \
+    $(SRC_PATH)/SyntaxTreeNode.cpp \
     $(SRC_PATH)/parser.cpp \
     -L$(SRC_PATH) -lfl -ly \
     -o bin/splc
 clean:
 	@rm -rf $(SRC_PATH)/lexer.cpp \
 	$(SRC_PATH)/parser.cpp \
-	$(SRC_PATH)/parser.hpp \
+	$(SRC_PATH)/parser.h \
 	$(SRC_PATH)/parser.output \
 	$(SRC_PATH)/*.o \
 	$(SRC_PATH)/*.a \
