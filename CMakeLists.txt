@@ -5,7 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 include_directories(src)
 include(CTest)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set($ENV{CTEST_OUTPUT_ON_FAILURE} TRUE)
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
@@ -14,16 +14,18 @@ find_package(BISON)
 find_package(FLEX)
 
 message("maozunyao:" ${CMAKE_CURRENT_SOURCE_DIR})
-FLEX_TARGET(scanner src/lexer.l src/lexer.cpp)
-add_library(lexer SHARED ${FLEX_scanner_OUTPUTS})
-
-
-
 BISON_TARGET(parser src/parser.y ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
         COMPILE_FLAGS  --debug
         DEFINES_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.hpp
         VERBOSE
         )
+FLEX_TARGET(scanner src/lexer.l src/lexer.cpp)
+ADD_FLEX_BISON_DEPENDENCY(scanner parser)
+add_library(lexer SHARED ${FLEX_scanner_OUTPUTS})
+
+
+
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(main
         src/parserMain.cc
@@ -37,11 +39,11 @@ PUBLIC fl)
 
 
 add_executable(CS323-project1
+        src/parser.cpp
 src/token.cpp
 src/main.cpp
         src/SyntaxTreeNode.hh
         src/SyntaxTreeNode.cc
-        src/parser.cpp
         )
 target_link_libraries(CS323-project1 PUBLIC fl)
 

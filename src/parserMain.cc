@@ -11,7 +11,7 @@ int yyparse (void);
 extern SyntaxTreeNode* root_node;
 extern int yydebug;
 int main(int argc, char **argv) {
-    yydebug=0;
+    yydebug=1;
     if (argc <= 1) {
         std::cout<<"PARSER_error_OUTPUT, no input path";
         return 1;
