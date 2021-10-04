@@ -17,6 +17,9 @@ find_package(FLEX)
 message("maozunyao:" ${CMAKE_CURRENT_SOURCE_DIR})
 FLEX_TARGET(scanner src/lexer.l src/lexer.cpp)
 add_library(lexer SHARED ${FLEX_scanner_OUTPUTS})
+
+
+
 BISON_TARGET(parser src/parser.y ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
         COMPILE_FLAGS  --debug
         DEFINES_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.hpp
