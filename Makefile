@@ -17,7 +17,6 @@ splc: .lex  .syntax
 	$(CPP) $(SRC_PATH)/parserMain.cpp \
     $(SRC_PATH)/token.cpp \
     $(SRC_PATH)/SyntaxTreeNode.cpp \
-		$(SRC_PATH)/lexer.cpp \
     $(SRC_PATH)/parser.cpp \
     -L$(SRC_PATH) -lfl -ly \
     -o bin/splc
