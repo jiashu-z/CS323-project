@@ -24,9 +24,9 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt update -y
-        sudo apt remove flex bison -y
+        sudo apt remove flex bison cmake -y
         sudo apt autoremove
-        sudo apt install flex bison -y
+        sudo apt install flex bison cmake -y
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
