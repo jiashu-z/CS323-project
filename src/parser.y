@@ -1,5 +1,5 @@
 %{
-#include "lexer.cpp"
+#include "lexer.h"
 #include "SyntaxTreeNode.h"
 int isError=0;
 SyntaxTreeNode* root_node;

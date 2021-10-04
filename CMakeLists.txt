@@ -21,7 +21,8 @@ BISON_TARGET(parser
   VERBOSE)
 FLEX_TARGET(scanner
   src/lexer.l
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.cpp)
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.cpp
+  DEFINES_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.h)
 ADD_FLEX_BISON_DEPENDENCY(scanner parser)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -29,11 +30,13 @@ add_executable(main
   src/parserMain.cpp
   src/token.cpp
   src/SyntaxTreeNode.cpp
+  ${FLEX_scanner_OUTPUTS}
   ${BISON_parser_OUTPUTS})
 target_link_libraries(main
 PUBLIC fl)
 
 add_executable(CS323-project1
+  ${FLEX_scanner_OUTPUTS}
   ${BISON_parser_OUTPUTS}
   src/token.cpp
   src/main.cpp
