@@ -10,39 +10,67 @@ set($ENV{CTEST_OUTPUT_ON_FAILURE} TRUE)
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
 
-find_package(BISON)
-find_package(FLEX)
 
-BISON_TARGET(parser
-  src/parser.y
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
-  COMPILE_FLAGS  --debug
-  DEFINES_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.h
-  VERBOSE)
-FLEX_TARGET(scanner
-  src/lexer.l
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.cpp
-  DEFINES_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.h)
-ADD_FLEX_BISON_DEPENDENCY(scanner parser)
+
+find_package(FLEX  REQUIRED)
+SET(FlexOutput ${CMAKE_SOURCE_DIR}/src/lexer.cpp)
+IF(FLEX_FOUND)
+    ADD_CUSTOM_COMMAND(
+            OUTPUT ${FlexOutput}
+            COMMAND ${FLEX_EXECUTABLE}
+            --outfile=${FlexOutput}
+            ${CMAKE_SOURCE_DIR}/src/lexer.l
+            COMMENT "Generating lexer.cpp"
+    )
+ENDIF()
+
+find_package(BISON REQUIRED)
+SET(BisonOutput ${CMAKE_SOURCE_DIR}/src/parser.cpp)
+IF(BISON_FOUND)
+    ADD_CUSTOM_COMMAND(
+            OUTPUT ${BisonOutput}
+            COMMAND ${BISON_EXECUTABLE}
+            -t -v
+            --defines=${CMAKE_SOURCE_DIR}/src/parser.h
+            --output=${BisonOutput}
+            ${CMAKE_SOURCE_DIR}/src/parser.y
+            COMMENT "Generating parser.cpp"
+            DEPENDS ${FlexOutput}
+    )
+ENDIF()
+
+
+#FLEX_TARGET(scanner src/lexer.l src/lexer.cpp)
+#
+#BISON_TARGET(parser src/parser.y ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
+#        COMPILE_FLAGS  --debug
+#        DEFINES_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.h
+#        VERBOSE
+#        )
+
+
+#ADD_FLEX_BISON_DEPENDENCY(scanner parser)
+#add_library(lexer SHARED ${FLEX_scanner_OUTPUTS})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(main
-  src/parserMain.cpp
-  src/token.cpp
-  src/SyntaxTreeNode.cpp
-  ${FLEX_scanner_OUTPUTS}
-  ${BISON_parser_OUTPUTS})
+        src/parserMain.cpp
+        src/token.cpp
+        src/SyntaxTreeNode.cpp
+        ${BisonOutput}
+        )
 target_link_libraries(main
 PUBLIC fl)
 
-add_executable(CS323-project1
-  ${FLEX_scanner_OUTPUTS}
-  ${BISON_parser_OUTPUTS}
-  src/token.cpp
-  src/main.cpp
-  src/SyntaxTreeNode.h
-  src/SyntaxTreeNode.cpp)
 
+
+add_executable(CS323-project1
+        src/parser.cpp
+src/token.cpp
+src/main.cpp
+        src/SyntaxTreeNode.h
+        src/SyntaxTreeNode.cpp
+        )
 target_link_libraries(CS323-project1 PUBLIC fl)
 
 add_executable(test_token
@@ -54,7 +82,7 @@ target_include_directories(test_token
 
 add_test(test_token test_token)
 
-add_executable(test_syntaxTree 
+add_executable(test_syntaxTree
   demo_test/test_syntaxTree.cpp
   src/SyntaxTreeNode.cpp)
 
