@@ -9,7 +9,7 @@ src/parser.cc
 src/parser.cpp
 src/parser.h
 src/parser.hpp
-
+src/rser.output
 .clion.source.upload.marker
 
 # Created by https://www.toptal.com/developers/gitignore/api/clion+all,macos,cmake
