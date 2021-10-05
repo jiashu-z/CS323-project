@@ -237,7 +237,8 @@ digit [0-9]
   return ID;
 }
 {digit}({letter_}|{digit})* {
-  // id start with number
+  // invalid id start with number
+  has_error=true;
   printf("Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);
   return ID;
 }
