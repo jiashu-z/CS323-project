@@ -5,28 +5,32 @@
 #include <cstdio>
 #include <iostream>
 #include "SyntaxTreeNode.h"
+
 void yyrestart(FILE *pFile);
-int yyparse (void);
-extern SyntaxTreeNode* root_node;
+
+int yyparse(void);
+
+extern SyntaxTreeNode *root_node;
 extern int yydebug;
+extern int has_error;
+
 int main(int argc, char **argv) {
-    yydebug=0;
+//    yydebug = 1;
     if (argc <= 1) {
-        std::cout<<"PARSER_error_OUTPUT, no input path";
+        std::cout << "PARSER_error_OUTPUT, no input path";
         return 1;
     } else if (argc > 2) {
-        std::cout<<"too much input path";
+        std::cout << "too much input path";
         return 1;
     } else {
-      //  std::cout<<"reading:"<<argv[1]<<std::endl;
         FILE *f = fopen(argv[1], "r");
         if (!f) {
-            std::cout<<"error of path %s";
+            std::cout << "error of path " << argv[1];
             return 1;
         }
         yyrestart(f);
         yyparse();
-        if(root_node!= nullptr) {
+        if (root_node != nullptr && !has_error) {
             root_node->preOrderPrint(root_node, 0);
         }
     }
