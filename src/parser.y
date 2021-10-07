@@ -19,7 +19,7 @@ void yyerror(const char* s){
 %nonassoc <node_type> LOWER_THAN_ELSE
 %nonassoc <node_type> ELSE
 %token <node_type> TYPE STRUCT
-%token <node_type> IF WHILE RETURN
+%token <node_type> IF WHILE RETURN FOR
 %token <node_type> CHAR
 %token <node_type> INT
 %token <node_type> FLOAT
@@ -53,13 +53,13 @@ ExtDefList: ExtDef ExtDefList {$$ = new SyntaxTreeNode("ExtDefList",yytext,@$.fi
     | {	$$ = new SyntaxTreeNode("ExtDefList",yytext,@$.first_line,@$.first_column,TreeNodeType::EMPTY); }
     ;
 ExtDef: Specifier ExtDecList SEMI {$$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);$$->insert({$1,$2,$3});}
-    | Specifier ExtDecList error {printf("Missing semicolon ';'\n");}
-    | error ExtDecList SEMI {printf("Missing specifier\n");}
     | Specifier SEMI {$$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
-    | error SEMI {printf("Missing specifier\n");}
-    | Specifier error {printf("Missing semicolon ';'\n");}
     | Specifier FunDec CompSt {$$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);}
-    | error FunDec CompSt {printf("Missing specifier\n");}
+    | Specifier ExtDecList error {printf("Missing semicolon ';'1\n");}
+    | error ExtDecList SEMI {printf("Missing specifier1\n");}
+    | error SEMI {printf("Missing specifier2\n");}
+    | Specifier error {printf("Missing semicolon ';'2\n");}
+    | error FunDec CompSt {printf("Missing specifier3\n");}
     ;
 ExtDecList: VarDec {$$=new SyntaxTreeNode("ExtDecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
     | VarDec COMMA ExtDecList{$$=new SyntaxTreeNode("ExtDecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
@@ -85,7 +85,7 @@ VarList: ParamDec COMMA VarList {$$=new SyntaxTreeNode("VarList",yytext,@$.first
     | ParamDec {$$=new SyntaxTreeNode("VarList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
     ;
 ParamDec: Specifier VarDec{$$=new SyntaxTreeNode("ParamDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);}
-    | error VarDec {printf("Missing specifier\n");}
+    | error VarDec {printf("Missing specifier4\n");}
     ;
 
 // statement
@@ -95,10 +95,10 @@ StmtList: Stmt StmtList{$$=new SyntaxTreeNode("StmtList",yytext,@$.first_line,@$
     | {$$=new SyntaxTreeNode("StmtList",yytext,@$.first_line,@$.first_column,TreeNodeType::EMPTY); }
     ;
 Stmt: Exp SEMI {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);}
-    | Exp error {printf("Missing semicolon ';'\n");}
+    | Exp error {printf("Missing semicolon ';'3\n");}
     | CompSt{$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
     | RETURN Exp SEMI   {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);}
-    | RETURN Exp error {printf("Missing semicolon ';'\n");}
+    | RETURN Exp error {printf("Missing semicolon ';'4\n");}
     | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5});
     //TODO: not sure the %prec and lower_than_else usage
     }
@@ -108,14 +108,15 @@ Stmt: Exp SEMI {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_colum
     | IF LP Exp error Stmt {printf("Missing closing parenthesis ')'\n");}
     | WHILE LP Exp RP Stmt {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5});}
     | WHILE LP Exp error Stmt {printf("Missing closing parenthesis ')'\n");}
+    | FOR LP Exp SEMI Exp SEMI Exp RP Stmt { $$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5,$6,$7,$8,$9});}
     ;
 // local definition
 DefList: Def DefList {$$=new SyntaxTreeNode("DefList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
     | {$$=new SyntaxTreeNode("DefList",yytext,@$.first_line,@$.first_column,TreeNodeType::EMPTY); }
     ;
 Def: Specifier DecList SEMI{$$=new SyntaxTreeNode("Def",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
-    | Specifier DecList error {printf("Missing semicolon ';'\n");}
-    | error DecList SEMI {printf("Missing specifier\n");}
+    | Specifier DecList error {printf("Missing semicolon ';'5\n");}
+    | error DecList SEMI {printf("Missing specifier5\n");}
     ;
 DecList: Dec{$$=new SyntaxTreeNode("DecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
     | Dec COMMA DecList{$$=new SyntaxTreeNode("DecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}

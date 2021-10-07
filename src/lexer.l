@@ -25,14 +25,15 @@
 
 CHAR '.'|'\\x[0-9a-fA-F]{1,2}'
 INVALID_HEX_CHAR '\\x[0-9a-fA-F]*[g-z][0-9a-fA-F]*'|'\\x[0-9a-fA-F]{3,}'
-INT [+-]?[0-9]+
-HEX_INT [+-]?0[xX](0|[1-9a-fA-F][0-9a-fA-F]*)
+INT [0-9]+
+HEX_INT 0[xX](0|[1-9a-fA-F][0-9a-fA-F]*)
 FLOAT {digit}+\.{digit}+
 TYPE int|float|char
 STRUCT struct
 IF if
 ELSE else
 WHILE while
+FOR for
 RETURN return
 DOT \.
 SEMI ;
@@ -109,6 +110,10 @@ digit [0-9]
   tokens_ptr->push_back(Token(Token::Type::WHILE, yytext, line_number));
   yylval.node_type=new SyntaxTreeNode("WHILE",yytext,line_number);
   return WHILE;
+}
+{FOR} {
+  yylval.node_type=new SyntaxTreeNode("WHILE",yytext,line_number);
+  return FOR;
 }
 {RETURN} {
   tokens_ptr->push_back(Token(Token::Type::RETURN, yytext, line_number));
@@ -230,7 +235,6 @@ digit [0-9]
   yylval.node_type=new SyntaxTreeNode("RC",yytext,line_number);
   return RC;
 }
-'([^'\\\n]|\\.)' {}
 {letter_}({letter_}|{digit})* {
   tokens_ptr->push_back(Token(Token::Type::ID, yytext, line_number));
   yylval.node_type=new SyntaxTreeNode("ID",yytext,line_number,TreeNodeType::ID);
@@ -246,6 +250,20 @@ digit [0-9]
   yycolumn=1;
   line_number += 1;
 }
+"//" {
+    char c = yyinput();
+    while(c!='\n'){c=yyinput();}
+}
+[/][*][^*]*[*]*[*][/]       {
+}
+ [/][*][^*]*[/][*][^*]*[*]+[/][*]*[*][/]  {  has_error=true;
+                                             printf("Error type A at Line %d: nested /*\n", yylineno);
+                                             return ERROR;
+}
+[/][*]                                    {   has_error=true;
+                                              printf("Error type A at Line %d: unmateched /*\n", yylineno);
+                                              return ERROR; }
+
 [\t\r ]+ {}
 . {
   has_error=true;
