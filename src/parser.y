@@ -55,14 +55,15 @@ ExtDefList: ExtDef ExtDefList {$$ = new SyntaxTreeNode("ExtDefList",yytext,@$.fi
 ExtDef: Specifier ExtDecList SEMI {$$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);$$->insert({$1,$2,$3});}
     | Specifier SEMI {$$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
     | Specifier FunDec CompSt {$$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);}
-    | Specifier ExtDecList error {printf("Missing semicolon ';'1\n");}
-    | error ExtDecList SEMI {printf("Missing specifier1\n");}
-    | error SEMI {printf("Missing specifier2\n");}
-    | Specifier error {printf("Missing semicolon ';'2\n");}
-    | error FunDec CompSt {printf("Missing specifier3\n");}
+    | Specifier ExtDecList error {printf("Missing semicolon ';'\n");}
+    | ExtDecList error SEMI {printf("Missing specifier\n");}
+    | SEMI error {printf("Missing specifier\n");}
+    | Specifier error {printf("Missing semicolon ';'\n");}
+    | error FunDec CompSt {printf("Missing specifier\n");}
     ;
 ExtDecList: VarDec {$$=new SyntaxTreeNode("ExtDecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
     | VarDec COMMA ExtDecList{$$=new SyntaxTreeNode("ExtDecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
+    | VarDec ExtDecList error {printf("Missing comma ','\n");}
     ;
 
 // specifier
@@ -70,6 +71,8 @@ Specifier: TYPE {$$=new SyntaxTreeNode("Specifier",yytext,@$.first_line,@$.first
     | StructSpecifier {$$=new SyntaxTreeNode("Specifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
     ;
 StructSpecifier: STRUCT ID LC DefList RC {$$=new SyntaxTreeNode("StructSpecifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5});}
+    | STRUCT ID LC DefList error {printf("Missing left brace\n");}
+    | STRUCT ID error DefList RC {printf("Missing right brace\n");}
     | STRUCT ID{$$=new SyntaxTreeNode("StructSpecifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
     ;
 // declarator
@@ -80,12 +83,15 @@ FunDec: ID LP VarList RP {$$=new SyntaxTreeNode("FunDec",yytext,@$.first_line,@$
     | ID LP VarList error {printf("Missing closing parenthesis ')'\n");}
     | ID LP RP {$$=new SyntaxTreeNode("FunDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
     | ID LP error {printf("Missing closing parenthesis ')'\n");}
+    | ID error VarList RP {printf("Missing left parenthesis ')'\n");}
+    | ID error RP {printf("Missing left parenthesis ')'\n");}
     ;
 VarList: ParamDec COMMA VarList {$$=new SyntaxTreeNode("VarList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);}
+    | ParamDec VarList error {printf("Missing comma ','\n");}
     | ParamDec {$$=new SyntaxTreeNode("VarList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
     ;
 ParamDec: Specifier VarDec{$$=new SyntaxTreeNode("ParamDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);}
-    | error VarDec {printf("Missing specifier4\n");}
+    | error VarDec {printf("Missing specifier\n");}
     ;
 
 // statement
@@ -95,10 +101,10 @@ StmtList: Stmt StmtList{$$=new SyntaxTreeNode("StmtList",yytext,@$.first_line,@$
     | {$$=new SyntaxTreeNode("StmtList",yytext,@$.first_line,@$.first_column,TreeNodeType::EMPTY); }
     ;
 Stmt: Exp SEMI {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);}
-    | Exp error {printf("Missing semicolon ';'3\n");}
+    | Exp error {printf("Missing semicolon ';'\n");}
     | CompSt{$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
     | RETURN Exp SEMI   {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);}
-    | RETURN Exp error {printf("Missing semicolon ';'4\n");}
+    | RETURN Exp error {printf("Missing semicolon ';'\n");}
     | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5});
     //TODO: not sure the %prec and lower_than_else usage
     }
@@ -109,17 +115,22 @@ Stmt: Exp SEMI {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_colum
     | WHILE LP Exp RP Stmt {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5});}
     | WHILE LP Exp error Stmt {printf("Missing closing parenthesis ')'\n");}
     | FOR LP Exp SEMI Exp SEMI Exp RP Stmt { $$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5,$6,$7,$8,$9});}
+    | FOR LP Exp SEMI Exp SEMI Exp error Stmt {printf("Missing closing parenthesis ')'\n");}
+    | IF error Exp RP Stmt {printf("Missing left parenthesis ')'\n");}
+    | WHILE error Exp RP Stmt {printf("Missing left parenthesis ')'\n");}
+    | FOR error Exp SEMI Exp SEMI Exp RP Stmt {printf("Missing left parenthesis ')'\n");}
     ;
 // local definition
 DefList: Def DefList {$$=new SyntaxTreeNode("DefList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
     | {$$=new SyntaxTreeNode("DefList",yytext,@$.first_line,@$.first_column,TreeNodeType::EMPTY); }
     ;
 Def: Specifier DecList SEMI{$$=new SyntaxTreeNode("Def",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
-    | Specifier DecList error {printf("Missing semicolon ';'5\n");}
-    | error DecList SEMI {printf("Missing specifier5\n");}
+    | Specifier DecList error {printf("Missing semicolon ';'\n");}
+    | error DecList SEMI {printf("Missing specifier\n");}
     ;
 DecList: Dec{$$=new SyntaxTreeNode("DecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
     | Dec COMMA DecList{$$=new SyntaxTreeNode("DecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
+    | Dec DecList error{printf("Missing comma ','\n");}
     ;
 Dec: VarDec{$$=new SyntaxTreeNode("Dec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
     | VarDec ASSIGN Exp{$$=new SyntaxTreeNode("Dec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
@@ -155,8 +166,10 @@ Exp: Exp ASSIGN Exp {$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_c
     | CHAR {$$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);  $$->insert($1);}
     | Exp ERROR Exp {}
     | ERROR {}
+    | ID error RP{printf("Missing left parenthesis ')'\n");}
     ;
 Args: Exp COMMA Args{$$=new SyntaxTreeNode("Args",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
     | Exp{$$=new SyntaxTreeNode("Args",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
+    | Exp Args error {printf("Missing comma ','\n");}
     ;
 %%
