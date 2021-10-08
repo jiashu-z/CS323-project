@@ -1,0 +1,329 @@
+Program (1)
+  ExtDefList (1)
+    ExtDef (1)
+      Specifier (1)
+        TYPE: int
+      ExtDecList (1)
+        VarDec (1)
+          ID: global_1
+        COMMA
+        ExtDecList (1)
+          VarDec (1)
+            ID: global_2
+      SEMI
+    ExtDefList (3)
+      ExtDef (3)
+        Specifier (3)
+          StructSpecifier (3)
+            STRUCT
+            ID: struct_1
+            LC
+            DefList (4)
+              Def (4)
+                Specifier (4)
+                  TYPE: int
+                DecList (4)
+                  Dec (4)
+                    VarDec (4)
+                      VarDec (4)
+                        ID: array_1
+                      LB
+                      INT: 2
+                      RB
+                SEMI
+              DefList (5)
+                Def (5)
+                  Specifier (5)
+                    TYPE: int
+                  DecList (5)
+                    Dec (5)
+                      VarDec (5)
+                        VarDec (5)
+                          VarDec (5)
+                            ID: array_2
+                          LB
+                          INT: 10
+                          RB
+                        LB
+                        INT: 2
+                        RB
+                  SEMI
+            RC
+        SEMI
+      ExtDefList (8)
+        ExtDef (8)
+          Specifier (8)
+            TYPE: int
+          FunDec (8)
+            ID: func_1
+            LP
+            VarList (8)
+              ParamDec (8)
+                Specifier (8)
+                  TYPE: int
+                VarDec (8)
+                  ID: a
+              COMMA
+              VarList (8)
+                ParamDec (8)
+                  Specifier (8)
+                    TYPE: int
+                  VarDec (8)
+                    ID: b
+            RP
+          CompSt (9)
+            LC
+            StmtList (10)
+              Stmt (10)
+                RETURN
+                Exp (10)
+                  Exp (10)
+                    Exp (10)
+                      INT: 3
+                    PLUS
+                    Exp (10)
+                      Exp (10)
+                        ID: a
+                      MUL
+                      Exp (10)
+                        ID: b
+                  MINUS
+                  Exp (10)
+                    Exp (10)
+                      INT: 2
+                    DIV
+                    Exp (10)
+                      INT: 1
+                SEMI
+            RC
+        ExtDefList (12)
+          ExtDef (12)
+            Specifier (12)
+              TYPE: int
+            FunDec (12)
+              ID: func_2
+              LP
+              VarList (12)
+                ParamDec (12)
+                  Specifier (12)
+                    TYPE: float
+                  VarDec (12)
+                    VarDec (12)
+                      ID: a
+                    LB
+                    INT: 2
+                    RB
+              RP
+            CompSt (13)
+              LC
+              StmtList (14)
+                Stmt (14)
+                  RETURN
+                  Exp (14)
+                    Exp (14)
+                      INT: 3
+                    AND
+                    Exp (14)
+                      Exp (14)
+                        ID: a
+                      LB
+                      Exp (14)
+                        INT: 1
+                      RB
+                  SEMI
+              RC
+          ExtDefList (17)
+            ExtDef (17)
+              Specifier (17)
+                TYPE: int
+              FunDec (17)
+                ID: test_11811535_1
+                LP
+                RP
+              CompSt (17)
+                LC
+                DefList (18)
+                  Def (18)
+                    Specifier (18)
+                      TYPE: int
+                    DecList (18)
+                      Dec (18)
+                        VarDec (18)
+                          ID: test_int_1
+                        ASSIGN
+                        Exp (18)
+                          INT: 1234
+                      COMMA
+                      DecList (18)
+                        Dec (18)
+                          VarDec (18)
+                            ID: test_int_2
+                          ASSIGN
+                          Exp (18)
+                            INT: 43981
+                    SEMI
+                  DefList (19)
+                    Def (19)
+                      Specifier (19)
+                        TYPE: float
+                      DecList (19)
+                        Dec (19)
+                          VarDec (19)
+                            ID: test_float
+                          ASSIGN
+                          Exp (19)
+                            FLOAT: 0.15
+                      SEMI
+                    DefList (20)
+                      Def (20)
+                        Specifier (20)
+                          TYPE: char
+                        DecList (20)
+                          Dec (20)
+                            VarDec (20)
+                              ID: test_char_1
+                            ASSIGN
+                            Exp (20)
+                              CHAR: '1'
+                          COMMA
+                          DecList (20)
+                            Dec (20)
+                              VarDec (20)
+                                ID: test_char_2
+                              ASSIGN
+                              Exp (20)
+                                CHAR: '\xa0'
+                        SEMI
+                      DefList (21)
+                        Def (21)
+                          Specifier (21)
+                            StructSpecifier (21)
+                              STRUCT
+                              ID: struct_1
+                          DecList (21)
+                            Dec (21)
+                              VarDec (21)
+                                ID: test_struct
+                          SEMI
+                StmtList (23)
+                  Stmt (23)
+                    Exp (23)
+                      Exp (23)
+                        Exp (23)
+                          Exp (23)
+                            ID: test_struct
+                          DOT
+                          ID: array_1
+                        LB
+                        Exp (23)
+                          INT: 1
+                        RB
+                      ASSIGN
+                      Exp (23)
+                        ID: func1
+                        LP
+                        Args (23)
+                          Exp (23)
+                            ID: global_2
+                          COMMA
+                          Args (23)
+                            Exp (23)
+                              Exp (23)
+                                Exp (23)
+                                  INT: 3
+                                MUL
+                                Exp (23)
+                                  ID: func_1
+                                  LP
+                                  Args (23)
+                                    Exp (23)
+                                      ID: global_1
+                                    COMMA
+                                    Args (23)
+                                      Exp (23)
+                                        ID: test_int_1
+                                  RP
+                              OR
+                              Exp (23)
+                                INT: 2
+                        RP
+                    SEMI
+                  StmtList (24)
+                    Stmt (24)
+                      Exp (24)
+                        Exp (24)
+                          Exp (24)
+                            Exp (24)
+                              ID: test_struct
+                            DOT
+                            ID: array_1
+                          LB
+                          Exp (24)
+                            INT: 2
+                          RB
+                        ASSIGN
+                        Exp (24)
+                          ID: func2
+                          LP
+                          Args (24)
+                            Exp (24)
+                              ID: global_2
+                          RP
+                      SEMI
+                    StmtList (26)
+                      Stmt (26)
+                        WHILE
+                        LP
+                        Exp (26)
+                          Exp (26)
+                            ID: test_int_1
+                          EQ
+                          Exp (26)
+                            INT: 1234
+                        RP
+                        Stmt (27)
+                          CompSt (27)
+                            LC
+                            StmtList (28)
+                              Stmt (28)
+                                IF
+                                LP
+                                Exp (28)
+                                  Exp (28)
+                                    ID: test_int_1
+                                  GT
+                                  Exp (28)
+                                    ID: test_int_2
+                                RP
+                                Stmt (29)
+                                  CompSt (29)
+                                    LC
+                                    StmtList (30)
+                                      Stmt (30)
+                                        RETURN
+                                        Exp (30)
+                                          ID: test_int_1
+                                        SEMI
+                                    RC
+                                ELSE
+                                Stmt (33)
+                                  CompSt (33)
+                                    LC
+                                    StmtList (34)
+                                      Stmt (34)
+                                        Exp (34)
+                                          Exp (34)
+                                            ID: test_int_1
+                                          ASSIGN
+                                          Exp (34)
+                                            INT: 1235
+                                        SEMI
+                                    RC
+                            RC
+                      StmtList (37)
+                        Stmt (37)
+                          RETURN
+                          Exp (37)
+                            INT: 0
+                          SEMI
+                RC

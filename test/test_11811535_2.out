@@ -1,0 +1,4 @@
+Error type A at Line 2: unknown lexeme 0000
+Error type A at Line 2: unknown lexeme 01
+Error type A at Line 2: unknown lexeme 0x00
+Error type A at Line 2: unknown lexeme 0x01

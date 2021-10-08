@@ -1,0 +1,9 @@
+my_struct
+{
+  int code;
+  char data;
+};
+int test_11811535_4()
+{
+  struct my_struct a;
+}
