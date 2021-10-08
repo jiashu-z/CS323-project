@@ -27,6 +27,7 @@ CHAR '.'|'\\x[0-9a-fA-F]{1,2}'
 INVALID_HEX_CHAR '\\x[0-9a-fA-F]*[g-z][0-9a-fA-F]*'|'\\x[0-9a-fA-F]{3,}'
 INT [0-9]+
 HEX_INT 0[xX](0|[1-9a-fA-F][0-9a-fA-F]*)
+INVALID_INT_START_WITH_0 0[0-9]+
 FLOAT {digit}+\.{digit}+
 TYPE int|float|char
 STRUCT struct
@@ -68,6 +69,11 @@ digit [0-9]
   return CHAR;
 }
 {INVALID_HEX_CHAR} {
+  has_error=true;
+  printf("Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);
+  return ERROR;
+}
+{INVALID_INT_START_WITH_0} {
   has_error=true;
   printf("Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);
   return ERROR;
