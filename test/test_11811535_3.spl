@@ -1,3 +1,3 @@
 int test_11811535_3(){
-  char c='\xaaaaaaaaa';
+  char c='\xaaaaaaaaa', d='aaaaaa';
 }
