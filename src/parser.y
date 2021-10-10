@@ -3,19 +3,20 @@
 #include "SyntaxTreeNode.h"
 
 SyntaxTreeNode* root_node;
-
-int cnt = 0;
-void yyerror(const char* s){
-    has_error = true;
-    cnt += 1;
-    printf("Error type B at Line %d: ", yylineno);
-}
+int error_cnt = 0;
 
 void error_message(const char* message){
-    if(cnt > 0){
+    if(error_cnt > 0){
         printf("%s\n", message);
-        cnt -= 1;
+        error_cnt -= 1;
     }
+}
+
+void yyerror(const char* s){
+    has_error = true;
+    error_message("Syntax error");
+    error_cnt += 1;
+    printf("Error type B at Line %d: ", yylineno);
 }
 %}
 
@@ -80,8 +81,8 @@ Specifier: TYPE {$$=new SyntaxTreeNode("Specifier",yytext,@$.first_line,@$.first
     | StructSpecifier {$$=new SyntaxTreeNode("Specifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
     ;
 StructSpecifier: STRUCT ID LC DefList RC {$$=new SyntaxTreeNode("StructSpecifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5});}
-    | STRUCT ID LC DefList error {error_message("Missing left brace");}
-    | STRUCT ID error DefList RC {error_message("Missing right brace");}
+    | STRUCT ID LC DefList error {error_message("Missing right brace '}'");}
+    | STRUCT ID error DefList RC {error_message("Missing left brace '}'");}
     | STRUCT ID{$$=new SyntaxTreeNode("StructSpecifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
     ;
 // declarator

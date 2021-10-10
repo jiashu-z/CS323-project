@@ -13,6 +13,7 @@ int yyparse(void);
 extern SyntaxTreeNode *root_node;
 extern int yydebug;
 extern int has_error;
+extern int error_cnt;
 
 int main(int argc, char **argv) {
 //    yydebug = 1;
@@ -32,6 +33,10 @@ int main(int argc, char **argv) {
         yyparse();
         if (root_node != nullptr && !has_error) {
             root_node->preOrderPrint(root_node, 0);
+        }
+        if (error_cnt > 0) {
+            std::cout << "Syntax error\n";
+            error_cnt -= 1;
         }
     }
     return 0;
