@@ -12,68 +12,72 @@
 
 
 enum class TreeNodeType {
-    Non_Terminal=1,
-    TYPE=2,
-    CHAR=3,
-    INT=4,
-    FLOAT=5,
-    ID=6,
-    OTHER=7,
-            EMPTY=8
+    Non_Terminal = 1,
+    TYPE = 2,
+    CHAR = 3,
+    INT = 4,
+    FLOAT = 5,
+    ID = 6,
+    OTHER = 7,
+    EMPTY = 8
 };
-class SyntaxTreeNode{
-    public:
-    TreeNodeType nodeType=TreeNodeType::OTHER;
-    SyntaxTreeNode * parent{};
-    std::vector<SyntaxTreeNode*> children;
+
+class SyntaxTreeNode {
+public:
+    TreeNodeType nodeType = TreeNodeType::OTHER;
+    SyntaxTreeNode *parent{};
+    std::vector<SyntaxTreeNode *> children;
     std::string attribute_name;
     std::string attribute_value;
-    int firstLine=0;
-    int firstColumn=0;
-    public:
+    int firstLine = 0;
+    int firstColumn = 0;
+public:
     explicit SyntaxTreeNode(const std::string &attributeName);
 
-    SyntaxTreeNode(const std::string &attributeName, const std::string &attributeValue,
+    SyntaxTreeNode(std::string attributeName, std::string attributeValue,
                    int firstLine, int firstColumn, TreeNodeType nodeType);
 
-    SyntaxTreeNode(const std::string &attributeName, const std::string &attributeValue,int firstLine,TreeNodeType nodeType);
-    SyntaxTreeNode(const std::string &attributeName, int intAttributeValue,int firstLine,TreeNodeType nodeType);
+    SyntaxTreeNode(std::string attributeName, std::string attributeValue, int firstLine, TreeNodeType nodeType);
 
-    SyntaxTreeNode(const std::string &attributeName,const std::string &attribute_value,int firstLine);
+    SyntaxTreeNode(const std::string &attributeName, int intAttributeValue, int firstLine, TreeNodeType nodeType);
 
-    SyntaxTreeNode(const std::string &attributeName,int firstLine, int firstColumn);
-        ~SyntaxTreeNode();
-        std::string ToString() const;
+    SyntaxTreeNode(const std::string &attributeName, const std::string &attribute_value, int firstLine);
+
+    SyntaxTreeNode(const std::string &attributeName, int firstLine, int firstColumn);
+
+    ~SyntaxTreeNode();
+
+    std::string ToString() const;
 
     SyntaxTreeNode *getParent() const;
 
-    const std::vector<SyntaxTreeNode*> &getChildren() const;
+    const std::vector<SyntaxTreeNode *> &getChildren() const;
 
     const std::string &getAttributeName() const;
 
     void insert(SyntaxTreeNode *newChild);
 
-    void preOrderPrint(SyntaxTreeNode *node,int level);
+    void preOrderPrint(SyntaxTreeNode *node, int level);
 
-    void insert(std::initializer_list<SyntaxTreeNode*> nodes);
-    
-    std::string enumToString(int enumValue){
+    void insert(std::initializer_list<SyntaxTreeNode *> nodes);
+
+    std::string enumToString(int enumValue) {
         switch (enumValue) {
-            case (int)TreeNodeType::Non_Terminal:
+            case (int) TreeNodeType::Non_Terminal:
                 return "non-terminal";
-            case (int)TreeNodeType::TYPE:
+            case (int) TreeNodeType::TYPE:
                 return "type";
-            case (int)TreeNodeType::INT:
+            case (int) TreeNodeType::INT:
                 return "int";
-            case (int)TreeNodeType::FLOAT:
+            case (int) TreeNodeType::FLOAT:
                 return "float";
-            case (int)TreeNodeType::CHAR:
+            case (int) TreeNodeType::CHAR:
                 return "char";
-            case (int)TreeNodeType::ID:
+            case (int) TreeNodeType::ID:
                 return "ID";
-            case (int)TreeNodeType::OTHER:
+            case (int) TreeNodeType::OTHER:
                 return "other";
-            case (int)TreeNodeType::EMPTY:
+            case (int) TreeNodeType::EMPTY:
                 return "empty";
             default:
                 return "unknown";

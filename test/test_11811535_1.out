@@ -291,7 +291,7 @@ Program (1)
                                 Exp (28)
                                   Exp (28)
                                     ID: test_int_1
-                                  GT
+                                  GE
                                   Exp (28)
                                     ID: test_int_2
                                 RP

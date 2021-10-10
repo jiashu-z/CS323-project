@@ -1,6 +1,9 @@
 /*https://stackoverflow.com/questions/15550553/flex-regular-expression-literal-char*/
-
+%x incl
 %{
+#define MAX_INCLUDE_DEPTH 10
+YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
+int include_stack_ptr = 1;
   int yycolumn = 1;
   #define YY_USER_ACTION \
     yylloc.first_line = yylineno; \
@@ -63,8 +66,39 @@ RC \}
 letter [a-zA-Z]
 letter_ {letter}|_
 digit [0-9]
-
 %%
+#include BEGIN(incl);
+<incl>[ \t]* {/* eat the whitespace */}
+<incl>[^ \t\n]+ { /* got the include file name */
+printf("reading: %s\n",yytext);
+if ( include_stack_ptr >= MAX_INCLUDE_DEPTH )
+{
+fprintf( stderr, "Includes nested too deeply" );
+exit( 1 );
+}
+include_stack[include_stack_ptr] =YY_CURRENT_BUFFER;
+include_stack_ptr++;
+yyin = fopen(yytext, "r" );
+if ( ! yyin )
+printf("can not open\n");
+yy_switch_to_buffer(yy_create_buffer( yyin, YY_BUF_SIZE ) );
+BEGIN(INITIAL);
+};
+<<EOF>> {
+include_stack_ptr--;
+if (include_stack_ptr==0)
+{
+yyterminate();
+}
+else
+{
+yy_delete_buffer( YY_CURRENT_BUFFER );
+yy_switch_to_buffer(
+include_stack[include_stack_ptr] );
+}
+}
+
+
 {CHAR} {
   yylval.node_type=new SyntaxTreeNode("TYPE",yytext,line_number,TreeNodeType::CHAR);
   return CHAR;
@@ -169,7 +203,7 @@ digit [0-9]
 }
 {GE} {
   tokens_ptr->push_back(Token(Token::Type::GE, yytext, line_number));
-  yylval.node_type=new SyntaxTreeNode("GT",yytext,line_number);
+  yylval.node_type=new SyntaxTreeNode("GE",yytext,line_number);
   return GE;
 }
 {NE} {
@@ -282,9 +316,7 @@ digit [0-9]
   printf("Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);
   return ERROR;
 }
-<<EOF>> {
-  yyterminate();
-}
+
 
 %%
 std::vector<Token> GetTokens(const std::string& file_path) {
