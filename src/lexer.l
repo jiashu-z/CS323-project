@@ -24,6 +24,7 @@
 %option yylineno
 
 CHAR '.'|'\\x[0-9a-fA-F]{1,2}'
+INVALID_CHAR '.{2,}'|''
 INVALID_HEX_CHAR '\\x[0-9a-fA-F]*[g-z][0-9a-fA-F]*'|'\\x[0-9a-fA-F]{3,}'
 INT [0-9]+
 HEX_INT 0[xX](0|[1-9a-fA-F][0-9a-fA-F]*)
@@ -67,6 +68,11 @@ digit [0-9]
 {CHAR} {
   yylval.node_type=new SyntaxTreeNode("TYPE",yytext,line_number,TreeNodeType::CHAR);
   return CHAR;
+}
+{INVALID_CHAR} {
+  has_error=true;
+  printf("Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);
+  return ERROR;
 }
 {INVALID_HEX_CHAR} {
   has_error=true;
