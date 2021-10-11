@@ -1,0 +1,5 @@
+#include test_2.spl
+int test_2()
+{
+    return 0;
+}

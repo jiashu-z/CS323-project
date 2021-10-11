@@ -1,0 +1,100 @@
+Program (1)
+  ExtDefList (1)
+    ExtDef (1)
+      Specifier (1)
+        TYPE: int
+      FunDec (1)
+        ID: test_2
+        LP
+        RP
+      CompSt (2)
+        LC
+        DefList (3)
+          Def (3)
+            Specifier (3)
+              TYPE: int
+            DecList (3)
+              Dec (3)
+                VarDec (3)
+                  ID: a
+                ASSIGN
+                Exp (3)
+                  INT: 1
+            SEMI
+        StmtList (5)
+          Stmt (5)
+            WHILE
+            LP
+            Exp (5)
+              Exp (5)
+                ID: i
+              ASSIGN
+              Exp (5)
+                INT: 0
+            SEMI
+            Exp (5)
+              Exp (5)
+                ID: i
+              LT
+              Exp (5)
+                INT: 5
+            SEMI
+            Exp (5)
+              Exp (5)
+                ID: i
+              ASSIGN
+              Exp (5)
+                Exp (5)
+                  ID: i
+                PLUS
+                Exp (5)
+                  INT: 1
+            RP
+            Stmt (6)
+              CompSt (6)
+                LC
+                StmtList (7)
+                  Stmt (7)
+                    Exp (7)
+                      Exp (7)
+                        ID: a
+                      ASSIGN
+                      Exp (7)
+                        ID: i
+                    SEMI
+                RC
+        RC
+    ExtDefList (10)
+      ExtDef (10)
+        Specifier (10)
+          TYPE: int
+        FunDec (10)
+          ID: test_2
+          LP
+          RP
+        CompSt (11)
+          LC
+          StmtList (12)
+            Stmt (12)
+              RETURN
+              Exp (12)
+                INT: 0
+              SEMI
+          RC
+      ExtDefList (14)
+        ExtDef (14)
+          Specifier (14)
+            TYPE: int
+          FunDec (14)
+            ID: test_4
+            LP
+            RP
+          CompSt (15)
+            LC
+            StmtList (16)
+              Stmt (16)
+                RETURN
+                Exp (16)
+                  INT: 0
+                SEMI
+            RC

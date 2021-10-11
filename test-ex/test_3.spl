@@ -1,0 +1,5 @@
+#include test_3_1.spl
+int test_4()
+{
+    return 0;
+}
