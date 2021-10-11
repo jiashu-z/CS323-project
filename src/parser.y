@@ -83,7 +83,6 @@ Specifier: TYPE {$$=new SyntaxTreeNode("Specifier",yytext,@$.first_line,@$.first
     ;
 StructSpecifier: STRUCT ID LC DefList RC {$$=new SyntaxTreeNode("StructSpecifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5});}
     | STRUCT ID LC DefList error {error_message("Missing right brace '}'");}
-    | STRUCT ID error DefList RC {error_message("Missing left brace '}'");}
     | STRUCT ID{$$=new SyntaxTreeNode("StructSpecifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
     ;
 // declarator
