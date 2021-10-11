@@ -68,46 +68,43 @@ letter_ {letter}|_
 digit [0-9]
 %%
 #include BEGIN(incl);
-<incl>[ \t]* {/* eat the whitespace */}
-<incl>[^ \t\n]+ { /* got the include file name */
-char *buffer;
-	if((buffer = getcwd(NULL, 0)) == NULL)
-	{
-		perror("getcwd error");
-	}
-	else
-	{
-       // printf("get current dir:%s\n", buffer);
-	}
-	char *split="//";
-	char path[200];
-	sprintf(path,"%s/../test-ex/%s",buffer,yytext);
-//printf("reading: %s\n",path);
-if ( include_stack_ptr >= MAX_INCLUDE_DEPTH )
-{
-fprintf( stderr, "Includes nested too deeply" );
-exit( 1 );
-}
-include_stack[include_stack_ptr] =YY_CURRENT_BUFFER;
-include_stack_ptr++;
-yyin = fopen(path, "r" );
-if ( ! yyin )
-printf("can not open:%s\n",path);
-yy_switch_to_buffer(yy_create_buffer( yyin, YY_BUF_SIZE ) );
-BEGIN(INITIAL);
+<incl>[ \t]* {/* ignore white space */}
+<incl>[^ \t\n]+ { /* read another file */
+    char *buffer;
+    if ((buffer = getcwd(NULL, 0)) == NULL) {
+        perror("getcwd error");
+        exit(-1);
+    }
+    char *split = "//";
+    char path[200];
+    sprintf(path,"%s/test-ex/%s", buffer, yytext);
+    if (include_stack_ptr >= MAX_INCLUDE_DEPTH) {
+        fprintf(stderr,"Includes nested too deeply");
+        exit(1);
+    }
+    include_stack[include_stack_ptr] =
+            YY_CURRENT_BUFFER;
+    include_stack_ptr++;
+    yyin = fopen(path, "r");
+    if (!yyin) {
+        printf("can not open:%s\n", path);
+    }
+    yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
+    BEGIN(INITIAL);
 };
 <<EOF>> {
-include_stack_ptr--;
-if (include_stack_ptr==0)
-{
-yyterminate();
-}
-else
-{
-yy_delete_buffer( YY_CURRENT_BUFFER );
-yy_switch_to_buffer(
-include_stack[include_stack_ptr] );
-}
+        include_stack_ptr--;
+        if (include_stack_ptr==0)
+        {
+            yyterminate();
+
+        }
+        else
+        {
+            yy_delete_buffer(YY_CURRENT_BUFFER);
+            yy_switch_to_buffer(
+                    include_stack[include_stack_ptr]);
+        }
 }
 
 
