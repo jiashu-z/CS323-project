@@ -28,7 +28,7 @@ int include_stack_ptr = 1;
 
 CHAR '.'|'\\x[0-9a-fA-F]{1,2}'
 INVALID_CHAR ''|'[^']{2,}'
-INVALID_HEX_CHAR '\\x[0-9a-fA-F]*[g-z][0-9a-fA-F]*'|'\\x[0-9a-fA-F]{3,}'
+
 INT [0-9]+
 HEX_INT 0[xX](0|[1-9a-fA-F][0-9a-fA-F]*)
 INVALID_INT_START_WITH_0 0[0-9]+
@@ -66,7 +66,14 @@ RC \}
 letter [a-zA-Z]
 letter_ {letter}|_
 digit [0-9]
+INVALID_HEX_CHAR ('\\x[0-9a-fA-F]*[g-zG-Z][0-9a-fA-F]*')|('\\x[0-9a-fA-F]{3,}')
+
 %%
+{INVALID_HEX_CHAR} {
+  has_error=true;
+  printf("Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);
+  return ERROR;
+}
 #include BEGIN(incl);
 <incl>[ \t]* {/* ignore white space */}
 <incl>[^ \t\n]+ { /* read another file */
@@ -117,11 +124,7 @@ digit [0-9]
   printf("Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);
   return ERROR;
 }
-{INVALID_HEX_CHAR} {
-  has_error=true;
-  printf("Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);
-  return ERROR;
-}
+
 {INVALID_INT_START_WITH_0} {
   has_error=true;
   printf("Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);

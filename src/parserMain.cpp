@@ -16,7 +16,7 @@ extern int has_error;
 extern int error_cnt;
 
 int main(int argc, char **argv) {
-//    yydebug = 1;
+    yydebug = 0;
     if (argc <= 1) {
         std::cout << "PARSER_error_OUTPUT, no input path";
         return 1;

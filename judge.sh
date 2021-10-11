@@ -105,5 +105,6 @@ echo "==================own_test begin"
 own_test
 echo "==================ex_test begin"
 ex_test
+#other_test
 #make_test_stdoutput
 #new_feature
