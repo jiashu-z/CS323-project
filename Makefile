@@ -14,7 +14,7 @@ CPP = $(GPP) $(CXX_FLAGS)
 .syntax:$(SRC_PATH)/parser.y
 	$(BISON) -t -v --defines=$(SRC_PATH)/parser.h --output=$(SRC_PATH)/parser.cpp $(SRC_PATH)/parser.y
 splc: .lex  .syntax
-    $(shell mkdir -p bin) \
+    mkdir -p bin
     $(CPP) $(SRC_PATH)/parserMain.cpp \
     $(SRC_PATH)/token.cpp \
     $(SRC_PATH)/SyntaxTreeNode.cpp \
