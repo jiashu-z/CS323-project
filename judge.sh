@@ -24,7 +24,7 @@ demo_test() {
 }
 own_test() {
   TEST_DIR="test"
-  PREFIX="test_11811535_"
+  PREFIX="test_11811620_"
   able=("1" "2" "3" "4" "5")
   for i in "${able[@]}"; do
     echo "begin test ${PREFIX}${i}:"
@@ -57,6 +57,41 @@ ex_test() {
     fi
     echo "========================================================================="
   done
+
+}
+other_test(){
+      TEST_DIR="other_test"
+      PREFIX="test_11811410_"
+      able=("1" "2" "3")
+      for i in "${able[@]}"; do
+        echo "begin test ${PREFIX}${i}:"
+        bin/splc ./${TEST_DIR}/${PREFIX}${i}.spl > ./${TEST_DIR}/${PREFIX}"${i}".test.out 2>&1
+        diff ./${TEST_DIR}/${PREFIX}"${i}".test.out ./${TEST_DIR}/${PREFIX}"${i}".out -y --suppress-common-lines --ignore-blank-lines
+    # when diff_rt is 0, there is no difference; when diff_rt is 1, there are some difference; 2 means diff run error.
+        diff_rt=$?
+        if [ $diff_rt == 0 ]; then
+            echo "${PREFIX}${i} passed!"
+        else
+            echo "${PREFIX}${i} have difference. Difference are the above: [Actual|Expected]"
+        fi
+        echo "========================================================================="
+      done
+        TEST_DIR="other_test"
+        PREFIX="test_11812301_"
+        able=("1" "2" "3" "4" "5")
+        for i in "${able[@]}"; do
+          echo "begin test ${PREFIX}${i}:"
+          bin/splc ./${TEST_DIR}/${PREFIX}${i}.spl > ./${TEST_DIR}/${PREFIX}"${i}".test.out 2>&1
+          diff ./${TEST_DIR}/${PREFIX}"${i}".test.out ./${TEST_DIR}/${PREFIX}"${i}".out -y --suppress-common-lines --ignore-blank-lines
+      # when diff_rt is 0, there is no difference; when diff_rt is 1, there are some difference; 2 means diff run error.
+          diff_rt=$?
+          if [ $diff_rt == 0 ]; then
+              echo "${PREFIX}${i} passed!"
+          else
+              echo "${PREFIX}${i} have difference. Difference are the above: [Actual|Expected]"
+          fi
+          echo "========================================================================="
+        done
 }
 
 new_feature() {
