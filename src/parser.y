@@ -38,6 +38,7 @@ void yyerror(const char* s){
 %left <node_type> OR
 %left <node_type> AND
 %left <node_type> NE EQ GE GT LE LT
+%nonassoc LOWER_NEGA
 %left <node_type> MINUS PLUS
 %left <node_type> MUL DIV
 %right <node_type> NOT //todo: negative
@@ -162,7 +163,7 @@ Exp: Exp ASSIGN Exp {$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_c
     | Exp DIV Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
     | LP Exp RP{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
     | LP Exp error{printf("Missing closing parenthesis ')'\n");}
-    | MINUS Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
+    | MINUS Exp %prec LOWER_NEGA {$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
     | NOT Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
     | ID LP Args RP{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4});}
     | ID LP Args error {error_message("Missing closing parenthesis ')'");}
