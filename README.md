@@ -1,6 +1,6 @@
 # CS323 Project 1
 
-This is the repository for project 1 of CS323 Compilers in SUSTech.
+This is the repository for the projects of CS323 Compilers in SUSTech.
 
 [![CMake](https://github.com/wateryloo/CS323-project1/actions/workflows/cmake.yml/badge.svg)](https://github.com/wateryloo/CS323-project1/actions/workflows/cmake.yml)
 
