@@ -170,7 +170,7 @@ INVALID_HEX_CHAR ('\\x[0-9a-fA-F]*[g-zG-Z][0-9a-fA-F]*')|('\\x[0-9a-fA-F]{3,}')
   return WHILE;
 }
 {FOR} {
-  yylval.node_type=new SyntaxTreeNode("WHILE",yytext,line_number);
+  yylval.node_type=new SyntaxTreeNode("FOR",yytext,line_number);
   return FOR;
 }
 {RETURN} {
