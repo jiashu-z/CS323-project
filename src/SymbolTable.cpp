@@ -5,9 +5,9 @@
 #include "SymbolTable.h"
 
 
-bool SymbolTable::insertSymbol(std::string name, Symbol *symbol) {
-     if(this->currentTable.find(name)==this->currentTable.end()) {
-        this->currentTable.emplace(name, symbol);
+bool SymbolTable::insertVariableSymbol(std::string name, Symbol *symbol) {
+     if(this->currentVariableTable.find(name) == this->currentVariableTable.end()) {
+        this->currentVariableTable.emplace(name, symbol);
         return true;
     }
     else{
@@ -15,9 +15,28 @@ bool SymbolTable::insertSymbol(std::string name, Symbol *symbol) {
     }
 }
 
-Symbol* SymbolTable::searchSymbol(std::string name) {
-    auto it=this->currentTable.find(name);
-    if(it!=currentTable.end()){
+Symbol* SymbolTable::searchVariableSymbol(std::string name) {
+    auto it=this->currentVariableTable.find(name);
+    if(it != currentVariableTable.end()){
+        return it->second;
+    } else{
+        return nullptr;
+    }
+}
+
+bool SymbolTable::insertFunctionSymbol(std::string name, Symbol *symbol) {
+    if(this->currentFunctionTable.find(name) == this->currentFunctionTable.end()) {
+        this->currentFunctionTable.emplace(name, symbol);
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+Symbol *SymbolTable::searchFunctionSymbol(std::string name) {
+    auto it=this->currentFunctionTable.find(name);
+    if(it != currentFunctionTable.end()){
         return it->second;
     } else{
         return nullptr;
@@ -26,4 +45,4 @@ Symbol* SymbolTable::searchSymbol(std::string name) {
 
 Symbol::Symbol(const std::string &name, SymbolType symbolType, const Symbol::DATA &data) : name(name),
                                                                                            symbolType(symbolType),
-                                                                                           data(data) {}
+                                                                                           symbolData(data) {}

@@ -31,9 +31,12 @@ enum class SymbolType {
 
 class SymbolTable {
 public:
-    std::unordered_map<std::string,Symbol*> currentTable;
-    bool insertSymbol(std::string name,Symbol * symbol);
-    Symbol* searchSymbol(std::string name);
+    std::unordered_map<std::string,Symbol*> currentVariableTable;
+    std::unordered_map<std::string,Symbol*> currentFunctionTable;
+    bool insertVariableSymbol(std::string name, Symbol * symbol);
+    Symbol* searchVariableSymbol(std::string name);
+    bool insertFunctionSymbol(std::string name, Symbol * symbol);
+    Symbol* searchFunctionSymbol(std::string name);
 };
 
 class Symbol{
@@ -41,7 +44,7 @@ public:
     using DATA = std::variant<IntType*,FloatType*,CharType*,ArrayType*,StructType*,FunctionType*>;
     std::string name;
     SymbolType symbolType = SymbolType::INT;
-    DATA data;
+    DATA symbolData;
     Symbol(const std::string &name, SymbolType symbolType, const DATA &data);
 };
 

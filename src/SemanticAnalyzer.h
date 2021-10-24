@@ -8,5 +8,7 @@
 #include "SymbolTable.h"
 #include <iostream>
 void usePrimarySymbol(SyntaxTreeNode * idNode, SymbolTable &symbolTable);
+void useFunctionSymbol(SyntaxTreeNode * expNode, SymbolTable &symbolTable);
 void insertPrimarySymbol(SyntaxTreeNode* defNode,SymbolTable &symbolTable);
+void insertFunctionSymbol(SyntaxTreeNode* extDefNode,SymbolTable &symbolTable);
 #endif //CS323_PROJECT1_SEMANTICANALYZER_H
