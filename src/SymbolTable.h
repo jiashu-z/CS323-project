@@ -42,7 +42,6 @@ public:
     std::string name;
     SymbolType symbolType = SymbolType::INT;
     DATA data;
-
     Symbol(const std::string &name, SymbolType symbolType, const DATA &data);
 };
 
@@ -53,30 +52,30 @@ public:
     Symbol* baseType=nullptr;
     int size=0;
 
-    ArrayType();
+    ArrayType()=default;
 
 };
 
 class IntType {
 public:
-    IntType();
+    IntType()=default;
 };
 
 class FloatType{
 public:
-    FloatType();
+    FloatType()=default;
 };
 
 class CharType{
 public:
-    CharType();
+    CharType()=default;
 };
 class StructType{
 public:
     std::vector<std::string> fieldName;
     std::vector<Symbol> fieldType;
 
-    StructType();
+    StructType()=default;
 };
 
 class FunctionType{
@@ -86,7 +85,7 @@ public:
     std::vector<Symbol> argsType;
     SymbolType returnType;
 
-    FunctionType();
+    FunctionType()=default;
 };
 
 

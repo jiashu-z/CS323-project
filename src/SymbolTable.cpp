@@ -4,17 +4,6 @@
 
 #include "SymbolTable.h"
 
-ArrayType::ArrayType() {}
-
-IntType::IntType() {}
-
-FloatType::FloatType() {}
-
-CharType::CharType() {}
-
-StructType::StructType() {}
-
-FunctionType::FunctionType() {}
 
 bool SymbolTable::insertSymbol(std::string name, Symbol *symbol) {
      if(this->currentTable.find(name)==this->currentTable.end()) {
