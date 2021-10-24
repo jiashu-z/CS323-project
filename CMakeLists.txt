@@ -68,7 +68,7 @@ PUBLIC fl)
 #target_link_libraries(CS323-project1 PUBLIC fl)
 
 add_executable(test_token
-  demo_test/test_token.cpp
+        Testing/test_token.cpp
   src/token.cpp)
 
 target_include_directories(test_token
@@ -77,7 +77,7 @@ target_include_directories(test_token
 add_test(test_token test_token)
 
 add_executable(test_syntaxTree
-  demo_test/test_syntaxTree.cpp
+        Testing/test_syntaxTree.cpp
   src/SyntaxTreeNode.cpp)
 
 target_include_directories(test_syntaxTree
@@ -85,7 +85,7 @@ target_include_directories(test_syntaxTree
 add_test(test_tree test_syntaxTree)
 
 add_executable(test_symbolTable
-        demo_test/test_symbolTable.cpp
+        Testing/test_symbolTable.cpp
         src/SymbolTable.cpp)
 
 target_include_directories(test_syntaxTree

@@ -19,6 +19,8 @@ splc: .lex  .syntax
     $(SRC_PATH)/token.cpp \
     $(SRC_PATH)/SyntaxTreeNode.cpp \
     $(SRC_PATH)/parser.cpp \
+    $(SRC_PATH)/SymbolTable.cpp \
+    $(SRC_PATH)/SemanticAnalyzer.cpp \
     -L$(SRC_PATH) -lfl -ly \
     -o bin/splc
 clean:
