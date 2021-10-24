@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "SymbolTable.h"
 
 enum class TreeNodeType {
   Non_Terminal = 1,
@@ -20,7 +21,6 @@ enum class TreeNodeType {
   OTHER = 7,
   EMPTY = 8
 };
-
 class SyntaxTreeNode {
  public:
   TreeNodeType nodeType = TreeNodeType::OTHER;
@@ -30,6 +30,7 @@ class SyntaxTreeNode {
   std::string attribute_value;
   int firstLine = 0;
   int firstColumn = 0;
+  SymbolType expType; //used for indicate expression data type
 
  public:
   explicit SyntaxTreeNode(const std::string &attributeName);

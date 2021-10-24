@@ -5,7 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 include_directories(src)
 include(CTest)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set($ENV{CTEST_OUTPUT_ON_FAILURE} TRUE)
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
@@ -46,6 +46,10 @@ add_executable(main
         src/token.cpp
         src/SyntaxTreeNode.cpp
         ${BisonOutput}
+        src/SymbolTable.cpp
+        src/SemanticAnalyzer.cpp
+
+
         )
 add_dependencies(main lexer parser)
 target_link_libraries(main
@@ -53,15 +57,15 @@ PUBLIC fl)
 
 
 
-add_executable(CS323-project1
-        ${BisonOutput}
-src/token.cpp
-src/main.cpp
-        src/SyntaxTreeNode.h
-        src/SyntaxTreeNode.cpp
-        )
-add_dependencies(CS323-project1 lexer parser)
-target_link_libraries(CS323-project1 PUBLIC fl)
+#add_executable(CS323-project1
+#        ${BisonOutput}
+#src/token.cpp
+#src/main.cpp
+#        rc/SemanticAnalyzer.cpp
+#        src/SyntaxTreeNode.cpp
+#        )
+#add_dependencies(CS323-project1 lexer parser)
+#target_link_libraries(CS323-project1 PUBLIC fl)
 
 add_executable(test_token
   demo_test/test_token.cpp
@@ -79,5 +83,13 @@ add_executable(test_syntaxTree
 target_include_directories(test_syntaxTree
   PUBLIC src)
 add_test(test_tree test_syntaxTree)
+
+add_executable(test_symbolTable
+        demo_test/test_symbolTable.cpp
+        src/SymbolTable.cpp)
+
+target_include_directories(test_syntaxTree
+        PUBLIC src)
+add_test(test_symbol test_symbolTable)
 
 add_executable(testInitList src/testInitializeList.cpp)
