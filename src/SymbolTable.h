@@ -75,10 +75,14 @@ class FunctionType {
  public:
   std::string functionName;
   std::vector<std::string> argsName;
-  std::vector<Symbol> argsType;
+  std::vector<Symbol*> argsType;
   SymbolType returnType;
 
   FunctionType() = default;
 };
 
-#endif  // CS323_PROJECT1_SYMBOLTABLE_H
+
+
+
+
+#endif //CS323_PROJECT1_SYMBOLTABLE_H

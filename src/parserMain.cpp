@@ -15,7 +15,7 @@ extern SyntaxTreeNode *root_node;
 extern int yydebug;
 extern int has_error;
 extern int error_cnt;
-int customDebug = 1;
+int customDebug = 0;
 int main(int argc, char **argv) {
   yydebug = 0;
   if (argc <= 1) {

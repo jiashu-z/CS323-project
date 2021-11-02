@@ -98,19 +98,102 @@ void insertFunctionSymbolWithoutArgs(SyntaxTreeNode *funDec,
               << ": multi definition of function " << functionName << std::endl;
   }
 }
-void insertFunctionSymbol(SyntaxTreeNode *extDefNode,
-                          SymbolTable &symbolTable) {
-  if (extDefNode->children.size() == 3) {
-    SymbolType functionRtType = extDefNode->children[0]->expType;
-    SyntaxTreeNode *funDec = extDefNode->children[1];
-    funDec->expType = functionRtType;
-    if (funDec->children.size() == 3) {
-      insertFunctionSymbolWithoutArgs(funDec, symbolTable);
-    } else if (funDec->children.size() == 4) {
-      std::cerr << "function with args not supported yet" << std::endl;
+void insertVarListToFunctionType(FunctionType * functionType,SyntaxTreeNode * varList,SymbolTable&symbolTable){
+    SyntaxTreeNode * paraDec=varList->children[0];
+    SyntaxTreeNode * specifier=paraDec->children[0];
+    SymbolType expType=specifier->expType;
+    SyntaxTreeNode * id=paraDec->children[1]->children[0];
+    std::string varName=id->attribute_value;
+
+        switch (expType) {
+            case SymbolType::INT: {
+                IntType *intType = new IntType;
+                Symbol *symbol = new Symbol(varName, expType, intType);
+                functionType->argsType.push_back(symbol);
+                bool rt=symbolTable.insertVariableSymbol(varName,symbol);
+                if(!rt){
+                    std::cout << "Error Type " << 3 << " at Line "
+                              << id->firstLine << ": "
+                              << "Redefined variable \""
+                              << id->attribute_value << "\"."
+                              << std::endl;
+                }
+                else{
+                    if(customDebug){
+                        std::cout<<varName<<" is inserted"<<std::endl;
+                    }
+                }
+                break;
+            }
+            case SymbolType::FLOAT: {
+                FloatType *floatType = new FloatType;
+                Symbol *symbol = new Symbol(varName, expType, floatType);
+                functionType->argsType.push_back(symbol);
+                bool rt=symbolTable.insertVariableSymbol(varName,symbol);
+                if(!rt){
+                    std::cout << "Error Type " << 3 << " at Line "
+                              << id->firstLine << ": "
+                              << "Redefined variable \""
+                              << id->attribute_value << "\"."
+                              << std::endl;
+                }
+                break;
+            }
+            case SymbolType::CHAR: {
+                CharType *charType = new CharType;
+                Symbol *symbol = new Symbol(varName, expType, charType);
+                functionType->argsType.push_back(symbol);
+                bool rt=symbolTable.insertVariableSymbol(varName,symbol);
+                if(!rt){
+                    std::cout << "Error Type " << 3 << " at Line "
+                              << id->firstLine << ": "
+                              << "Redefined variable \""
+                              << id->attribute_value << "\"."
+                              << std::endl;
+                }
+                break;
+            }
+            default: {
+                std::cout << "array and struct type are not supported yet > <" << std::endl;
+            }
+        }
+
+    if(varList->children.size()==3){
+        SyntaxTreeNode * childVarList=varList->getChildren()[2];
+        insertVarListToFunctionType(functionType,childVarList,symbolTable);
     }
-  } else {
-    std::cout << "fatal unhandled error!" << std::endl;
-    exit(-1);
-  }
 }
+void insertFunctionSymbolWithArgs(SyntaxTreeNode* funDec,SymbolTable &symbolTable){
+    std::string functionName=funDec->children[0]->attribute_value;
+    FunctionType *functionType=new FunctionType;
+    Symbol *rt=symbolTable.searchFunctionSymbol(functionName);
+    SyntaxTreeNode * varList=funDec->children[2];
+    if(rt== nullptr) {
+        functionType->functionName = functionName;
+        functionType->returnType = funDec->expType;
+        insertVarListToFunctionType(functionType,varList,symbolTable);
+        Symbol *symbol = new Symbol(functionName, funDec->expType, functionType);
+        symbolTable.insertFunctionSymbol(functionName,symbol);
+    }
+    else{
+        std::cout<<"Error type 4 at Line "<<funDec->firstLine<<": multi definition of function "<<functionName<<std::endl;
+        exit(2);
+    }
+}
+
+void insertFunctionSymbol(SyntaxTreeNode *funDec,
+                          SymbolTable &symbolTable) {
+
+//    if(symbolTable.searchFunctionSymbol(funDec->getChildren()[0]->attribute_value)!= nullptr){
+//
+//    }
+  //  else {
+        if (funDec->children.size() == 3) {
+            insertFunctionSymbolWithoutArgs(funDec, symbolTable);
+        } else if (funDec->children.size() == 4) {
+            insertFunctionSymbolWithArgs(funDec, symbolTable);
+        }
+ //   }
+
+}
+
