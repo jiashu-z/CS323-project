@@ -4,6 +4,7 @@
 
 #include <cstdio>
 #include <iostream>
+
 #include "SyntaxTreeNode.h"
 
 void yyrestart(FILE *pFile);
@@ -14,7 +15,7 @@ extern SyntaxTreeNode *root_node;
 extern int yydebug;
 extern int has_error;
 extern int error_cnt;
-int customDebug=1;
+int customDebug = 1;
 int main(int argc, char **argv) {
   yydebug = 0;
   if (argc <= 1) {
@@ -31,7 +32,7 @@ int main(int argc, char **argv) {
     }
     yyrestart(f);
     yyparse();
-    std::cout<<"=========Syntax Tree============"<<std::endl;
+    std::cout << "=========Syntax Tree============" << std::endl;
     if (root_node != nullptr && !has_error) {
       root_node->preOrderPrint(root_node, 0);
     }

@@ -3,7 +3,9 @@
 //
 
 #include "SyntaxTreeNode.h"
+
 #include <utility>
+
 #include "token.h"
 #define DEBUG 0
 
@@ -125,23 +127,23 @@ SyntaxTreeNode::SyntaxTreeNode(std::string attributeName,
       attribute_name(std::move(attributeName)),
       attribute_value(std::move(attributeValue)),
       firstLine(firstLine) {
-    switch (nodeType) {
-        case TreeNodeType::INT:{
-            this->expType=SymbolType::INT;
-            break;
-        }
-        case TreeNodeType::FLOAT:{
-            this->expType=SymbolType::FLOAT;
-            break;
-        }
-        case TreeNodeType::CHAR:{
-            this->expType=SymbolType::CHAR;
-            break;
-        }
-        default:{
-            break;
-        }
+  switch (nodeType) {
+    case TreeNodeType::INT: {
+      this->expType = SymbolType::INT;
+      break;
     }
+    case TreeNodeType::FLOAT: {
+      this->expType = SymbolType::FLOAT;
+      break;
+    }
+    case TreeNodeType::CHAR: {
+      this->expType = SymbolType::CHAR;
+      break;
+    }
+    default: {
+      break;
+    }
+  }
 }
 
 SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName,
