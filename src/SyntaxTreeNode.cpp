@@ -36,6 +36,7 @@ const std::string &SyntaxTreeNode::getAttributeName() const {
   return attribute_name;
 }
 void SyntaxTreeNode::insert(SyntaxTreeNode *newChild) {
+    newChild->parent=this;
   this->children.push_back(newChild);
 }
 

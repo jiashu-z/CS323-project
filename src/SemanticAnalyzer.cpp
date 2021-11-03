@@ -10,6 +10,27 @@ void usePrimarySymbol(SyntaxTreeNode *idNode, SymbolTable &symbolTable) {
               << "Undefined variable \"" << idNode->attribute_value << "\"."
               << std::endl;
   }
+  else{
+      switch (symbol->symbolType) {
+          case SymbolType::INT:{
+              idNode->expType=SymbolType::INT;
+              break;
+          }
+          case SymbolType::FLOAT:{
+              idNode->expType=SymbolType::FLOAT;
+              break;
+          }
+          case SymbolType::CHAR:{
+              idNode->expType=SymbolType::CHAR;
+              break;
+          }
+          default:{
+              std::cout<<"fatal error!"<<std::endl;
+              exit(20);
+          }
+
+      }
+  }
 }
 void useFunctionSymbol(SyntaxTreeNode *expNode, SymbolTable &symbolTable) {
   SyntaxTreeNode *idNode = expNode->children[0];
@@ -183,17 +204,61 @@ void insertFunctionSymbolWithArgs(SyntaxTreeNode* funDec,SymbolTable &symbolTabl
 
 void insertFunctionSymbol(SyntaxTreeNode *funDec,
                           SymbolTable &symbolTable) {
-
-//    if(symbolTable.searchFunctionSymbol(funDec->getChildren()[0]->attribute_value)!= nullptr){
-//
-//    }
-  //  else {
         if (funDec->children.size() == 3) {
             insertFunctionSymbolWithoutArgs(funDec, symbolTable);
         } else if (funDec->children.size() == 4) {
             insertFunctionSymbolWithArgs(funDec, symbolTable);
         }
- //   }
-
+}
+void assignVarDecIDType(SyntaxTreeNode* varDec,SyntaxTreeNode *exp){
+    if(varDec->getChildren().size()==1){
+        varDec->children[0]->expType=exp->expType;
+    }
+}
+void checkAssignDataType(SyntaxTreeNode * left,SyntaxTreeNode * right){
+    if(left->expType!=right->expType){
+        std::cout<<"Error type 5 at Line "<<left->firstLine<<":  unmatching type on both sides of assignment."<<std::endl;
+        exit(5);
+    }
+}
+void assignSpecifierType(SyntaxTreeNode *specifier){
+    SyntaxTreeNode * type=specifier->getChildren()[0];
+    if(type->attribute_value=="int"){
+        specifier->expType=SymbolType::INT;
+    }
+    else if(type->attribute_value=="float"){
+        specifier->expType=SymbolType::FLOAT;
+    }
+    else if(type->attribute_value=="char"){
+        specifier->expType=SymbolType::CHAR;
+    }
+    else{
+        std::cout<<"fatal error!"<<std::endl;
+        exit(20);
+    }
+}
+void checkrValue(SyntaxTreeNode * exp){
+    if(exp->children.size()==1){
+        SyntaxTreeNode * child=exp->children[0];
+        if(child->nodeType==TreeNodeType::INT
+        ||child->nodeType==TreeNodeType::FLOAT
+        ||child->nodeType==TreeNodeType::CHAR
+        )
+        {
+            std::cout<<"Error type "<<6<<" at Line "<<exp->firstLine<<": left side in assignment is rvalue"<<std::endl;
+        }
+    }
+}
+void checkReturnType(SyntaxTreeNode* exp){
+    SymbolType rtType=exp->expType;
+    SyntaxTreeNode *parent=exp->parent;
+    while (parent->attribute_name!="ExtDef"){
+        parent=parent->parent;
+    }
+    SymbolType specifierType=parent->getChildren()[0]->expType;
+    if(specifierType!=rtType){
+        std::cout<<"Error type 8 at Line "<<exp->firstLine<<": incompatiable return type"<<std::endl;
+        exit(8);
+    }
 }
 
