@@ -30,9 +30,9 @@ Exp：计算表达式
 | 2、函数调用时未定义                     | exp                        | finished     |                                                              |
 | 3、变量重复定义                         | extdef def                 | finished     |                                                              |
 | 4、函数重复定义                         | fundec                     | finished     |                                                              |
-| 5、=号两侧表达式类型不匹配              | exp                        | working(all) |                                                              |
+| 5、=号两侧表达式类型不匹配              | exp                        | working      | 结构体和数组类型可能需要在别的产生式更新exptype值            |
 | 6、=号左侧出现只有右值的表达式          | exp                        | finished     |                                                              |
-| 7、操作数类型不匹配                     | exp                        | finished     |                                                              |
+| 7、操作数类型不匹配                     | exp                        | working      |                                                              |
 | 8、return语句与函数声明的类型不匹配     | extdef                     | working(mzy) |                                                              |
 | 9、函数调用时实参和型参数目或类型不匹配 | exp                        | working(mzy) |                                                              |
 | 10、对非数组类型使用[]                  | exp                        | working(wsx) |                                                              |
