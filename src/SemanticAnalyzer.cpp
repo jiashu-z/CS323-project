@@ -26,7 +26,7 @@ void usePrimarySymbol(SyntaxTreeNode *idNode, SymbolTable &symbolTable) {
           }
           default:{
               std::cout<<"fatal error!"<<std::endl;
-              exit(20);
+              exit(0);
           }
 
       }
@@ -51,7 +51,7 @@ void getDecs(SyntaxTreeNode *decList, std::vector<SyntaxTreeNode *> *decs) {
     return;
   } else {
     std::cerr << "fatal error! please check out" << std::endl;
-    exit(-1);
+    exit(0);
   }
 }
 void insertPrimarySymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable) {
@@ -198,7 +198,7 @@ void insertFunctionSymbolWithArgs(SyntaxTreeNode* funDec,SymbolTable &symbolTabl
     }
     else{
         std::cout<<"Error type 4 at Line "<<funDec->firstLine<<": multi definition of function "<<functionName<<std::endl;
-        exit(2);
+        exit(0);
     }
 }
 
@@ -218,7 +218,7 @@ void assignVarDecIDType(SyntaxTreeNode* varDec,SyntaxTreeNode *exp){
 void checkAssignDataType(SyntaxTreeNode * left,SyntaxTreeNode * right){
     if(left->expType!=right->expType){
         std::cout<<"Error type 5 at Line "<<left->firstLine<<":  unmatching type on both sides of assignment."<<std::endl;
-        exit(5);
+        exit(0);
     }
 }
 void assignSpecifierType(SyntaxTreeNode *specifier){
@@ -234,7 +234,7 @@ void assignSpecifierType(SyntaxTreeNode *specifier){
     }
     else{
         std::cout<<"fatal error!"<<std::endl;
-        exit(20);
+        exit(0);
     }
 }
 void checkrValue(SyntaxTreeNode * exp){
@@ -258,7 +258,7 @@ void checkReturnType(SyntaxTreeNode* exp){
     SymbolType specifierType=parent->getChildren()[0]->expType;
     if(specifierType!=rtType){
         std::cout<<"Error type 8 at Line "<<exp->firstLine<<": incompatiable return type"<<std::endl;
-        exit(8);
+        exit(0);
     }
 }
 
