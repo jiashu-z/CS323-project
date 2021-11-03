@@ -256,7 +256,7 @@ void assignVarDecIDType(SyntaxTreeNode* varDec,SyntaxTreeNode *exp){
     }
 }
 void checkAssignDataType(SyntaxTreeNode * left,SyntaxTreeNode * right){
-    if(left->expType!=right->expType){
+    if(left->expType!=right->expType || right->expType==SymbolType::UNKNOWN){
         std::string errorMessage="unmatching type on both sides of assignment";
         printErrorMessage(5,left->firstLine,errorMessage);
         exit(0);
