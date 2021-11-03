@@ -68,6 +68,8 @@ ExtDefList: ExtDef ExtDefList {$$ = new SyntaxTreeNode("ExtDefList",yytext,@$.fi
 ExtDef: Specifier ExtDecList SEMI {$$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);$$->insert({$1,$2,$3});}
     | Specifier SEMI {$$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
     | Specifier FunDec CompSt {$$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);
+    assignFunctionReturnType($1,$2,symbolTable);
+    checkFunctionReturnStatement($1,$3);
     }
     | error SEMI{error_message("Missing specifier");}
     | ExtDecList error SEMI {error_message("Missing specifier");}
@@ -82,7 +84,9 @@ ExtDecList: VarDec {$$=new SyntaxTreeNode("ExtDecList",yytext,@$.first_line,@$.f
 // specifier
 Specifier: TYPE {$$=new SyntaxTreeNode("Specifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);
 			assignSpecifierType($$);}
-    | StructSpecifier {$$=new SyntaxTreeNode("Specifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
+    | StructSpecifier {$$=new SyntaxTreeNode("Specifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);
+    $$->expType=SymbolType::STRUCT;
+    }
     ;
 StructSpecifier: STRUCT ID LC DefList RC {$$=new SyntaxTreeNode("StructSpecifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5});}
     | STRUCT ID LC DefList error {error_message("Missing right brace '}'");}
@@ -94,11 +98,9 @@ VarDec: ID {$$=new SyntaxTreeNode("VarDec",yytext,@$.first_line,@$.first_column,
     ;
 FunDec: ID LP VarList RP {$$=new SyntaxTreeNode("FunDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4});
 	insertFunctionSymbol($$,symbolTable);
-//		std::cout<<"funcdec is formed"<<std::endl;
 }
     | ID LP RP {$$=new SyntaxTreeNode("FunDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
     insertFunctionSymbol($$,symbolTable);
-   // std::cout<<"funcdec is formed"<<std::endl;
      }
     | ID LP VarList error {error_message("Missing closing parenthesis ')'");}
     | ID LP error {error_message("Missing closing parenthesis ')'");}
@@ -194,6 +196,7 @@ Exp: Exp ASSIGN Exp {$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_c
     }
     | Exp PLUS Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
     $$->expType=$1->expType;
+    checkBinaryOperator($$,$1,$3);
     }
     | Exp MINUS Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
     $$->expType=$1->expType;
@@ -213,7 +216,8 @@ Exp: Exp ASSIGN Exp {$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_c
     | NOT Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});
     $$->expType=$2->expType;
     }
-    | ID LP Args RP{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4});useFunctionSymbol($$,symbolTable);
+    | ID LP Args RP{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4});
+    useFunctionSymbol($$,symbolTable);
     $$->expType=$1->expType;
     }
     | ID LP RP{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});

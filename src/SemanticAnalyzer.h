@@ -18,4 +18,7 @@ void assignSpecifierType(SyntaxTreeNode *specifier);
 void checkrValue(SyntaxTreeNode * exp);
 void checkReturnType(SyntaxTreeNode * rtExp);
 void printErrorMessage(int errorType,int errorLine,std::string& errorMessage);
+void checkFunctionReturnStatement(SyntaxTreeNode* specifier,SyntaxTreeNode* CompSt);
+void assignFunctionReturnType(SyntaxTreeNode* specifier,SyntaxTreeNode* funcDec,SymbolTable & symbolTable);
+void checkBinaryOperator(SyntaxTreeNode* parentExp, SyntaxTreeNode* leftOperand,SyntaxTreeNode* rightOperand);
 #endif  // CS323_PROJECT1_SEMANTICANALYZER_H

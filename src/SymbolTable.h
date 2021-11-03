@@ -19,7 +19,7 @@ class ArrayType;
 class StructType;
 class FunctionType;
 
-enum class SymbolType { INT, FLOAT, CHAR, ARRAY, STRUCT, FUNCTION, NONE };
+enum class SymbolType { INT, FLOAT, CHAR, ARRAY, STRUCT, FUNCTION, UNKNOWN };
 
 class SymbolTable {
  public:
@@ -36,7 +36,7 @@ class Symbol {
   using DATA = std::variant<IntType*, FloatType*, CharType*, ArrayType*,
                             StructType*, FunctionType*>;
   std::string name;
-  SymbolType symbolType = SymbolType::INT;
+  SymbolType symbolType = SymbolType::UNKNOWN;
   DATA symbolData;
   Symbol(const std::string& name, SymbolType symbolType, const DATA& data);
 };
@@ -74,7 +74,6 @@ class StructType {
 class FunctionType {
  public:
   std::string functionName;
-  std::vector<std::string> argsName;
   std::vector<Symbol*> argsType;
   SymbolType returnType;
 

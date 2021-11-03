@@ -6,6 +6,16 @@ extern int customDebug;
 void printErrorMessage(int errorType,int errorLine,std::string& errorMessage){
     std::cout<< "Error type "<<errorType<<" at Line "<<errorLine<<": "<<errorMessage<<std::endl;
 }
+void checkBinaryOperator(SyntaxTreeNode* parentExp, SyntaxTreeNode* leftOperand,SyntaxTreeNode* rightOperand){
+    bool number = (leftOperand->expType==SymbolType::INT || leftOperand->expType==SymbolType::FLOAT)
+            && (rightOperand->expType==SymbolType::INT || rightOperand->expType==SymbolType::FLOAT);
+    bool typeEqual=(leftOperand->expType==rightOperand->expType);
+    if(!(number&&typeEqual)){
+        std::string errorMessage="binary operation on non-number variables";
+        parentExp->expType=SymbolType::UNKNOWN;
+        printErrorMessage(7,leftOperand->firstLine,errorMessage);
+    }
+}
 void usePrimarySymbol(SyntaxTreeNode *idNode, SymbolTable &symbolTable) {
   Symbol *symbol = symbolTable.searchVariableSymbol(idNode->attribute_value);
   if (symbol == nullptr) {
@@ -27,19 +37,59 @@ void usePrimarySymbol(SyntaxTreeNode *idNode, SymbolTable &symbolTable) {
               break;
           }
           default:{
-              std::cout<<"fatal error!"<<std::endl;
-              exit(0);
+              idNode->expType=SymbolType::UNKNOWN;
+              break;
           }
-
       }
   }
 }
+int getArgsNum(SyntaxTreeNode * args){
+    SyntaxTreeNode * currentArgs=args;
+    int argNum=0;
+    while (true){
+        if(currentArgs->getChildren().size()==3){
+            argNum++;
+            currentArgs=currentArgs->getChildren()[2];
+        }
+        else{
+            argNum++;
+            break;
+        }
+    }
+    return argNum;
+}
 void useFunctionSymbol(SyntaxTreeNode *expNode, SymbolTable &symbolTable) {
   SyntaxTreeNode *idNode = expNode->children[0];
-  Symbol *symbol = symbolTable.searchFunctionSymbol(idNode->attribute_value);
-  if (symbol == nullptr) {
-      std::string errorMessage="undefined function: "+idNode->attribute_value;
-      printErrorMessage(2,idNode->firstLine,errorMessage);
+  Symbol *functionSymbol = symbolTable.searchFunctionSymbol(idNode->attribute_value);
+  if (functionSymbol == nullptr) {
+      Symbol *symbol2=symbolTable.searchVariableSymbol(idNode->attribute_value);
+      if(symbol2!= nullptr){
+          std::string errorMessage = "invoking non-function variable: "+idNode->attribute_value;
+          printErrorMessage(11,idNode->firstLine,errorMessage);
+      }
+      else {
+          std::string errorMessage = "undefined function: " + idNode->attribute_value;
+          printErrorMessage(2, idNode->firstLine, errorMessage);
+      }
+  }
+  else {
+
+      FunctionType *functionType=std::get<FunctionType *>(functionSymbol->symbolData);
+      idNode->expType=functionType->returnType;
+      int argsExpectNum=functionType->argsType.size();
+      int argsActualNum=0;
+      if(expNode->children.size()==3){
+          if(argsExpectNum!=argsActualNum){
+              std::string errorMessage="invalid argument number for "+idNode->attribute_value+", expect "+std::to_string(argsExpectNum)+", got "+std::to_string(argsActualNum);
+              printErrorMessage(9,expNode->firstLine,errorMessage);
+          }
+      } else if(expNode->children.size()==4){
+            argsActualNum=getArgsNum(expNode->children[2]);
+          if(argsExpectNum!=argsActualNum){
+              std::string errorMessage="invalid argument number for "+idNode->attribute_value+", expect "+std::to_string(argsExpectNum)+", got "+std::to_string(argsActualNum);
+              printErrorMessage(9,expNode->firstLine,errorMessage);
+          }
+      }
   }
 }
 void getDecs(SyntaxTreeNode *decList, std::vector<SyntaxTreeNode *> *decs) {
@@ -72,29 +122,30 @@ void insertPrimarySymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable) {
         case SymbolType::INT: {
           IntType *data = new IntType;
           symbol = new Symbol(symbolName, symbolType, data);
+            symbolTable.insertVariableSymbol(symbolName, symbol);
           break;
         }
         case SymbolType::FLOAT: {
           FloatType *data = new FloatType;
           symbol = new Symbol(symbolName, symbolType, data);
+            symbolTable.insertVariableSymbol(symbolName, symbol);
           break;
         }
         case SymbolType::CHAR: {
           CharType *data = new CharType;
           symbol = new Symbol(symbolName, symbolType, data);
+            symbolTable.insertVariableSymbol(symbolName, symbol);
           break;
         }
+          case SymbolType::STRUCT:{
+              StructType *data=new StructType;
+              symbol = new Symbol(symbolName, symbolType, data);
+              symbolTable.insertVariableSymbol(symbolName, symbol);
+              break;
+          }
         default: {
           break;
         }
-      }
-      if (symbol == nullptr) {
-        std::cout << "fatal unhandled error!" << std::endl;
-      } else {
-        if (customDebug) {
-          std::cout << "Symbol " << symbolName << " inserted" << std::endl;
-        }
-        symbolTable.insertVariableSymbol(symbolName, symbol);
       }
     } else {
         std::string errorMessage = "redefine variable: "+dec->children[0]->children[0]->attribute_value;
@@ -109,7 +160,6 @@ void insertFunctionSymbolWithoutArgs(SyntaxTreeNode *funDec,
   Symbol *rt = symbolTable.searchFunctionSymbol(functionName);
   if (rt == nullptr) {
     functionType->functionName = functionName;
-    functionType->returnType = funDec->expType;
     Symbol *symbol = new Symbol(functionName, funDec->expType, functionType);
     symbolTable.insertFunctionSymbol(functionName, symbol);
   } else {
@@ -181,7 +231,6 @@ void insertFunctionSymbolWithArgs(SyntaxTreeNode* funDec,SymbolTable &symbolTabl
     SyntaxTreeNode * varList=funDec->children[2];
     if(rt== nullptr) {
         functionType->functionName = functionName;
-        functionType->returnType = funDec->expType;
         insertVarListToFunctionType(functionType,varList,symbolTable);
         Symbol *symbol = new Symbol(functionName, funDec->expType, functionType);
         symbolTable.insertFunctionSymbol(functionName,symbol);
@@ -255,4 +304,28 @@ void checkReturnType(SyntaxTreeNode* exp){
         exit(0);
     }
 }
-
+void preOrderCheckStmt(SyntaxTreeNode* node,SymbolType & rtType){
+    if(node->children.empty()){
+        return;
+    } else if(node->children[0]->attribute_name=="RETURN"){
+        SyntaxTreeNode *exp=node->children[1];
+        if(exp->expType!=rtType){
+            std::string errorMesaage="incompatiable return type";
+            printErrorMessage(8,exp->firstLine,errorMesaage);
+        }
+    }
+    for (auto & i : node->children){
+        preOrderCheckStmt(i,rtType);
+    }
+}
+void checkFunctionReturnStatement(SyntaxTreeNode* specifier,SyntaxTreeNode* compSt){
+    SymbolType rtType=specifier->expType;
+    SyntaxTreeNode * stmtList=compSt->children[2];
+    preOrderCheckStmt(stmtList,rtType);
+}
+void assignFunctionReturnType(SyntaxTreeNode* specifier,SyntaxTreeNode* funcDec,SymbolTable & symbolTable){
+    std::string functionName=funcDec->children[0]->attribute_value;
+    Symbol * functionSymbol=symbolTable.searchFunctionSymbol(functionName);
+    FunctionType * functionType=std::get<FunctionType *>(functionSymbol->symbolData);
+    functionType->returnType=specifier->expType;
+}
