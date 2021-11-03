@@ -5,9 +5,9 @@
 TEST_DIR_OWN="test"
 TEST_DIR_EX="test-ex"
 demo_test() {
-  TEST_DIR="demo_test"
-  PREFIX="test_1_r"
-  able=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12")
+  TEST_DIR="project2_test"
+  PREFIX="test_2_r"
+  able=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15")
   for i in "${able[@]}"; do
     echo "begin test ${PREFIX}${i}:"
     bin/splc ./${TEST_DIR}/${PREFIX}${i}.spl > ./${TEST_DIR}/${PREFIX}"${i}".test.out 2>&1
@@ -101,10 +101,10 @@ new_feature() {
 make clean splc
 echo "==================demo_test begin"
 demo_test
-echo "==================own_test begin"
-own_test
-echo "==================ex_test begin"
-ex_test
+#echo "==================own_test begin"
+#own_test
+#echo "==================ex_test begin"
+#ex_test
 #other_test
 #make_test_stdoutput
 #new_feature

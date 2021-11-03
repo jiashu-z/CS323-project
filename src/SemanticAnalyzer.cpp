@@ -3,12 +3,14 @@
 //
 #include "SemanticAnalyzer.h"
 extern int customDebug;
+void printErrorMessage(int errorType,int errorLine,std::string& errorMessage){
+    std::cout<< "Error type "<<errorType<<" at Line "<<errorLine<<": "<<errorMessage<<std::endl;
+}
 void usePrimarySymbol(SyntaxTreeNode *idNode, SymbolTable &symbolTable) {
   Symbol *symbol = symbolTable.searchVariableSymbol(idNode->attribute_value);
   if (symbol == nullptr) {
-    std::cout << "Error Type " << 1 << " at Line " << idNode->firstLine << ": "
-              << "Undefined variable \"" << idNode->attribute_value << "\"."
-              << std::endl;
+      std::string errorMessage="undefined variable: "+idNode->attribute_value;
+      printErrorMessage(1,idNode->firstLine,errorMessage);
   }
   else{
       switch (symbol->symbolType) {
@@ -36,9 +38,8 @@ void useFunctionSymbol(SyntaxTreeNode *expNode, SymbolTable &symbolTable) {
   SyntaxTreeNode *idNode = expNode->children[0];
   Symbol *symbol = symbolTable.searchFunctionSymbol(idNode->attribute_value);
   if (symbol == nullptr) {
-    std::cout << "Error Type " << 2 << " at Line " << idNode->firstLine << ": "
-              << "Undefined function \"" << idNode->attribute_value << "\"."
-              << std::endl;
+      std::string errorMessage="undefined function: "+idNode->attribute_value;
+      printErrorMessage(2,idNode->firstLine,errorMessage);
   }
 }
 void getDecs(SyntaxTreeNode *decList, std::vector<SyntaxTreeNode *> *decs) {
@@ -96,11 +97,8 @@ void insertPrimarySymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable) {
         symbolTable.insertVariableSymbol(symbolName, symbol);
       }
     } else {
-      std::cout << "Error Type " << 3 << " at Line "
-                << dec->children[0]->children[0]->firstLine << ": "
-                << "Redefined variable \""
-                << dec->children[0]->children[0]->attribute_value << "\"."
-                << std::endl;
+        std::string errorMessage = "redefine variable: "+dec->children[0]->children[0]->attribute_value;
+        printErrorMessage(3,dec->getChildren()[0]->children[0]->firstLine,errorMessage);
     }
   }
 }
@@ -115,8 +113,8 @@ void insertFunctionSymbolWithoutArgs(SyntaxTreeNode *funDec,
     Symbol *symbol = new Symbol(functionName, funDec->expType, functionType);
     symbolTable.insertFunctionSymbol(functionName, symbol);
   } else {
-    std::cout << "Error type 4 at Line " << funDec->firstLine
-              << ": multi definition of function " << functionName << std::endl;
+      std::string errorMessage = "redefine function: "+functionName;
+      printErrorMessage(4,funDec->firstLine,errorMessage);
   }
 }
 void insertVarListToFunctionType(FunctionType * functionType,SyntaxTreeNode * varList,SymbolTable&symbolTable){
@@ -133,11 +131,8 @@ void insertVarListToFunctionType(FunctionType * functionType,SyntaxTreeNode * va
                 functionType->argsType.push_back(symbol);
                 bool rt=symbolTable.insertVariableSymbol(varName,symbol);
                 if(!rt){
-                    std::cout << "Error Type " << 3 << " at Line "
-                              << id->firstLine << ": "
-                              << "Redefined variable \""
-                              << id->attribute_value << "\"."
-                              << std::endl;
+                    std::string errorMessage="redefine variable: "+id->attribute_value;
+                    printErrorMessage(3,id->firstLine,errorMessage);
                 }
                 else{
                     if(customDebug){
@@ -152,11 +147,9 @@ void insertVarListToFunctionType(FunctionType * functionType,SyntaxTreeNode * va
                 functionType->argsType.push_back(symbol);
                 bool rt=symbolTable.insertVariableSymbol(varName,symbol);
                 if(!rt){
-                    std::cout << "Error Type " << 3 << " at Line "
-                              << id->firstLine << ": "
-                              << "Redefined variable \""
-                              << id->attribute_value << "\"."
-                              << std::endl;
+                    std::string errorMessage="redefine variable: "+id->attribute_value;
+                    printErrorMessage(3,id->firstLine,errorMessage);
+
                 }
                 break;
             }
@@ -166,11 +159,8 @@ void insertVarListToFunctionType(FunctionType * functionType,SyntaxTreeNode * va
                 functionType->argsType.push_back(symbol);
                 bool rt=symbolTable.insertVariableSymbol(varName,symbol);
                 if(!rt){
-                    std::cout << "Error Type " << 3 << " at Line "
-                              << id->firstLine << ": "
-                              << "Redefined variable \""
-                              << id->attribute_value << "\"."
-                              << std::endl;
+                    std::string errorMessage="redefine variable: "+id->attribute_value;
+                    printErrorMessage(3,id->firstLine,errorMessage);
                 }
                 break;
             }
@@ -197,7 +187,8 @@ void insertFunctionSymbolWithArgs(SyntaxTreeNode* funDec,SymbolTable &symbolTabl
         symbolTable.insertFunctionSymbol(functionName,symbol);
     }
     else{
-        std::cout<<"Error type 4 at Line "<<funDec->firstLine<<": multi definition of function "<<functionName<<std::endl;
+        std::string errorMessage="redefine function: "+functionName;
+        printErrorMessage(4,funDec->firstLine,errorMessage);
         exit(0);
     }
 }
@@ -217,7 +208,8 @@ void assignVarDecIDType(SyntaxTreeNode* varDec,SyntaxTreeNode *exp){
 }
 void checkAssignDataType(SyntaxTreeNode * left,SyntaxTreeNode * right){
     if(left->expType!=right->expType){
-        std::cout<<"Error type 5 at Line "<<left->firstLine<<":  unmatching type on both sides of assignment."<<std::endl;
+        std::string errorMessage="unmatching type on both sides of assignment";
+        printErrorMessage(5,left->firstLine,errorMessage);
         exit(0);
     }
 }
@@ -245,7 +237,8 @@ void checkrValue(SyntaxTreeNode * exp){
         ||child->nodeType==TreeNodeType::CHAR
         )
         {
-            std::cout<<"Error type "<<6<<" at Line "<<exp->firstLine<<": left side in assignment is rvalue"<<std::endl;
+            std::string errorMessage="left side in assignment is rvalue";
+            printErrorMessage(6,exp->firstLine,errorMessage);
         }
     }
 }
@@ -257,7 +250,8 @@ void checkReturnType(SyntaxTreeNode* exp){
     }
     SymbolType specifierType=parent->getChildren()[0]->expType;
     if(specifierType!=rtType){
-        std::cout<<"Error type 8 at Line "<<exp->firstLine<<": incompatiable return type"<<std::endl;
+        std::string errorMessage="incompatiable return type";
+        printErrorMessage(8,exp->firstLine,errorMessage);
         exit(0);
     }
 }

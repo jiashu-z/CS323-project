@@ -17,4 +17,5 @@ void assignVarDecIDType(SyntaxTreeNode* varDec,SyntaxTreeNode *exp);
 void assignSpecifierType(SyntaxTreeNode *specifier);
 void checkrValue(SyntaxTreeNode * exp);
 void checkReturnType(SyntaxTreeNode * rtExp);
+void printErrorMessage(int errorType,int errorLine,std::string& errorMessage);
 #endif  // CS323_PROJECT1_SEMANTICANALYZER_H
