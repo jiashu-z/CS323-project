@@ -33,7 +33,13 @@ class SyntaxTreeNode {
   int firstColumn = 0;
 
   // used for indicate expression data type and function return type
-  SymbolType expType = SymbolType::UNKNOWN;  
+  SymbolType expType = SymbolType::UNKNOWN;
+
+  /**
+   * @brief Metadata of variable. This symbol should never be new-ed.
+   *
+   */
+  Symbol *symbol = nullptr;
 
  public:
   explicit SyntaxTreeNode(const std::string &attributeName);

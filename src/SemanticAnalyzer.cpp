@@ -2,6 +2,7 @@
 // Created by maozunyao on 2021/10/24.
 //
 #include "SemanticAnalyzer.h"
+#include <exception>
 #include <unordered_map>
 #include <utility>
 extern int customDebug;
@@ -40,6 +41,12 @@ void usePrimarySymbol(SyntaxTreeNode *idNode, SymbolTable &symbolTable) {
       }
       case SymbolType::CHAR: {
         idNode->expType = SymbolType::CHAR;
+        break;
+      }
+      case SymbolType::STRUCT: {
+        idNode->expType = SymbolType::STRUCT;
+        idNode->symbol =
+            symbolTable.searchVariableSymbol(idNode->attribute_value);
         break;
       }
       default: {
@@ -150,9 +157,19 @@ void insertPrimarySymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable) {
           break;
         }
         case SymbolType::STRUCT: {
-          StructType *data = new StructType;
-          symbol = new Symbol(symbolName, symbolType, data);
-          symbolTable.insertVariableSymbol(symbolName, symbol);
+          const std::string &structTypeName =
+              specifier->children[0]->children[1]->attribute_value;
+          auto &structDefinitionTable =
+              symbolTable.currentStructDefinitionTable;
+          if (structDefinitionTable.find(structTypeName) ==
+              structDefinitionTable.end()) {
+            printErrorMessage(16, defNode->firstLine,
+                              "Undefined struct error.");
+          } else {
+            symbol = structDefinitionTable[structTypeName];
+            symbolTable.insertVariableSymbol(symbolName, symbol);
+            defNode->symbol = symbol;
+          }
           break;
         }
         default: { break; }
@@ -272,11 +289,11 @@ void checkAssignDataType(SyntaxTreeNode *left, SyntaxTreeNode *right) {
       right->expType == SymbolType::UNKNOWN) {
     std::string errorMessage = "unmatching type on both sides of assignment";
     printErrorMessage(5, left->firstLine, errorMessage);
-    exit(0);
   }
 }
 
-void insertStructDefinitionSymbol(SyntaxTreeNode *structSpecifierNode, SymbolTable &symbolTable) {
+void insertStructDefinitionSymbol(SyntaxTreeNode *structSpecifierNode,
+                                  SymbolTable &symbolTable) {
   auto &structDefinitionTable = symbolTable.currentStructDefinitionTable;
   std::string typeName = structSpecifierNode->children[1]->attribute_value;
 
@@ -292,7 +309,7 @@ void insertStructDefinitionSymbol(SyntaxTreeNode *structSpecifierNode, SymbolTab
       SyntaxTreeNode *specifierNode = defNode->children[0];
       SyntaxTreeNode *decListNode = defNode->children[1];
 
-      while (decListNode->children.size() != 1) {
+      while (true) {
         SyntaxTreeNode *decNode = decListNode->children[0];
         SyntaxTreeNode *varDecNode = decNode->children[0];
 
@@ -321,37 +338,42 @@ void insertStructDefinitionSymbol(SyntaxTreeNode *structSpecifierNode, SymbolTab
             break;
           }
           case SymbolType::STRUCT: {
-            std::string &typeName = specifierNode->children[0]->children[1]->attribute_value;
-            if (structDefinitionTable.find(typeName) != structDefinitionTable.end()) {
+            std::string &typeName =
+                specifierNode->children[0]->children[1]->attribute_value;
+            if (structDefinitionTable.find(typeName) !=
+                structDefinitionTable.end()) {
               symbol = structDefinitionTable[typeName];
             } else {
               printErrorMessage(-1, -1, "todo");
             }
             break;
           }
-          default: {
-              printErrorMessage(-1, -1, "todo");
-          }
+          default: { printErrorMessage(-1, -1, "todo"); }
         }
 
         data->fieldName.push_back(varName);
         data->fieldType.push_back(symbol);
-        decListNode = decListNode->children[2];
+
+        if (decListNode->children.size() > 1) {
+          decListNode = decListNode->children[2];
+        } else {
+          break;
+        }
       }
       SymbolType &expType = specifierNode->expType;
-      
+
       defListNode = defListNode->children[1];
     }
     Symbol *symbol = new Symbol(name, symbolType, data);
     structDefinitionTable.insert(std::make_pair(typeName, symbol));
   } else {
-    printErrorMessage(15, structSpecifierNode->firstLine, "todo");
+    printErrorMessage(15, structSpecifierNode->firstLine,
+                      "redefine struct: " +
+                          structSpecifierNode->children[1]->attribute_value);
   }
 }
 
-void insertStructSymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable) {
-  
-}
+void insertStructSymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable) {}
 
 void assignSpecifierType(SyntaxTreeNode *specifier) {
   SyntaxTreeNode *type = specifier->getChildren()[0];
@@ -418,4 +440,29 @@ void assignFunctionReturnType(SyntaxTreeNode *specifier,
   FunctionType *functionType =
       std::get<FunctionType *>(functionSymbol->symbolData);
   functionType->returnType = specifier->expType;
+}
+
+void checkDotOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
+                      SyntaxTreeNode *rightOperand, SymbolTable &symbolTable) {
+  if (leftOperand->expType != SymbolType::STRUCT) {
+    printErrorMessage(13, parentExp->firstLine,
+                      "accessing with non-struct variable");
+    parentExp->expType = SymbolType::UNKNOWN;
+  } else {
+    const Symbol *symbol = leftOperand->symbol;
+    const StructType *symbolData = std::get<StructType *>(symbol->symbolData);
+    const std::string &varName = rightOperand->attribute_value;
+    std::unordered_map<std::string, Symbol *> nameTypeMap;
+    for (auto i = 0; i < symbolData->fieldName.size(); ++i) {
+      nameTypeMap.insert(
+          std::make_pair(symbolData->fieldName[i], symbolData->fieldType[i]));
+    }
+    if (nameTypeMap.find(varName) == nameTypeMap.end()) {
+      printErrorMessage(14, parentExp->firstLine,
+                        "no such member: " + rightOperand->attribute_value);
+    } else {
+      parentExp->expType = nameTypeMap[varName]->symbolType;
+      parentExp->symbol = nameTypeMap[varName];
+    }
+  }
 }

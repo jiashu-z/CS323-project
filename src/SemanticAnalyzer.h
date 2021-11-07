@@ -19,7 +19,8 @@ void insertPrimarySymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable);
 
 void insertFunctionSymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable);
 
-void insertStructDefinitionSymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable);
+void insertStructDefinitionSymbol(SyntaxTreeNode *defNode,
+                                  SymbolTable &symbolTable);
 
 void insertStructSymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable);
 
@@ -33,7 +34,8 @@ void checkrValue(SyntaxTreeNode *exp);
 
 void checkReturnType(SyntaxTreeNode *rtExp);
 
-void printErrorMessage(int errorType, int errorLine, const std::string &errorMessage);
+void printErrorMessage(int errorType, int errorLine,
+                       const std::string &errorMessage);
 
 void checkFunctionReturnStatement(SyntaxTreeNode *specifier,
                                   SyntaxTreeNode *CompSt);
@@ -44,5 +46,8 @@ void assignFunctionReturnType(SyntaxTreeNode *specifier,
 
 void checkBinaryOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
                          SyntaxTreeNode *rightOperand);
+
+void checkDotOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
+                      SyntaxTreeNode *rightOperand, SymbolTable &symbolTable);
 
 #endif  // CS323_PROJECT1_SEMANTICANALYZER_H

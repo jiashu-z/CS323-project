@@ -418,12 +418,14 @@ Exp: Exp ASSIGN Exp {
     | Exp DOT ID {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3});
+        checkDotOperator($$, $1, $3, symbolTable);
     }
     | ID {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
         $$->insert($1);
         usePrimarySymbol($1,symbolTable);
         $$->expType = $1->expType;
+        $$->symbol = $1->symbol;
     }
     | INT {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
