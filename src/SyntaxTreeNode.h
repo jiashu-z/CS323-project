@@ -31,9 +31,9 @@ class SyntaxTreeNode {
   std::string attribute_value;
   int firstLine = 0;
   int firstColumn = 0;
-  SymbolType expType =
-      SymbolType::UNKNOWN;  // used for indicate expression data type and
-                            // function return type
+
+  // used for indicate expression data type and function return type
+  SymbolType expType = SymbolType::UNKNOWN;  
 
  public:
   explicit SyntaxTreeNode(const std::string &attributeName);

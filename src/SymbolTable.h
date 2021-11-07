@@ -67,7 +67,7 @@ class CharType {
 class StructType {
  public:
   std::vector<std::string> fieldName;
-  std::vector<Symbol> fieldType;
+  std::vector<Symbol*> fieldType;
 
   StructType() = default;
 };
@@ -87,6 +87,6 @@ class StructDefinitionType {
   StructType structDefinition;
 
   StructDefinitionType() = default;
-}
+};
 
 #endif  // CS323_PROJECT1_SYMBOLTABLE_H

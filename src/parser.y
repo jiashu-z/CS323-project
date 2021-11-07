@@ -3,12 +3,12 @@
 #include "SyntaxTreeNode.h"
 #include "SymbolTable.h"
 #include "SemanticAnalyzer.h"
- SymbolTable symbolTable;
+SymbolTable symbolTable;
 SyntaxTreeNode* root_node;
 int error_cnt = 0;
 
 void error_message(const char* message){
-    if(error_cnt > 0){
+    if (error_cnt > 0) {
         printf("%s\n", message);
         error_cnt -= 1;
     }
@@ -62,179 +62,403 @@ Program: ExtDefList {
     $$->insert($1);
     root_node=$$;
 };
-ExtDefList: ExtDef ExtDefList {$$ = new SyntaxTreeNode("ExtDefList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);$$->insert({$1,$2});}
-    | {	$$ = new SyntaxTreeNode("ExtDefList",yytext,@$.first_line,@$.first_column,TreeNodeType::EMPTY); }
-    ;
-ExtDef: Specifier ExtDecList SEMI {$$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);$$->insert({$1,$2,$3});}
-    | Specifier SEMI {$$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
-    | Specifier FunDec CompSt {$$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);
-    assignFunctionReturnType($1,$2,symbolTable);
-    checkFunctionReturnStatement($1,$3);
+ExtDefList: ExtDef ExtDefList {
+        $$ = new SyntaxTreeNode("ExtDefList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2});
     }
-    | error SEMI{error_message("Missing specifier");}
-    | ExtDecList error SEMI {error_message("Missing specifier");}
-    | Specifier error {error_message("Missing semicolon ';'");}
-    | error FunDec CompSt {error_message("Missing specifier");}
+    | {
+        $$ = new SyntaxTreeNode("ExtDefList",yytext,@$.first_line,@$.first_column,TreeNodeType::EMPTY);
+    }
     ;
-ExtDecList: VarDec {$$=new SyntaxTreeNode("ExtDecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
-    | VarDec COMMA ExtDecList{$$=new SyntaxTreeNode("ExtDecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
-    | VarDec ExtDecList error {error_message("Missing comma ','");}
+ExtDef: Specifier ExtDecList SEMI {
+        $$ = new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3});
+    }
+    | Specifier SEMI {
+        $$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1, $2});
+    }
+    | Specifier FunDec CompSt {
+        $$ = new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert($1);
+        $$->insert($2);
+        $$->insert($3);
+        assignFunctionReturnType($1,$2,symbolTable);
+        checkFunctionReturnStatement($1,$3);
+    }
+    | error SEMI {
+        error_message("Missing specifier");
+    }
+    | ExtDecList error SEMI {
+        error_message("Missing specifier");
+    }
+    | Specifier error {
+        error_message("Missing semicolon ';'");
+    }
+    | error FunDec CompSt {
+        error_message("Missing specifier");
+    }
+    ;
+ExtDecList: VarDec {
+        $$ = new SyntaxTreeNode("ExtDecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert($1);
+    }
+    | VarDec COMMA ExtDecList {
+        $$ = new SyntaxTreeNode("ExtDecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3});
+    }
+    | VarDec ExtDecList error {
+        error_message("Missing comma ','");
+    }
     ;
 
 // specifier
-Specifier: TYPE {$$=new SyntaxTreeNode("Specifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);
-			assignSpecifierType($$);}
-    | StructSpecifier {$$=new SyntaxTreeNode("Specifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);
-    $$->expType=SymbolType::STRUCT;
+Specifier: TYPE {
+        $$ = new SyntaxTreeNode("Specifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert($1);
+        assignSpecifierType($$);
+    }
+    | StructSpecifier {
+        $$ = new SyntaxTreeNode("Specifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert($1);
+        $$->expType = SymbolType::STRUCT;
+
+        insertStructDefinitionSymbol($$, symbolTable);
     }
     ;
-StructSpecifier: STRUCT ID LC DefList RC {$$=new SyntaxTreeNode("StructSpecifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5});}
-    | STRUCT ID LC DefList error {error_message("Missing right brace '}'");}
-    | STRUCT ID{$$=new SyntaxTreeNode("StructSpecifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
+StructSpecifier: STRUCT ID LC DefList RC {
+        $$ = new SyntaxTreeNode("StructSpecifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3,$4,$5});
+    }
+    | STRUCT ID LC DefList error {
+        error_message("Missing right brace '}'");
+    }
+    | STRUCT ID {
+        $$ = new SyntaxTreeNode("StructSpecifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2});
+    }
     ;
 // declarator
-VarDec: ID {$$=new SyntaxTreeNode("VarDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
-    | VarDec LB INT RB {$$=new SyntaxTreeNode("VarDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4});}
+VarDec: ID {
+        $$ = new SyntaxTreeNode("VarDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert($1);
+    }
+    | VarDec LB INT RB {
+        $$ = new SyntaxTreeNode("VarDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3,$4});
+    }
     ;
-FunDec: ID LP VarList RP {$$=new SyntaxTreeNode("FunDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4});
-	insertFunctionSymbol($$,symbolTable);
-}
-    | ID LP RP {$$=new SyntaxTreeNode("FunDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-    insertFunctionSymbol($$,symbolTable);
-     }
-    | ID LP VarList error {error_message("Missing closing parenthesis ')'");}
-    | ID LP error {error_message("Missing closing parenthesis ')'");}
-    | ID error VarList RP {error_message("Missing left parenthesis ')'");}
-    | ID error RP {error_message("Missing left parenthesis ')'");}
+FunDec: ID LP VarList RP {
+        $$ = new SyntaxTreeNode("FunDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3,$4});
+        insertFunctionSymbol($$,symbolTable);
+    }
+    | ID LP RP {
+        $$ = new SyntaxTreeNode("FunDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3});
+        insertFunctionSymbol($$,symbolTable);
+    }
+    | ID LP VarList error {
+        error_message("Missing closing parenthesis ')'");
+    }
+    | ID LP error {
+        error_message("Missing closing parenthesis ')'");
+    }
+    | ID error VarList RP {
+        error_message("Missing left parenthesis ')'");
+    }
+    | ID error RP {
+        error_message("Missing left parenthesis ')'");
+    }
     ;
-VarList: ParamDec COMMA VarList {$$=new SyntaxTreeNode("VarList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);}
-    | ParamDec VarList error {error_message("Missing comma ','");}
-    | ParamDec {$$=new SyntaxTreeNode("VarList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
+VarList: ParamDec COMMA VarList {
+        $$ = new SyntaxTreeNode("VarList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert($1);
+        $$->insert($2);
+        $$->insert($3);
+    }
+    | ParamDec VarList error {
+        error_message("Missing comma ','");
+    }
+    | ParamDec {
+        $$ = new SyntaxTreeNode("VarList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert($1);
+    }
     ;
-ParamDec: Specifier VarDec{$$=new SyntaxTreeNode("ParamDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);
-
-}
+ParamDec: Specifier VarDec {
+        $$ = new SyntaxTreeNode("ParamDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert($1);
+        $$->insert($2);
+    }
     ;
 
 // statement
-CompSt: LC DefList StmtList RC{$$=new SyntaxTreeNode("CompSt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);$$->insert($4);
-//std::cout<<"compst is formed"<<std::endl;
-}
+CompSt: LC DefList StmtList RC{
+        $$ = new SyntaxTreeNode("CompSt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert($1);
+        $$->insert($2);
+        $$->insert($3);
+        $$->insert($4);
+    }
     ;
-StmtList: Stmt StmtList{$$=new SyntaxTreeNode("StmtList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
-    | {$$=new SyntaxTreeNode("StmtList",yytext,@$.first_line,@$.first_column,TreeNodeType::EMPTY); }
+StmtList: Stmt StmtList{
+        $$ = new SyntaxTreeNode("StmtList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2});
+    }
+    | {
+        $$ = new SyntaxTreeNode("StmtList",yytext,@$.first_line,@$.first_column,TreeNodeType::EMPTY); 
+    }
     ;
-Stmt: Exp SEMI {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);}
-    | Exp error {error_message("Missing semicolon ';'");}
-    | CompSt{$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
-    | RETURN Exp SEMI   {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);
-    //checkReturnType($2);
+Stmt: Exp SEMI { 
+        $$ = new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert($1);
+        $$->insert($2);
     }
-    | RETURN Exp error {error_message("Missing semicolon ';'");}
-    | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5});
-    //TODO: not sure the %prec and lower_than_else usage
+    | Exp error {
+        error_message("Missing semicolon ';'");
     }
-    | IF LP Exp RP Stmt ELSE Stmt{
-    $$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);$$->insert($4);$$->insert($5);$$->insert($6);$$->insert($7);
+    | CompSt {
+        $$ = new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert($1);
     }
-    | IF LP Exp error Stmt {error_message("Missing closing parenthesis ')'");}
-    | WHILE LP Exp RP Stmt {$$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5});}
-    | WHILE LP Exp error Stmt {error_message("Missing closing parenthesis ')'");}
-    | FOR LP Exp SEMI Exp SEMI Exp RP Stmt { $$=new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4,$5,$6,$7,$8,$9});}
-    | FOR LP Exp SEMI Exp SEMI Exp error Stmt {error_message("Missing closing parenthesis ')'");}
-    | IF error Exp RP Stmt {error_message("Missing left parenthesis ')'");}
-    | WHILE error Exp RP Stmt {error_message("Missing left parenthesis ')'");}
-    | FOR error Exp SEMI Exp SEMI Exp RP Stmt {error_message("Missing left parenthesis ')'");}
+    | RETURN Exp SEMI {
+        $$ = new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert($1);
+        $$->insert($2);
+        $$->insert($3);
+    }
+    | RETURN Exp error {
+        error_message("Missing semicolon ';'");
+    }
+    | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE {
+        $$ = new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3,$4,$5});
+    }
+    | IF LP Exp RP Stmt ELSE Stmt {
+        $$ = new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert($1);
+        $$->insert($2);
+        $$->insert($3);
+        $$->insert($4);
+        $$->insert($5);
+        $$->insert($6);
+        $$->insert($7);
+    }
+    | IF LP Exp error Stmt {
+        error_message("Missing closing parenthesis ')'");
+    }
+    | WHILE LP Exp RP Stmt {
+        $$ = new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3,$4,$5});
+    }
+    | WHILE LP Exp error Stmt {
+        error_message("Missing closing parenthesis ')'");
+    }
+    | FOR LP Exp SEMI Exp SEMI Exp RP Stmt {
+        $$ = new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3,$4,$5,$6,$7,$8,$9});
+    }
+    | FOR LP Exp SEMI Exp SEMI Exp error Stmt {
+        error_message("Missing closing parenthesis ')'");
+    }
+    | IF error Exp RP Stmt {
+        error_message("Missing left parenthesis ')'");
+    }
+    | WHILE error Exp RP Stmt {
+        error_message("Missing left parenthesis ')'");
+    }
+    | FOR error Exp SEMI Exp SEMI Exp RP Stmt {
+        error_message("Missing left parenthesis ')'");
+    }
     ;
 // local definition
-DefList: Def DefList {$$=new SyntaxTreeNode("DefList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});}
-    | {$$=new SyntaxTreeNode("DefList",yytext,@$.first_line,@$.first_column,TreeNodeType::EMPTY); }
+DefList: Def DefList {
+        $$ = new SyntaxTreeNode("DefList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2});
+    }
+    | {
+        $$ = new SyntaxTreeNode("DefList",yytext,@$.first_line,@$.first_column,TreeNodeType::EMPTY); 
+    }
     ;
-Def: Specifier DecList SEMI{$$=new SyntaxTreeNode("Def",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-		insertPrimarySymbol($$,symbolTable);
-		}
-    | Specifier DecList error {error_message("Missing semicolon ';'");}
+Def: Specifier DecList SEMI {
+        $$ = new SyntaxTreeNode("Def",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3});
+        insertPrimarySymbol($$,symbolTable);
+    }
+    | Specifier DecList error {
+        error_message("Missing semicolon ';'");
+    }
 
-DecList: Dec{$$=new SyntaxTreeNode("DecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
-    | Dec COMMA DecList{$$=new SyntaxTreeNode("DecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
-    | Dec DecList error{printf("Missing comma ','\n");}
+DecList: Dec {
+        $$ = new SyntaxTreeNode("DecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert($1);
+    }
+    | Dec COMMA DecList {
+        $$ = new SyntaxTreeNode("DecList",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3});
+    }
+    | Dec DecList error {
+        printf("Missing comma ','\n");
+    }
     ;
-Dec: VarDec{$$=new SyntaxTreeNode("Dec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
-    | VarDec ASSIGN Exp{$$=new SyntaxTreeNode("Dec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-    assignVarDecIDType($1,$3);
+Dec: VarDec {
+        $$ = new SyntaxTreeNode("Dec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert($1);
+    }
+    | VarDec ASSIGN Exp {
+        $$ = new SyntaxTreeNode("Dec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3});
+        assignVarDecIDType($1,$3);
     };
 
 // expression
-Exp: Exp ASSIGN Exp {$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);
-    $$->expType=$1->expType;
-    checkAssignDataType($1,$3);
-    checkrValue($1);
-}
-    | Exp AND Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
+Exp: Exp ASSIGN Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert($1);
+        $$->insert($2);
+        $$->insert($3);
+        $$->expType = $1->expType;
+        checkAssignDataType($1,$3);
+        checkrValue($1);
+    }
+    | Exp AND Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3});
+        $$->expType = $1->expType;
+    }
+    | Exp OR Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3});
+        $$->expType = $1->expType;
+    }
+    | Exp LT Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3});
+        $$->expType = $1->expType;
+    }
+    | Exp LE Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3});
         $$->expType=$1->expType;
     }
-    | Exp OR Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
+    | Exp GT Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert($1);
+        $$->insert($2);
+        $$->insert($3);
         $$->expType=$1->expType;
     }
-    | Exp LT Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-        $$->expType=$1->expType;
+    | Exp GE Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3});
+        $$->expType = $1->expType;
     }
-    | Exp LE Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-        $$->expType=$1->expType;
+    | Exp NE Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3});
+        $$->expType = $1->expType;
     }
-    | Exp GT Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->insert($2);$$->insert($3);
-        $$->expType=$1->expType;
+    | Exp EQ Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3});
+        $$->expType = $1->expType;
     }
-    | Exp GE Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-        $$->expType=$1->expType;
+    | Exp PLUS Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3});
+        $$->expType = $1->expType;
+        checkBinaryOperator($$,$1,$3);
     }
-    | Exp NE Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-        $$->expType=$1->expType;
+    | Exp MINUS Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3});
+        $$->expType = $1->expType;
     }
-    | Exp EQ Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-        $$->expType=$1->expType;
+    | Exp MUL Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3});
+        $$->expType = $1->expType;
     }
-    | Exp PLUS Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-    $$->expType=$1->expType;
-    checkBinaryOperator($$,$1,$3);
+    | Exp DIV Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3});
+        $$->expType = $1->expType;
     }
-    | Exp MINUS Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-    $$->expType=$1->expType;
+    | LP Exp RP {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3});
+        $$->expType = $2->expType;
     }
-    | Exp MUL Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-    $$->expType=$1->expType;
+    | MINUS Exp %prec LOWER_NEGA {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2});
+        $$->expType = $2->expType;
     }
-    | Exp DIV Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-    $$->expType=$1->expType;
+    | NOT Exp {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2});
+        $$->expType = $2->expType;
     }
-    | LP Exp RP{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-    $$->expType=$2->expType;
+    | ID LP Args RP {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3,$4});
+        useFunctionSymbol($$,symbolTable);
+        $$->expType = $1->expType;
     }
-    | MINUS Exp %prec LOWER_NEGA {$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});
-    $$->expType=$2->expType;
+    | ID LP RP {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3});
+        useFunctionSymbol($$,symbolTable);
+        $$->expType = $1->expType;
     }
-    | NOT Exp{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2});
-    $$->expType=$2->expType;
+    | Exp LB Exp RB {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3,$4});
     }
-    | ID LP Args RP{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4});
-    useFunctionSymbol($$,symbolTable);
-    $$->expType=$1->expType;
+    | Exp DOT ID {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert({$1,$2,$3});
     }
-    | ID LP RP{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});
-    		useFunctionSymbol($$,symbolTable);$$->expType=$1->expType;}
-    | Exp LB Exp RB{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3,$4});}
-    | Exp DOT ID{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
-    | ID {$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);usePrimarySymbol($1,symbolTable);$$->expType=$1->expType;}
-    | INT { $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);  $$->insert($1); $$->expType=SymbolType::INT;}
-    | FLOAT{$$=new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);$$->expType=SymbolType::FLOAT;}
-    | CHAR {$$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);  $$->insert($1);$$->expType=SymbolType::CHAR;}
-       | ID LP error{printf("Missing closing parenthesis ')'\n");}
-        | ID LP Args error {error_message("Missing closing parenthesis ')'");}
-        | LP Exp error SEMI{printf("Missing closing parenthesis ')'\n");}
+    | ID {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert($1);
+        usePrimarySymbol($1,symbolTable);
+        $$->expType = $1->expType;
+    }
+    | INT {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert($1); 
+        $$->expType = SymbolType::INT;
+    }
+    | FLOAT {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert($1);
+        $$->expType = SymbolType::FLOAT;
+    }
+    | CHAR {
+        $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+        $$->insert($1);
+        $$->expType = SymbolType::CHAR;
+    }
+    | ID LP error {
+        printf("Missing closing parenthesis ')'\n");
+    }
+    | ID LP Args error {
+        error_message("Missing closing parenthesis ')'");
+    }
+    | LP Exp error SEMI {
+        printf("Missing closing parenthesis ')'\n");
+    }
     | Exp ERROR Exp {}
     | ERROR {}
     ;
-Args: Exp COMMA Args{$$=new SyntaxTreeNode("Args",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert({$1,$2,$3});}
-    | Exp{$$=new SyntaxTreeNode("Args",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); $$->insert($1);}
+Args: Exp COMMA Args {
+        $$ = new SyntaxTreeNode("Args",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert({$1,$2,$3});
+    }
+    | Exp {
+        $$ = new SyntaxTreeNode("Args",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal); 
+        $$->insert($1);
+    }
     ;
 %%

@@ -2,9 +2,11 @@
 // Created by maozunyao on 2021/10/24.
 //
 #include "SemanticAnalyzer.h"
+#include <unordered_map>
+#include <utility>
 extern int customDebug;
 void printErrorMessage(int errorType, int errorLine,
-                       std::string &errorMessage) {
+                       const std::string &errorMessage) {
   std::cout << "Error type " << errorType << " at Line " << errorLine << ": "
             << errorMessage << std::endl;
 }
@@ -273,6 +275,83 @@ void checkAssignDataType(SyntaxTreeNode *left, SyntaxTreeNode *right) {
     exit(0);
   }
 }
+
+void insertStructDefinitionSymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable) {
+  auto &structDefinitionTable = symbolTable.currentStructDefinitionTable;
+  std::string typeName = defNode->children[0]->children[1]->attribute_value;
+
+  if (structDefinitionTable.find(typeName) == structDefinitionTable.end()) {
+    std::string &name = typeName;
+    SymbolType &symbolType = defNode->expType;
+    StructType *data = new StructType;
+    SyntaxTreeNode *defListNode = defNode->children[0]->children[3];
+
+    while (!defListNode->children.empty()) {
+      SyntaxTreeNode *defNode = defListNode->children[0];
+      SyntaxTreeNode *specifierNode = defNode->children[0];
+      SyntaxTreeNode *decListNode = defNode->children[1];
+
+      while (decListNode->children.size() != 1) {
+        SyntaxTreeNode *decNode = decListNode->children[0];
+        SyntaxTreeNode *varDecNode = decNode->children[0];
+
+        while (varDecNode->children.size() != 1) {
+          varDecNode = varDecNode->children[0];
+        }
+        SyntaxTreeNode *idNode = varDecNode->children[0];
+        std::string &varName = idNode->attribute_value;
+
+        Symbol *symbol;
+        switch (specifierNode->expType) {
+          case SymbolType::INT: {
+            symbol = new Symbol(varName, specifierNode->expType, new IntType);
+            break;
+          }
+          case SymbolType::FLOAT: {
+            symbol = new Symbol(varName, specifierNode->expType, new FloatType);
+            break;
+          }
+          case SymbolType::CHAR: {
+            symbol = new Symbol(varName, specifierNode->expType, new CharType);
+            break;
+          }
+          case SymbolType::ARRAY: {
+            // TODO
+            break;
+          }
+          case SymbolType::STRUCT: {
+            std::string &typeName = specifierNode->children[0]->children[1]->attribute_value;
+            if (structDefinitionTable.find(typeName) != structDefinitionTable.end()) {
+              symbol = structDefinitionTable[typeName];
+            } else {
+              printErrorMessage(-1, -1, "todo");
+            }
+            break;
+          }
+          default: {
+              printErrorMessage(-1, -1, "todo");
+          }
+        }
+
+        data->fieldName.push_back(varName);
+        data->fieldType.push_back(symbol);
+        decListNode = decListNode->children[2];
+      }
+      SymbolType &expType = specifierNode->expType;
+      
+      defListNode = defListNode->children[1];
+    }
+    Symbol *symbol = new Symbol(name, symbolType, data);
+    structDefinitionTable.insert(std::make_pair(typeName, symbol));
+  } else {
+    printErrorMessage(-1, -1, "todo");
+  }
+}
+
+void insertStructSymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable) {
+  
+}
+
 void assignSpecifierType(SyntaxTreeNode *specifier) {
   SyntaxTreeNode *type = specifier->getChildren()[0];
   if (type->attribute_value == "int") {
