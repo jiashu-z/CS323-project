@@ -38,9 +38,9 @@ Exp：计算表达式
 | 10、对非数组类型使用[]                  | exp                        | working(wsx) |                                                              |
 | 11、对非函数类型使用（）                | exp                        | finished     |                                                              |
 | 12、对数组使用[]时里面是非整数          | exp                        | working(wsx) |                                                              |
-| 13、对非结构体类型使用.                 | exp                        | working(zjs) |                                                              |
-| 14、访问结构体中未定义的field           | exp                        | working(zjs) |                                                              |
-| 15、结构体名字重复                      | exp def                    | working(zjs) |                                                              |
+| 13、对非结构体类型使用.                 | exp                        | testing(zjs) |                                                              |
+| 14、访问结构体中未定义的field           | exp                        | testing(zjs) |                                                              |
+| 15、结构体名字重复                      | exp def                    | testing(zjs) |                                                              |
 
 This is the repository for the projects of CS323 Compilers in SUSTech.
 
