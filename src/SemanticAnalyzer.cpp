@@ -276,15 +276,16 @@ void checkAssignDataType(SyntaxTreeNode *left, SyntaxTreeNode *right) {
   }
 }
 
-void insertStructDefinitionSymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable) {
+void insertStructDefinitionSymbol(SyntaxTreeNode *structSpecifierNode, SymbolTable &symbolTable) {
   auto &structDefinitionTable = symbolTable.currentStructDefinitionTable;
-  std::string typeName = defNode->children[0]->children[1]->attribute_value;
+  std::string typeName = structSpecifierNode->children[1]->attribute_value;
 
   if (structDefinitionTable.find(typeName) == structDefinitionTable.end()) {
     std::string &name = typeName;
-    SymbolType &symbolType = defNode->expType;
+    SymbolType expType = SymbolType::STRUCT;
+    SymbolType &symbolType = expType;
     StructType *data = new StructType;
-    SyntaxTreeNode *defListNode = defNode->children[0]->children[3];
+    SyntaxTreeNode *defListNode = structSpecifierNode->children[3];
 
     while (!defListNode->children.empty()) {
       SyntaxTreeNode *defNode = defListNode->children[0];
@@ -344,7 +345,7 @@ void insertStructDefinitionSymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTa
     Symbol *symbol = new Symbol(name, symbolType, data);
     structDefinitionTable.insert(std::make_pair(typeName, symbol));
   } else {
-    printErrorMessage(-1, -1, "todo");
+    printErrorMessage(15, structSpecifierNode->firstLine, "todo");
   }
 }
 

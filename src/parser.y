@@ -123,12 +123,12 @@ Specifier: TYPE {
         $$->insert($1);
         $$->expType = SymbolType::STRUCT;
 
-        insertStructDefinitionSymbol($$, symbolTable);
     }
     ;
 StructSpecifier: STRUCT ID LC DefList RC {
         $$ = new SyntaxTreeNode("StructSpecifier",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3,$4,$5});
+        insertStructDefinitionSymbol($$, symbolTable);
     }
     | STRUCT ID LC DefList error {
         error_message("Missing right brace '}'");

@@ -33,7 +33,7 @@ void checkrValue(SyntaxTreeNode *exp);
 
 void checkReturnType(SyntaxTreeNode *rtExp);
 
-void printErrorMessage(int errorType, int errorLine, std::string &errorMessage);
+void printErrorMessage(int errorType, int errorLine, const std::string &errorMessage);
 
 void checkFunctionReturnStatement(SyntaxTreeNode *specifier,
                                   SyntaxTreeNode *CompSt);
