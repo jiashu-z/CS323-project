@@ -36,7 +36,7 @@ const std::string &SyntaxTreeNode::getAttributeName() const {
   return attribute_name;
 }
 void SyntaxTreeNode::insert(SyntaxTreeNode *newChild) {
-    newChild->parent=this;
+  newChild->parent = this;
   this->children.push_back(newChild);
 }
 
@@ -141,9 +141,7 @@ SyntaxTreeNode::SyntaxTreeNode(std::string attributeName,
       this->expType = SymbolType::CHAR;
       break;
     }
-    default: {
-      break;
-    }
+    default: { break; }
   }
 }
 

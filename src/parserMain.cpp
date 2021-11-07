@@ -32,11 +32,11 @@ int main(int argc, char **argv) {
     }
     yyrestart(f);
     yyparse();
-    if(customDebug) {
-        std::cout << "=========Syntax Tree============" << std::endl;
-        if (root_node != nullptr && !has_error) {
-            root_node->preOrderPrint(root_node, 0);
-        }
+    if (customDebug) {
+      std::cout << "=========Syntax Tree============" << std::endl;
+      if (root_node != nullptr && !has_error) {
+        root_node->preOrderPrint(root_node, 0);
+      }
     }
     if (error_cnt > 0) {
       std::cout << "Syntax error\n";

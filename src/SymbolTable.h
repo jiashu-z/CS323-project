@@ -25,6 +25,7 @@ class SymbolTable {
  public:
   std::unordered_map<std::string, Symbol*> currentVariableTable;
   std::unordered_map<std::string, Symbol*> currentFunctionTable;
+  std::unordered_map<std::string, Symbol*> currentStructDefinitionTable;
   bool insertVariableSymbol(std::string name, Symbol* symbol);
   Symbol* searchVariableSymbol(std::string name);
   bool insertFunctionSymbol(std::string name, Symbol* symbol);
@@ -80,8 +81,12 @@ class FunctionType {
   FunctionType() = default;
 };
 
+class StructDefinitionType {
+ public:
+  std::string name;
+  StructType structDefinition;
 
+  StructDefinitionType() = default;
+}
 
-
-
-#endif //CS323_PROJECT1_SYMBOLTABLE_H
+#endif  // CS323_PROJECT1_SYMBOLTABLE_H
