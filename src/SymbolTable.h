@@ -48,6 +48,7 @@ class ArrayType {
   int size = 0;
 
   ArrayType() = default;
+  ArrayType(Symbol* baseType, int size);
 };
 
 class IntType {

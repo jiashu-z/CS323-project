@@ -35,9 +35,9 @@ Exp：计算表达式
 | 7、操作数类型不匹配                     | exp                        | finished     |                                                              |
 | 8、return语句与函数声明的类型不匹配     | extdef                     | finished     |                                                              |
 | 9、函数调用时实参和型参数目或类型不匹配 | exp                        | finished     |                                                              |
-| 10、对非数组类型使用[]                  | exp                        | working(wsx) |                                                              |
+| 10、对非数组类型使用[]                  | exp                        | testing(wsx) |                                                              |
 | 11、对非函数类型使用（）                | exp                        | finished     |                                                              |
-| 12、对数组使用[]时里面是非整数          | exp                        | working(wsx) |                                                              |
+| 12、对数组使用[]时里面是非整数          | exp                        | testing(wsx) |                                                              |
 | 13、对非结构体类型使用.                 | exp                        | testing(zjs) |                                                              |
 | 14、访问结构体中未定义的field           | exp                        | testing(zjs) |                                                              |
 | 15、结构体名字重复                      | exp def                    | testing(zjs) |                                                              |

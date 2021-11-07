@@ -45,3 +45,5 @@ Symbol *SymbolTable::searchFunctionSymbol(std::string name) {
 Symbol::Symbol(const std::string &name, SymbolType symbolType,
                const Symbol::DATA &data)
     : name(name), symbolType(symbolType), symbolData(data) {}
+
+ArrayType::ArrayType(Symbol *baseType, int size) : baseType(baseType), size(size){}
