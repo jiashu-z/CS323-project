@@ -45,7 +45,7 @@ void yyerror(const char* s){
 %left <node_type> MINUS PLUS
 %left <node_type> MUL DIV
 %right <node_type> NOT //todo: negative
-%left <node_type> LP RP LB RB DOT //todo: correct or not
+%left <node_type> LP RP LB RB DOT
 %token <node_type> SEMI COMMA
 %token <node_type> LC RC
 
@@ -74,6 +74,7 @@ ExtDefList: ExtDef ExtDefList {
 ExtDef: Specifier ExtDecList SEMI {
         $$ = new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3});
+	insertStructSymbol($$,symbolTable);
     }
     | Specifier SEMI {
         $$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);

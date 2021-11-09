@@ -22,7 +22,7 @@ void insertFunctionSymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable);
 void insertStructDefinitionSymbol(SyntaxTreeNode *defNode,
                                   SymbolTable &symbolTable);
 
-void insertStructSymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable);
+void insertStructSymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable);
 
 void checkAssignDataType(SyntaxTreeNode *left, SyntaxTreeNode *right);
 
