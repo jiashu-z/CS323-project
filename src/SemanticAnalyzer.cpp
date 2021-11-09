@@ -616,7 +616,7 @@ void checkDotOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
                       "accessing with non-struct variable");
     parentExp->expType = SymbolType::UNKNOWN;
   } else {
-    const Symbol *symbol = leftOperand->symbol;
+    const Symbol *symbol = leftOperand->children[0]->symbol;
     const StructType *symbolData = std::get<StructType *>(symbol->symbolData);
     const std::string &varName = rightOperand->attribute_value;
     std::unordered_map<std::string, Symbol *> nameTypeMap;
