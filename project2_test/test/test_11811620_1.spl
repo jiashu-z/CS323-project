@@ -1,0 +1,13 @@
+struct A
+{
+  int num;
+};
+struct B
+{
+  struct A arr[10];
+};
+int test_2_r10()
+{
+  struct B instance;
+  int i = instance.arr[0].name;
+}
