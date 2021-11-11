@@ -47,3 +47,5 @@ Symbol::Symbol(const std::string &name, SymbolType symbolType,
     : name(name), symbolType(symbolType), symbolData(data) {}
 
 ArrayType::ArrayType(Symbol *baseType, int size) : baseType(baseType), size(size){}
+
+ArrayType::ArrayType(Symbol *baseType, int size, int remainDepth) : baseType(baseType), size(size), remainDepth(remainDepth){}

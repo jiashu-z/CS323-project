@@ -182,28 +182,55 @@ Symbol *getOneDimArrBaseSymbol(SyntaxTreeNode *specifier, SymbolTable &symbolTab
 }
 
 Symbol *getMultiDimArrBaseSymbol(SyntaxTreeNode *node, SyntaxTreeNode *specifier,
-                                 const std::string &symbolName, SymbolTable &symbolTable) {
+                                 const std::string &symbolName, SymbolTable &symbolTable,
+                                 int &depth, std::vector<int> &sizes) {
   if (node->getChildren().size() > 1) {
-    return getMultiDimArrBaseSymbol(node->children[0], specifier, symbolName, symbolTable);
-  } else {
-    Symbol *baseSymbol = getOneDimArrBaseSymbol(specifier, symbolTable);
-    ArrayType *data = new ArrayType(baseSymbol, stoi(node->parent->children[2]->attribute_value));
-    Symbol *symbol = new Symbol(symbolName, SymbolType::ARRAY, data);
+    int size = stoi(node->parent->children[2]->attribute_value);
+    sizes.push_back(size);
+
+    Symbol *baseSymbol = getMultiDimArrBaseSymbol(node->children[0], specifier, symbolName,
+                                                  symbolTable, depth, sizes);
+    depth += 1;
+    auto *data = new ArrayType(baseSymbol, 0, depth);
+    auto *symbol = new Symbol(symbolName, SymbolType::ARRAY, data);
     return symbol;
+  } else {
+    depth = 0;
+    sizes.push_back(stoi(node->parent->children[2]->attribute_value));
+
+    Symbol *baseSymbol = getOneDimArrBaseSymbol(specifier, symbolTable);
+    auto *data = new ArrayType(baseSymbol, 0, depth);
+    auto *symbol = new Symbol(symbolName, SymbolType::ARRAY, data);
+    return symbol;
+  }
+}
+
+void changeMultiDimArrSize(Symbol *symbol, std::vector<int> &sizes) {
+  ArrayType *data = std::get<ArrayType *>(symbol->symbolData);
+  if (data->baseType->symbolType == SymbolType::ARRAY) {
+    changeMultiDimArrSize(data->baseType, sizes);
+    data->size = sizes.front();
+    sizes.erase(sizes.begin());
+  } else {
+    return;
   }
 }
 
 Symbol *getArrSymbol(SyntaxTreeNode *node, SyntaxTreeNode *specifier,
                      const std::string &symbolName, SymbolTable &symbolTable) {
   Symbol *baseSymbol;
+  int depth = -1;
+  std::vector<int> sizes;
   if (node->getChildren().size() > 1) {
     // multi-dimensional array
-    baseSymbol = getMultiDimArrBaseSymbol(node, specifier, symbolName, symbolTable);
+    baseSymbol = getMultiDimArrBaseSymbol(node, specifier, symbolName, symbolTable, depth, sizes);
   } else {
     baseSymbol = getOneDimArrBaseSymbol(specifier, symbolTable);
   }
-  ArrayType *data = new ArrayType(baseSymbol, stoi(node->parent->children[2]->attribute_value));
-  return new Symbol(symbolName, SymbolType::ARRAY, data);
+  auto *data = new ArrayType(baseSymbol, stoi(node->parent->children[2]->attribute_value), depth + 1);
+  auto *symbol = new Symbol(symbolName, SymbolType::ARRAY, data);
+  changeMultiDimArrSize(symbol, sizes);
+  return symbol;
 }
 
 void insertPrimarySymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable) {
@@ -212,7 +239,7 @@ void insertPrimarySymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable) {
 
   auto *decs = new std::vector<SyntaxTreeNode *>();
   getDecs(decList, decs);
-  for (auto & dec : *decs) {
+  for (auto &dec: *decs) {
     SyntaxTreeNode *node = dec->children[0]->children[0];
     std::string symbolName = node->attribute_value;
 
@@ -492,7 +519,7 @@ void insertStructSymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable) {
 
   auto *extDecs = new std::vector<SyntaxTreeNode *>();
   getDecs(extDecList, extDecs);
-  for (auto & extDec : *extDecs) {
+  for (auto &extDec: *extDecs) {
     SyntaxTreeNode *node = extDec->children[0];
     std::string symbolName = node->attribute_value;
 
@@ -634,22 +661,52 @@ void checkDotOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
   }
 }
 
-void checkArrayType(SyntaxTreeNode *expNode, SymbolTable &symbolTable) {
-  std::string arrayName;
-  if (expNode->getChildren().size() == 1) {
-    arrayName = expNode->children[0]->attribute_value;
-  } else {
-    arrayName = expNode->attribute_value;
+ArrayType *updateArrExpType(SyntaxTreeNode *leftExpNode, SyntaxTreeNode *rightExpNode,
+                            Symbol *arraySymbol) {
+  int depth = 1;
+  while (rightExpNode->getChildren().size() != 1) {
+    depth++;
+    rightExpNode = rightExpNode->children[0];
   }
 
-  Symbol *arraySymbol = symbolTable.searchVariableSymbol(arrayName);
-  if (arraySymbol == nullptr || arraySymbol->symbolType != SymbolType::ARRAY) {
-    printErrorMessage(10, expNode->firstLine, "indexing on non-array variable");
+  ArrayType *data = std::get<ArrayType *>(arraySymbol->symbolData);
+  int remainDepth = data->remainDepth - depth;
+  while (data->remainDepth != remainDepth && remainDepth >= 0) {
+    data = std::get<ArrayType *>(data->baseType->symbolData);
+  }
+  leftExpNode->expType = data->baseType->symbolType;
+
+  return data;
+}
+
+void checkIndexTypeAndRange(SyntaxTreeNode *indexExpNode, ArrayType *data) {
+  if (indexExpNode->expType != SymbolType::INT) {
+    printErrorMessage(12, indexExpNode->firstLine, "indexing by non-integer");
+  }else{
+    // todo: index is int type variable
+//    int value = stoi(indexExpNode->attribute_value);
+//    if (value >= data->size || value < 0) {
+//      printErrorMessage(17, indexExpNode->firstLine, "index out of range");
+//    }
   }
 }
 
-void checkIndexType(SyntaxTreeNode *expNode) {
-  if (expNode->expType != SymbolType::INT) {
-    printErrorMessage(12, expNode->firstLine, "indexing by non-integer");
+void checkAndUpdateExpArray(SyntaxTreeNode *leftExpNode, SyntaxTreeNode *rightExpNode,
+                            SyntaxTreeNode *indexExpNode, SymbolTable &symbolTable) {
+  std::string arrayName;
+  if (rightExpNode->getChildren().size() == 1) {
+    arrayName = rightExpNode->children[0]->attribute_value;
+  } else {
+    arrayName = rightExpNode->attribute_value;
+  }
+
+  Symbol *arraySymbol = symbolTable.searchVariableSymbol(arrayName);
+  if (arraySymbol != nullptr) {
+    ArrayType *data = updateArrExpType(leftExpNode, rightExpNode, arraySymbol);
+    checkIndexTypeAndRange(indexExpNode, data);
+  }
+  // todo: undefined variable v.s. non-array variable
+  if (arraySymbol == nullptr || arraySymbol->symbolType != SymbolType::ARRAY) {
+    printErrorMessage(10, rightExpNode->firstLine, "indexing on non-array variable");
   }
 }

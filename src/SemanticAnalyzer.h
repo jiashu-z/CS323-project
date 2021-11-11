@@ -52,8 +52,7 @@ void checkBinaryOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
 void checkDotOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
                       SyntaxTreeNode *rightOperand, SymbolTable &symbolTable);
 
-void checkArrayType(SyntaxTreeNode *expNode, SymbolTable &symbolTable);
-
-void checkIndexType(SyntaxTreeNode *expNode);
+void checkAndUpdateExpArray(SyntaxTreeNode *leftExpNode, SyntaxTreeNode *rightExpNode,
+                            SyntaxTreeNode *indexExpNode, SymbolTable &symbolTable);
 
 #endif  // CS323_PROJECT1_SEMANTICANALYZER_H

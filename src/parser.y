@@ -418,8 +418,8 @@ Exp: Exp ASSIGN Exp {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3,$4});
         $$->expType = $1->expType;
-        checkArrayType($1,symbolTable);
-        checkIndexType($3);
+        $$->attribute_value = $1->attribute_value;
+        checkAndUpdateExpArray($$,$1,$3,symbolTable);
     }
     | Exp DOT ID {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);

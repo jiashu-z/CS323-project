@@ -46,9 +46,11 @@ class ArrayType {
  public:
   Symbol* baseType = nullptr;
   int size = 0;
+  int remainDepth = 0;
 
   ArrayType() = default;
   ArrayType(Symbol* baseType, int size);
+  ArrayType(Symbol* baseType, int size, int remainDepth);
 };
 
 class IntType {
