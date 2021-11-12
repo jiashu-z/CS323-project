@@ -679,15 +679,26 @@ ArrayType *updateArrExpType(SyntaxTreeNode *leftExpNode, SyntaxTreeNode *rightEx
   return data;
 }
 
-void checkIndexTypeAndRange(SyntaxTreeNode *indexExpNode, ArrayType *data) {
+bool isNumber(const std::string& s)
+{
+  std::string::const_iterator it = s.begin();
+  while (it != s.end() && std::isdigit(*it)) ++it;
+  return !s.empty() && it == s.end();
+}
+
+void checkIndexTypeAndRange(SyntaxTreeNode *indexExpNode, ArrayType *data, SymbolTable &symbolTable) {
   if (indexExpNode->expType != SymbolType::INT) {
     printErrorMessage(12, indexExpNode->firstLine, "indexing by non-integer");
   }else{
-    // todo: index is int type variable
-//    int value = stoi(indexExpNode->attribute_value);
-//    if (value >= data->size || value < 0) {
-//      printErrorMessage(17, indexExpNode->firstLine, "index out of range");
-//    }
+    std::string indexString = indexExpNode->attribute_value;
+    if(isNumber(indexString)){
+      int value = stoi(indexExpNode->attribute_value);
+      if (value >= data->size || value < 0) {
+        printErrorMessage(17, indexExpNode->firstLine, "index out of range");
+      }
+    }else{
+      // todo: index is int type variable
+    }
   }
 }
 
@@ -703,7 +714,7 @@ void checkAndUpdateExpArray(SyntaxTreeNode *leftExpNode, SyntaxTreeNode *rightEx
   Symbol *arraySymbol = symbolTable.searchVariableSymbol(arrayName);
   if (arraySymbol != nullptr) {
     ArrayType *data = updateArrExpType(leftExpNode, rightExpNode, arraySymbol);
-    checkIndexTypeAndRange(indexExpNode, data);
+    checkIndexTypeAndRange(indexExpNode, data, symbolTable);
   }
   // todo: undefined variable v.s. non-array variable
   if (arraySymbol == nullptr || arraySymbol->symbolType != SymbolType::ARRAY) {
