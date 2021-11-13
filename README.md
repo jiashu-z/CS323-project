@@ -30,7 +30,7 @@ Exp：计算表达式
 | 2、函数调用时未定义                     | exp                        | finished     |                                                              |
 | 3、变量重复定义                         | extdef def                 | finished     |                                                              |
 | 4、函数重复定义                         | fundec                     | finished     |                                                              |
-| 5、=号两侧表达式类型不匹配              | exp                        | finished     | 结构体和数组类型可能需要在别的产生式更新exptype值            |
+| 5、=号两侧表达式类型不匹配              | exp                        | finished     |                                                              |
 | 6、=号左侧出现只有右值的表达式          | exp                        | finished     |                                                              |
 | 7、操作数类型不匹配                     | exp                        | finished     |                                                              |
 | 8、return语句与函数声明的类型不匹配     | extdef                     | finished     |                                                              |
@@ -116,12 +116,11 @@ public:
 
 ## TODO:
 
-```
-vardec 处理
+1.写十个test case, 尽量覆盖struct里套array,以及struct 多维数组的情况
 
-int a[10][10]
-float f=a[0]
-```
+2.函数的形参里有struct和array的情况没测试过
+
+3.写bonus
 
 
 
