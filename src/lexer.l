@@ -116,7 +116,7 @@ INVALID_HEX_CHAR ('\\x[0-9a-fA-F]*[g-zG-Z][0-9a-fA-F]*')|('\\x[0-9a-fA-F]{3,}')
 
 
 {CHAR} {
-  yylval.node_type=new SyntaxTreeNode("TYPE",yytext,line_number,TreeNodeType::CHAR);
+  yylval.node_type=new SyntaxTreeNode("char_constant",yytext,line_number,TreeNodeType::CHAR);
   return CHAR;
 }
 {INVALID_CHAR} {
@@ -132,16 +132,16 @@ INVALID_HEX_CHAR ('\\x[0-9a-fA-F]*[g-zG-Z][0-9a-fA-F]*')|('\\x[0-9a-fA-F]{3,}')
 }
 {INT} {
   tokens_ptr->push_back(Token(Token::Type::INT, yytext, line_number));
-  yylval.node_type=new SyntaxTreeNode("TYPE",yytext,line_number,TreeNodeType::INT);
+  yylval.node_type=new SyntaxTreeNode("int_constant",yytext,line_number,TreeNodeType::INT);
   return INT;
 }
 {HEX_INT} {
   tokens_ptr->push_back(Token(Token::Type::INT, yytext, line_number));
-  yylval.node_type=new SyntaxTreeNode("TYPE",strtol(yytext, NULL, 16),line_number,TreeNodeType::INT);
+  yylval.node_type=new SyntaxTreeNode("int_constant",strtol(yytext, NULL, 16),line_number,TreeNodeType::INT);
   return INT;
 }
 {FLOAT} {
-  yylval.node_type=new SyntaxTreeNode("TYPE",yytext,line_number,TreeNodeType::FLOAT);
+  yylval.node_type=new SyntaxTreeNode("float_constant",yytext,line_number,TreeNodeType::FLOAT);
   return FLOAT;
 }
 {TYPE} {

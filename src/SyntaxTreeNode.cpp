@@ -13,6 +13,7 @@ SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName) {
   this->parent = nullptr;
   this->children = std::vector<SyntaxTreeNode *>();
   this->attribute_name = attributeName;
+  symbol=new Symbol(attributeName,SymbolType::UNKNOWN);
 }
 
 SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName,
@@ -22,6 +23,7 @@ SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName,
   this->children = std::vector<SyntaxTreeNode *>();
   this->attribute_name = attributeName;
   this->attribute_value = attribute_value;
+    symbol=new Symbol(attributeName,SymbolType::UNKNOWN);
 }
 SyntaxTreeNode::~SyntaxTreeNode() = default;
 std::string SyntaxTreeNode::ToString() const { return attribute_name; }
@@ -107,6 +109,7 @@ SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName, int firstLine,
   this->attribute_name = attributeName;
   this->firstLine = firstLine;
   this->firstColumn = firstColumn;
+    symbol=new Symbol(attributeName,SymbolType::UNKNOWN);
 }
 
 SyntaxTreeNode::SyntaxTreeNode(std::string attributeName,
@@ -119,6 +122,7 @@ SyntaxTreeNode::SyntaxTreeNode(std::string attributeName,
       firstColumn(firstColumn) {
   this->parent = nullptr;
   this->children = std::vector<SyntaxTreeNode *>();
+    symbol=new Symbol(attributeName,SymbolType::UNKNOWN);
 }
 
 SyntaxTreeNode::SyntaxTreeNode(std::string attributeName,
@@ -128,21 +132,7 @@ SyntaxTreeNode::SyntaxTreeNode(std::string attributeName,
       attribute_name(std::move(attributeName)),
       attribute_value(std::move(attributeValue)),
       firstLine(firstLine) {
-  switch (nodeType) {
-    case TreeNodeType::INT: {
-      this->expType = SymbolType::INT;
-      break;
-    }
-    case TreeNodeType::FLOAT: {
-      this->expType = SymbolType::FLOAT;
-      break;
-    }
-    case TreeNodeType::CHAR: {
-      this->expType = SymbolType::CHAR;
-      break;
-    }
-    default: { break; }
-  }
+    symbol=new Symbol(attributeName,SymbolType::UNKNOWN);
 }
 
 SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName,
@@ -152,4 +142,5 @@ SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName,
   this->attribute_value = std::to_string(intAttributeValue);
   this->firstLine = firstLine;
   this->nodeType = nodeType;
+    symbol=new Symbol(attributeName,SymbolType::UNKNOWN);
 }

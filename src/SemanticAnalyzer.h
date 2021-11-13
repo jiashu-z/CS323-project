@@ -26,7 +26,7 @@ void insertStructSymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable);
 
 void checkAssignDataType(SyntaxTreeNode *left, SyntaxTreeNode *right);
 
-void assignIDArrayType(SyntaxTreeNode *varDec);
+void assignIDArrayType(SyntaxTreeNode *parent,SyntaxTreeNode *varDec);
 
 void assignVarDecIDType(SyntaxTreeNode *varDec, SyntaxTreeNode *exp);
 
@@ -55,4 +55,11 @@ void checkDotOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
 void checkAndUpdateExpArray(SyntaxTreeNode *leftExpNode, SyntaxTreeNode *rightExpNode,
                             SyntaxTreeNode *indexExpNode, SymbolTable &symbolTable);
 
+void updateSyntaxTreeNodeSymbol(SyntaxTreeNode *to, SyntaxTreeNode *from);
+
+void assignStructSpecifierType(SyntaxTreeNode* specifier,SymbolTable & symbolTable);
+
+void assignConstantSymbol(SyntaxTreeNode* node,const SymbolType &symbolType);
+
+void getDefNodes(SyntaxTreeNode *defList, std::vector<SyntaxTreeNode *> *defNodes);
 #endif  // CS323_PROJECT1_SEMANTICANALYZER_H

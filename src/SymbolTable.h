@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+
 class SymbolTable;
 class Symbol;
 class IntType;
@@ -40,6 +41,7 @@ class Symbol {
   SymbolType symbolType = SymbolType::UNKNOWN;
   DATA symbolData;
   Symbol(const std::string& name, SymbolType symbolType, const DATA& data);
+    Symbol(const std::string& name, SymbolType symbolType);
 };
 
 class ArrayType {
@@ -69,7 +71,6 @@ class CharType {
 };
 class StructType {
  public:
-  std::vector<std::string> fieldName;
   std::vector<Symbol*> fieldType;
 
   StructType() = default;

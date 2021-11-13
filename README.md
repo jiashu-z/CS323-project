@@ -114,3 +114,14 @@ public:
 };
 ```
 
+## TODO:
+
+```
+vardec 处理
+
+int a[10][10]
+float f=a[0]
+```
+
+
+

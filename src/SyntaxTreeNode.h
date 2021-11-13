@@ -27,18 +27,10 @@ class SyntaxTreeNode {
   TreeNodeType nodeType = TreeNodeType::OTHER;
   SyntaxTreeNode *parent{};
   std::vector<SyntaxTreeNode *> children;
-  std::string attribute_name;
+  std::string attribute_name; //
   std::string attribute_value;
   int firstLine = 0;
   int firstColumn = 0;
-
-  // used for indicate expression data type and function return type
-  SymbolType expType = SymbolType::UNKNOWN;
-
-  /**
-   * @brief Metadata of variable. This symbol should never be new-ed.
-   *
-   */
   Symbol *symbol = nullptr;
 
  public:
