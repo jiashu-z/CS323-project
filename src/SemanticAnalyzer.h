@@ -52,7 +52,7 @@ void checkBinaryOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
 void checkDotOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
                       SyntaxTreeNode *rightOperand, SymbolTable &symbolTable);
 
-void checkAndUpdateExpArray(SyntaxTreeNode *leftExpNode, SyntaxTreeNode *rightExpNode,
+void checkAndUpdateExpArray(SyntaxTreeNode *headExpNode, SyntaxTreeNode *arrayIdExpNode,
                             SyntaxTreeNode *indexExpNode, SymbolTable &symbolTable);
 
 void updateSyntaxTreeNodeSymbol(SyntaxTreeNode *to, SyntaxTreeNode *from);
