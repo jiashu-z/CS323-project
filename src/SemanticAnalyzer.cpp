@@ -351,7 +351,7 @@ void insertVarListToFunctionType(FunctionType *functionType,
             break;
         }
         default: {
-            std::cout << "fatal error!"
+            std::cout << "fatal error!"<<__LINE__
                       << std::endl;
         }
     }
@@ -532,7 +532,7 @@ void assignSpecifierType(SyntaxTreeNode *specifier) {
         CharType *charType = new CharType;
         specifier->symbol = new Symbol(specifier->attribute_value, SymbolType::CHAR, charType);
     } else {
-        std::cout << "fatal error!" << std::endl;
+        std::cout << "fatal error!" << __LINE__<<std::endl;
         exit(0);
     }
 }
@@ -666,10 +666,8 @@ void checkIndexTypeAndRange(SyntaxTreeNode *indexExpNode, ArrayType *data, Symbo
                                   "index out of range:" + std::to_string(value) + ", array length:" +
                                   std::to_string(data->size));
             }
-        } else {
-            std::cout<<"fatal error!"<<std::endl;
         }
-    }
+}
 }
 
 void checkAndUpdateExpArray(SyntaxTreeNode *headExpNode, SyntaxTreeNode *arrayIdExpNode,
@@ -693,6 +691,9 @@ void checkAndUpdateExpArray(SyntaxTreeNode *headExpNode, SyntaxTreeNode *arrayId
 
 void updateSyntaxTreeNodeSymbol(SyntaxTreeNode *to, SyntaxTreeNode *from) {
     to->symbol = from->symbol;
+    if(from->attribute_name=="ID"){
+        to->attribute_value=from->attribute_value;
+    }
 }
 
 void assignStructSpecifierType(SyntaxTreeNode *specifier, SymbolTable &symbolTable) {
