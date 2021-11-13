@@ -343,8 +343,15 @@ void insertVarListToFunctionType(FunctionType *functionType,
             rt = symbolTable.insertVariableSymbol(varName, symbol);
             break;
         }
+        case SymbolType::STRUCT:{
+            StructType *structType = std::get<StructType*>(specifier->symbol->symbolData);
+            Symbol *symbol=new Symbol(varName,expType,structType);
+            functionType->argsType.push_back(symbol);
+            rt = symbolTable.insertVariableSymbol(varName, symbol);
+            break;
+        }
         default: {
-            std::cout << "struct type are not supported yet > <"
+            std::cout << "fatal error!"
                       << std::endl;
         }
     }

@@ -9,11 +9,12 @@ struct Parent
   float cc;
 };
 struct Parent array3dim[4][5][6];
-int test_2_r13(struct Parent array3[5][10])
+int test_2_r13(struct Parent array3[5][10],struct Child child)
 {
 struct Parent father,mother;
   father.dim2Array[0][2].age=mother.dim2Array[0][2].name+20;
   array3[0][2].cc=123456.0;
   array3[0][2].dim2Array[3][5].name=123456;
   array3dim[0][1][2].dim2Array[3][4].age=array3[1][2].cc;
+  child.age=10;
 }
