@@ -418,6 +418,8 @@ void assignIDArrayType(SyntaxTreeNode *parentVarDec, SyntaxTreeNode *varDec) {
 }
 
 void checkAssignDataType(SyntaxTreeNode *left, SyntaxTreeNode *right) {
+    //TODO:struct a=struct b;
+    //TODO array1[][]=array2[];
   if (left->symbol->symbolType != right->symbol->symbolType) {
     std::string errorMessage = "unmatching type on both sides of assignment";
     printErrorMessage(5, left->firstLine, errorMessage);
@@ -554,38 +556,57 @@ void checkrValue(SyntaxTreeNode *exp) {
   }
 }
 
-void checkReturnType(SyntaxTreeNode *exp) {
-  SymbolType rtType = exp->symbol->symbolType;
-  SyntaxTreeNode *parent = exp->parent;
-  while (parent->attribute_name != "ExtDef") {
-    parent = parent->parent;
-  }
-  SymbolType specifierType = parent->getChildren()[0]->symbol->symbolType;
-  if (specifierType != SymbolType::UNKNOWN) {
-    if (specifierType != rtType) {
-      std::string errorMessage = "incompatiable return type";
-      printErrorMessage(8, exp->firstLine, errorMessage);
+void checkReturnType(Symbol * expected,Symbol * actual,int line) {
+  if (expected->symbolType != SymbolType::UNKNOWN && actual->symbolType!=SymbolType::UNKNOWN) {
+        switch (actual->symbolType) {
+            case SymbolType::ARRAY:{
+                std::string errorMessage = "incompatiable return type: function return value should not be array type";
+                printErrorMessage(8, line, errorMessage);
+                break;
+//                ArrayType * actualArrayType=std::get<ArrayType*>(actual->symbolData);
+//                ArrayType * expectedArrayType=std::get<ArrayType*>(expected->symbolData);
+//                if(actualArrayType->remainDepth!=expectedArrayType->remainDepth){
+//                    std::string errorMessage = "incompatiable return type:unmatched array dimension. Expected:"+
+//                            std::to_string(expectedArrayType->remainDepth)+", Actual:"+std::to_string(actualArrayType->remainDepth);
+//                    printErrorMessage(8, line, errorMessage);
+//                }
+//                else if(actualArrayType->baseType->symbolType!=expectedArrayType->baseType->symbolType){
+//                    std::string errorMessage = "incompatiable return type:unmatched array base type";
+//                    printErrorMessage(8, line, errorMessage);
+//                }
+//                break;
+            }
+            case SymbolType::STRUCT:{
+                if(actual->name!=expected->name){
+                    std::string errorMessage = "incompatiable return type:unmatched struct type";
+                    printErrorMessage(8, line, errorMessage);
+                }
+                break;
+            }
+            case SymbolType::FUNCTION:{
+                SymbolType functionReturnType = std::get<FunctionType *>(actual->symbolData)->returnType;
+                if(functionReturnType!=expected->symbolType){
+                    std::string errorMessage = "incompatiable return type";
+                    printErrorMessage(8, line, errorMessage);
+                }
+                break;
+            }
+            default:
+                if (expected->symbolType != actual->symbolType) {
+                    std::string errorMessage = "incompatiable return type";
+                    printErrorMessage(8, line, errorMessage);
+                }
+                break;
     }
   }
 }
 
-void preOrderCheckStmt(SyntaxTreeNode *node, SymbolType &rtType) {
+void preOrderCheckStmt(SyntaxTreeNode *node, Symbol *rtType) {
   if (node->children.empty()) {
     return;
   } else if (node->children[0]->attribute_name == "RETURN") {
     SyntaxTreeNode *exp = node->children[1];
-    SymbolType expType = SymbolType::UNKNOWN;
-    if (exp->symbol->symbolType == SymbolType::FUNCTION) {
-      expType = std::get<FunctionType *>(exp->symbol->symbolData)->returnType;
-    } else {
-      expType = exp->symbol->symbolType;
-    }
-    if (expType != SymbolType::UNKNOWN) {
-      if (expType != rtType) {
-        std::string errorMesaage = "incompatiable return type";
-        printErrorMessage(8, exp->firstLine, errorMesaage);
-      }
-    }
+      checkReturnType(rtType,exp->symbol,exp->firstLine);
   }
   for (auto &i : node->children) {
     preOrderCheckStmt(i, rtType);
@@ -594,9 +615,8 @@ void preOrderCheckStmt(SyntaxTreeNode *node, SymbolType &rtType) {
 
 void checkFunctionReturnStatement(SyntaxTreeNode *specifier,
                                   SyntaxTreeNode *compSt) {
-  SymbolType rtType = specifier->symbol->symbolType;
   SyntaxTreeNode *stmtList = compSt->children[2];
-  preOrderCheckStmt(stmtList, rtType);
+  preOrderCheckStmt(stmtList, specifier->symbol);
 }
 
 void assignFunctionReturnType(SyntaxTreeNode *specifier,
