@@ -42,15 +42,17 @@ Symbol *SymbolTable::searchFunctionSymbol(std::string name) {
   }
 }
 
-Symbol::Symbol(const std::string &name, SymbolType symbolType,
+Symbol::Symbol(const std::string &name, const SymbolType &symbolType,
                const Symbol::DATA &data)
     : name(name), symbolType(symbolType), symbolData(data) {}
 
-Symbol::Symbol(const std::string &name, SymbolType symbolType) {
-    this->name=name;
-    this->symbolType=symbolType;
+Symbol::Symbol(const std::string &name, const SymbolType &symbolType) {
+  this->name = name;
+  this->symbolType = symbolType;
 }
 
-ArrayType::ArrayType(Symbol *baseType, int size) : baseType(baseType), size(size){}
+ArrayType::ArrayType(Symbol *baseType, int size)
+    : baseType(baseType), size(size) {}
 
-ArrayType::ArrayType(Symbol *baseType, int size, int remainDepth) : baseType(baseType), size(size), remainDepth(remainDepth){}
+ArrayType::ArrayType(Symbol *baseType, int size, int remainDepth)
+    : baseType(baseType), size(size), remainDepth(remainDepth) {}

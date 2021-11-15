@@ -10,9 +10,9 @@
 #include <variant>
 #include <vector>
 
-
 class SymbolTable;
 class Symbol;
+enum class SymbolType;
 class IntType;
 class FloatType;
 class CharType;
@@ -40,8 +40,9 @@ class Symbol {
   std::string name;
   SymbolType symbolType = SymbolType::UNKNOWN;
   DATA symbolData;
-  Symbol(const std::string& name, SymbolType symbolType, const DATA& data);
-    Symbol(const std::string& name, SymbolType symbolType);
+  Symbol(const std::string& name, const SymbolType& symbolType,
+         const DATA& data);
+  Symbol(const std::string& name, const SymbolType& symbolType);
 };
 
 class ArrayType {

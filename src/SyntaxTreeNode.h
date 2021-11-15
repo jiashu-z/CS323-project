@@ -27,7 +27,7 @@ class SyntaxTreeNode {
   TreeNodeType nodeType = TreeNodeType::OTHER;
   SyntaxTreeNode *parent{};
   std::vector<SyntaxTreeNode *> children;
-  std::string attribute_name; //
+  std::string attribute_name;  //
   std::string attribute_value;
   int firstLine = 0;
   int firstColumn = 0;

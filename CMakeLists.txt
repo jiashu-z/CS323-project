@@ -78,7 +78,8 @@ add_test(test_token test_token)
 
 add_executable(test_syntaxTree
         test_executable/test_syntaxTree.cpp
-  src/SyntaxTreeNode.cpp)
+  src/SyntaxTreeNode.cpp
+  src/SymbolTable.cpp)
 
 target_include_directories(test_syntaxTree
   PUBLIC src)
