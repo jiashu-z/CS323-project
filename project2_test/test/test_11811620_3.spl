@@ -1,0 +1,34 @@
+struct A
+{
+  int num1;
+  int arr1[1];
+};
+
+struct B
+{
+};
+
+int test_11811620_3()
+{
+  int a;
+  float b;
+  char c;
+  struct A d;
+  int e[1][1];
+  struct A f[1][1][1];
+  struct B g;
+
+  a = b;
+  c = a;
+  e = f;
+  e = f[0];
+  f[0][0][0] = g;
+  f[0][0][0].num1 = a;
+  f[0][0][0].arr1 = e;
+  f[0][0][0].arr1 = e[0];
+
+  1 = a;
+
+  d = 1 + d;
+  e = 1 + e;
+}

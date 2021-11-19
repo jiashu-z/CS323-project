@@ -1,13 +1,16 @@
 struct A
 {
   int num;
+  int arr1[10];
 };
 struct B
 {
-  struct A arr[10];
+  struct A arr2[10][9];
 };
-int test_2_r10()
+int test_11811620_1()
 {
   struct B instance;
-  int i = instance.arr[0].num;
+  int arr3[9];
+  int i = instance.arr2[0][0].num;
+  arr3 = instance.arr2[0][0].arr1;
 }

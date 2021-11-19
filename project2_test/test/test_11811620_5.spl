@@ -1,0 +1,19 @@
+struct A
+{
+  int num;
+};
+
+int test_11811620_5()
+{
+  int a;
+  int b[10];
+  struct A c;
+  struct A d[10];
+
+  a = a[0];
+  a = b[9];
+  c = c[10];
+  c = d[9];
+  a = b[a];
+  a = b[c];
+}

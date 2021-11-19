@@ -1,0 +1,31 @@
+struct A
+{
+  int num;
+};
+
+struct A func1(int a1, float b1, char c1, struct A d1){
+  return a1;
+}
+
+struct B func1(int a1, float b2, char c2, struct A d2){
+  return d2;
+}
+
+struct A func3(int a3, float b3, char c3, struct A d3){
+  return e3;
+}
+
+int func4(int a4, float b4, char c4, struct A d4){
+  func2(a4, b4, c4, d4);
+  func3(a4, b4, c4, d4);
+}
+
+int test_11811620_2()
+{
+  int a = 1 + e;
+  float b;
+  char c;
+  struct A c;
+  func2(a, b, c, f);
+  func1(a, b, c, f);
+}

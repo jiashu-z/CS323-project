@@ -1,0 +1,8 @@
+Error type 8 at Line 7: incompatiable return type
+Error type 8 at Line 12: incompatiable return type: function return value should not be array type
+Error type 8 at Line 20: incompatiable return type:unmatched struct type
+Error type 9 at Line 29: invalid argument number for func1, expect 0, got 1
+Error type 9 at Line 33: invalid argument number for func3, expect 4, got 2
+// mismatch on line 30, 32, 33
+// line 31, size different?
+Error type 11 at Line 34: invoking non-function variable: a

@@ -1,0 +1,8 @@
+Error type 5 at Line 21: unmatching type on both sides of assignment
+Error type 5 at Line 22: unmatching type on both sides of assignment // ?
+// unmatching at line 23, 24, 25, 27,
+Error type 6 at Line 30: left side in assignment is rvalue
+Error type 7 at Line 32: binary operation on non-number variables
+Error type 5 at Line 32: unmatching type on both sides of assignment
+Error type 7 at Line 33: binary operation on non-number variables
+Error type 5 at Line 33: unmatching type on both sides of assignment

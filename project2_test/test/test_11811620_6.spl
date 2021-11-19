@@ -1,0 +1,23 @@
+struct A
+{
+  int num;
+};
+
+struct A
+{
+};
+
+int test_11811620_5()
+{
+  int a;
+  int b[10];
+  struct A c;
+  struct A d[10];
+
+  a = c.num;
+  a = a.num;
+  c = d.num;
+  a = c.n;
+
+
+}
