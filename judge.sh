@@ -5,7 +5,7 @@
 TEST_DIR_OWN="test"
 TEST_DIR_EX="test-ex"
 demo_test() {
-  TEST_DIR="project2_test"
+  TEST_DIR="project2_test/demo_test"
   PREFIX="test_2_r"
   able=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15")
   for i in "${able[@]}"; do
