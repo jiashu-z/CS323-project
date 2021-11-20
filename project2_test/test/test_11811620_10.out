@@ -1,0 +1,3 @@
+Error type 3 at Line 5: redefine variable: arr1
+Error type 3 at Line 9: redefine variable: var1
+Error type 3 at Line 10: redefine variable: arr3
