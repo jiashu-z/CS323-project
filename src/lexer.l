@@ -82,7 +82,6 @@ INVALID_HEX_CHAR ('\\x[0-9a-fA-F]*[g-zG-Z][0-9a-fA-F]*')|('\\x[0-9a-fA-F]{3,}')
         perror("getcwd error");
         exit(-1);
     }
-    char *split = "//";
     char path[200];
     sprintf(path,"%s/test-ex/%s", buffer, yytext);
     if (include_stack_ptr >= MAX_INCLUDE_DEPTH) {

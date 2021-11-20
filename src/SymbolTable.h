@@ -23,14 +23,23 @@ class FunctionType;
 enum class SymbolType { INT, FLOAT, CHAR, ARRAY, STRUCT, FUNCTION, UNKNOWN };
 
 class SymbolTable {
- public:
-  std::unordered_map<std::string, Symbol*> currentVariableTable;
-  std::unordered_map<std::string, Symbol*> currentFunctionTable;
-  std::unordered_map<std::string, Symbol*> currentStructDefinitionTable;
-  bool insertVariableSymbol(std::string name, Symbol* symbol);
-  Symbol* searchVariableSymbol(std::string name);
-  bool insertFunctionSymbol(std::string name, Symbol* symbol);
-  Symbol* searchFunctionSymbol(std::string name);
+public:
+    std::unordered_map<std::string, Symbol *> currentVariableTable;
+    std::unordered_map<std::string, Symbol *> currentFunctionDefinitionTable;
+    std::unordered_map<std::string, Symbol *> currentFunctionDeclarationTable;
+    std::unordered_map<std::string, Symbol *> currentStructDefinitionTable;
+
+    bool insertVariableSymbol(std::string name, Symbol *symbol);
+
+    Symbol *searchVariableSymbol(std::string name);
+
+    bool insertFunctionDefinitionSymbol(std::string name, Symbol *symbol);
+
+    Symbol *searchFunctionDefinitionSymbol(std::string name);
+
+    bool insertFunctionDeclarationSymbol(std::string name, Symbol *symbol);
+
+    Symbol *searchFunctionDeclarationSymbol(std::string name);
 };
 
 class Symbol {
@@ -81,7 +90,8 @@ class FunctionType {
  public:
   std::string functionName;
   std::vector<Symbol*> argsType;
-  SymbolType returnType;
+    SymbolType returnType;
+    bool hasDefinition = true;
 
   FunctionType() = default;
 };

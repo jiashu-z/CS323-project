@@ -23,7 +23,8 @@ SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName,
   this->parent = nullptr;
   this->children = std::vector<SyntaxTreeNode *>();
   this->attribute_name = attributeName;
-  this->attribute_value = attribute_value;
+    this->attribute_value = attribute_value;
+    this->firstLine = firstLine;
   SymbolType type = SymbolType::UNKNOWN;
   this->symbol=new Symbol(attributeName, type);
 }

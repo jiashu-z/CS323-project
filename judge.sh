@@ -23,11 +23,12 @@ demo_test() {
   done
 }
 own_test() {
-  TEST_DIR="test"
+  TEST_DIR="project2_test/test"
   PREFIX="test_11811620_"
-  able=("1" "2" "3" "4" "5")
+  able=("1" "2" "3" "4" "5" "6")
   for i in "${able[@]}"; do
     echo "begin test ${PREFIX}${i}:"
+   # echo "command: bin/splc ./${TEST_DIR}/${PREFIX}${i}.spl > ./${TEST_DIR}/${PREFIX}"${i}".test.out 2>&1"
     bin/splc ./${TEST_DIR}/${PREFIX}${i}.spl > ./${TEST_DIR}/${PREFIX}"${i}".test.out 2>&1
     diff ./${TEST_DIR}/${PREFIX}"${i}".test.out ./${TEST_DIR}/${PREFIX}"${i}".out -y --suppress-common-lines --ignore-blank-lines
 # when diff_rt is 0, there is no difference; when diff_rt is 1, there are some difference; 2 means diff run error.
@@ -101,8 +102,8 @@ new_feature() {
 make clean splc
 echo "==================demo_test begin"
 demo_test
-#echo "==================own_test begin"
-#own_test
+echo "==================own_test begin"
+own_test
 #echo "==================ex_test begin"
 #ex_test
 #other_test

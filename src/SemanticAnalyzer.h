@@ -17,7 +17,7 @@ void insertSymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable);
 
 void insertPrimarySymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable);
 
-void insertFunctionSymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable);
+void insertFunctionSymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable, bool hasDeninition);
 
 void insertStructDefinitionSymbol(SyntaxTreeNode *defNode,
                                   SymbolTable &symbolTable);
@@ -40,7 +40,9 @@ void printErrorMessage(int errorType, int errorLine,
                        const std::string &errorMessage);
 
 void checkFunctionReturnStatement(SyntaxTreeNode *specifier,
-                                  SyntaxTreeNode *CompSt);
+                                  SyntaxTreeNode *CompSt,
+                                  SymbolTable &symbolTable
+);
 
 void assignFunctionReturnType(SyntaxTreeNode *specifier,
                               SyntaxTreeNode *funcDec,
@@ -66,4 +68,14 @@ void assignConstantSymbol(SyntaxTreeNode *node, const SymbolType &symbolType);
 
 void getDefNodes(SyntaxTreeNode *defList,
                  std::vector<SyntaxTreeNode *> *defNodes);
+
+bool checkArrayEquivelence(ArrayType *left, ArrayType *right);
+
+bool checkStructEquivelence(StructType *left, StructType *right);
+
+void checkFunctionArgsType(FunctionType *leftFuntionSymbol, FunctionType *rightFunctionSymbol);
+
+void checkArgsType(std::vector<Symbol *> &leftArgs, std::vector<Symbol *> &rightArgs, int firstLine,
+                   std::string functionName);
+
 #endif  // CS323_PROJECT1_SEMANTICANALYZER_H
