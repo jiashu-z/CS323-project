@@ -1,0 +1,7 @@
+Error type 15 at Line 6: redefine struct: A
+Error type 13 at Line 18: accessing with non-struct variable
+Error type 5 at Line 18: unmatching type on both sides of assignment
+Error type 13 at Line 19: accessing with non-struct variable
+Error type 5 at Line 19: unmatching type on both sides of assignment
+Error type 14 at Line 20: no such member: n
+Error type 5 at Line 20: unmatching type on both sides of assignment

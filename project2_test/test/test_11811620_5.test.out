@@ -1,0 +1,6 @@
+Error type 10 at Line 13: indexing on non-array variable
+Error type 5 at Line 13: unmatching type on both sides of assignment
+Error type 10 at Line 15: indexing on non-array variable
+Error type 5 at Line 15: unmatching type on both sides of assignment
+Error type 12 at Line 18: indexing by non-integer
+Error type 5 at Line 18: unmatching type on both sides of assignment
