@@ -41,6 +41,10 @@ Exp：计算表达式
 | 13、对非结构体类型使用.                 | exp                        | testing(zjs) |                                                              |
 | 14、访问结构体中未定义的field           | exp                        | testing(zjs) |                                                              |
 | 15、结构体名字重复                      | exp def                    | testing(zjs) |                                                              |
+| 16、结构体未定义                        |                            |              |                                                              |
+| 17、函数没有return语句                  |                            |              |                                                              |
+| 18、函数的两次声明签名不一致            |                            |              |                                                              |
+|                                         |                            |              |                                                              |
 
 This is the repository for the projects of CS323 Compilers in SUSTech.
 
@@ -114,13 +118,13 @@ public:
 };
 ```
 
-## TODO:
+## Bonus:
 
-1.写十个test case, 尽量覆盖struct里套array,以及struct 多维数组的情况
+1.函数可多次声明
 
-2.函数的形参里有struct和array的情况没测试过
+2.数组越界检测
 
-3.写bonus
+3.多维数组维度不一致检测
 
-
+4.struct的类型等价
 

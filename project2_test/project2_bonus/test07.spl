@@ -1,0 +1,7 @@
+//bonus 1: function declaration
+int declare(int a1,int b1);
+int main(){
+    int c;
+    c=declare(1,2);
+    return 0;
+}
