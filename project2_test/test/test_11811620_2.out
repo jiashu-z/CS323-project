@@ -1,7 +1,13 @@
 Error type 8 at Line 7: incompatiable return type
-Error type -1 at Line 10: undefined struct type // type -1?
+Error type 16 at Line 10: undefined struct type: B
+Error type 3 at Line 10: redefine variable: a1
 Error type 4 at Line 10: redefine function: func1
-// redefined variable in line 10, line 28
-// undefined variable in line 15, line 20, line 29, line 30
-// undefined function in line 19, line 29
-// missing return in func4?
+Error type 1 at Line 15: undefined variable: e3
+Error type 2 at Line 19: undefined function: func2
+Error type 17 at Line 18: missing return statement
+Error type 1 at Line 25: undefined variable: e
+Error type 3 at Line 28: redefine variable: c
+Error type 1 at Line 29: undefined variable: f
+Error type 2 at Line 29: undefined function: func2
+Error type 1 at Line 30: undefined variable: f
+Error type 9 at Line 30: invalid argument type for func1. expected: struct, actual: UNKNOWN
