@@ -20,3 +20,7 @@ struct Parent test_2_r13(struct Parent array3[5][10],struct Child child)
   child.age=10;
   return c2;
 }
+int test_11811620_7()
+{
+  return 0;
+}

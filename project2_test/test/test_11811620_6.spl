@@ -7,7 +7,7 @@ struct A
 {
 };
 
-int test_11811620_5()
+int test_11811620_6()
 {
   int a;
   int b[10];

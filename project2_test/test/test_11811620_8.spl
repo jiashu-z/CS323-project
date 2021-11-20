@@ -5,7 +5,7 @@ struct A
 int func3(int a3[9],int b3[9][9], struct A c3[9], struct A d3[9][9]){
   return a3[0];
 }
-int test_11811620_4()
+int test_11811620_8()
 {
   int b[10][10];
   struct A c[10][10];
