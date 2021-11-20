@@ -1,0 +1,7 @@
+//bonus 3: judge equivalence for array dimension
+int test_05(){
+    int a[3][5];
+    int b[5][4][6];
+    a=b;
+    return 0;
+}

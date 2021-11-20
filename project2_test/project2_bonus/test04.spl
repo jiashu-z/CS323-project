@@ -1,0 +1,5 @@
+//bonus 2:array length boundary check
+int main(){
+    int array[10];
+    return array[10];
+}

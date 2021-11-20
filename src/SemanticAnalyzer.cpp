@@ -85,28 +85,8 @@ bool checkStructEquivelence(StructType *left, StructType *right) {
         return false;
     } else {
         for (int i = 0; i < left->fieldType.size(); ++i) {
-            if (left->fieldType.at(i)->symbolType != right->fieldType.at(i)->symbolType) {
+            if (!typeEquiveLence(left->fieldType.at(i), right->fieldType.at(i))) {
                 return false;
-            }
-            switch (left->fieldType.at(i)->symbolType) {
-                case SymbolType::STRUCT: {
-                    StructType *leftChild = std::get<StructType *>(left->fieldType.at(i)->symbolData);
-                    StructType *rightChild = std::get<StructType *>(right->fieldType.at(i)->symbolData);
-                    if (!checkStructEquivelence(leftChild, rightChild)) {
-                        return false;
-                    }
-                    break;
-                }
-                case SymbolType::ARRAY: {
-                    ArrayType *leftChild = std::get<ArrayType *>(left->fieldType.at(i)->symbolData);
-                    ArrayType *rightChild = std::get<ArrayType *>(right->fieldType.at(i)->symbolData);
-                    if (!checkArrayEquivelence(leftChild, rightChild)) {
-                        return false;
-                    }
-                    break;
-                }
-                default:
-                    break;
             }
         }
         return true;
@@ -410,10 +390,9 @@ Symbol *insertFunctionSymbolWithoutArgs(SyntaxTreeNode *funDec,
 ) {
 
     std::string functionName = funDec->children[0]->attribute_value;
-    FunctionType *functionType = new FunctionType;
-    functionType->functionName = functionName;
-    Symbol *symbol = new Symbol(functionName, SymbolType::FUNCTION, functionType);
+    Symbol *symbol;
     if (hasDefinition) {
+        symbol = funDec->symbol;
         Symbol *rt = symbolTable.searchFunctionDefinitionSymbol(functionName);
         if (rt == nullptr) {
             symbolTable.insertFunctionDefinitionSymbol(functionName, symbol);
@@ -422,13 +401,16 @@ Symbol *insertFunctionSymbolWithoutArgs(SyntaxTreeNode *funDec,
             printErrorMessage(4, funDec->firstLine, errorMessage);
         }
     } else {
+        FunctionType *functionType = new FunctionType;
+        functionType->functionName = functionName;
+        symbol = new Symbol(functionName, SymbolType::FUNCTION, functionType);
         Symbol *rt = symbolTable.searchFunctionDeclarationSymbol(functionName);
         if (rt != nullptr) {
-            checkFunctionArgsType(std::get<FunctionType *>(rt->symbolData), functionType);
+            checkFunctionArgsType(std::get<FunctionType *>(rt->symbolData), functionType, funDec->firstLine);
         }
         Symbol *definition = symbolTable.searchFunctionDefinitionSymbol(functionName);
         if (definition != nullptr) {
-            checkFunctionArgsType(std::get<FunctionType *>(definition->symbolData), functionType);
+            checkFunctionArgsType(std::get<FunctionType *>(definition->symbolData), functionType, funDec->firstLine);
         }
     }
     return symbol;
@@ -531,15 +513,15 @@ void checkArgsType(std::vector<Symbol *> &leftArgs, std::vector<Symbol *> &right
 
 }
 
-void checkFunctionArgsType(FunctionType *leftFuntionSymbol, FunctionType *rightFunctionSymbol) {
+void checkFunctionArgsType(FunctionType *leftFuntionSymbol, FunctionType *rightFunctionSymbol, int firstLine) {
     if (leftFuntionSymbol->argsType.size() != rightFunctionSymbol->argsType.size()) {
         std::string errorMessage = "unmatched function declaration";
-        printErrorMessage(17, -2, errorMessage);
+        printErrorMessage(18, firstLine, errorMessage);
     } else {
         for (int i = 0; i < leftFuntionSymbol->argsType.size(); ++i) {
-            if (leftFuntionSymbol->argsType.at(i)->symbolType != rightFunctionSymbol->argsType.at(i)->symbolType) {
+            if (!typeEquiveLence(leftFuntionSymbol->argsType.at(i), rightFunctionSymbol->argsType.at(i))) {
                 std::string errorMessage = "unmatched function declaration";
-                printErrorMessage(17, -2, errorMessage);
+                printErrorMessage(18, firstLine, errorMessage);
                 return;
             }
         }
@@ -553,39 +535,36 @@ Symbol *insertFunctionSymbolWithArgs(SyntaxTreeNode *funDec,
 ) {
 
     std::string functionName = funDec->children[0]->attribute_value;
-    FunctionType *functionType = new FunctionType;
     SyntaxTreeNode *varList = funDec->children[2];
-    Symbol *symbol = nullptr;
+    Symbol *symbol;
+
     if (hasDefinition) {
+        symbol = funDec->symbol;
+        FunctionType *functionType = std::get<FunctionType *>(symbol->symbolData);
         Symbol *rt = symbolTable.searchFunctionDefinitionSymbol(functionName);
-        functionType->functionName = functionName;
-        insertVarListToFunctionType(functionType, varList, symbolTable);
-        insertVarListToSymbolTable(functionType, varList, symbolTable);
-        symbol = new Symbol(functionName, SymbolType::FUNCTION, functionType);
+        symbol = funDec->symbol;
         if (rt == nullptr) {
             symbolTable.insertFunctionDefinitionSymbol(functionName, symbol);
-            Symbol *declaration = symbolTable.searchFunctionDeclarationSymbol(functionName);
-            if (declaration != nullptr) {
-                checkFunctionArgsType(std::get<FunctionType *>(declaration->symbolData), functionType);
-            }
         } else {
             std::string errorMessage = "redefine function: " + functionName;
             printErrorMessage(4, funDec->firstLine, errorMessage);
         }
     } else {
-        Symbol *rt = symbolTable.searchFunctionDeclarationSymbol(functionName);
+        FunctionType *functionType = new FunctionType;
         functionType->functionName = functionName;
         insertVarListToFunctionType(functionType, varList, symbolTable);
         insertVarListToSymbolTable(functionType, varList, symbolTable);
+        symbol = new Symbol(functionName, SymbolType::FUNCTION, functionType);
+        Symbol *rt = symbolTable.searchFunctionDeclarationSymbol(functionName);
         if (rt == nullptr) {
             symbol = new Symbol(functionName, SymbolType::FUNCTION, functionType);
             symbolTable.insertFunctionDeclarationSymbol(functionName, symbol);
         } else {
-            checkFunctionArgsType(std::get<FunctionType *>(rt->symbolData), functionType);
+            checkFunctionArgsType(std::get<FunctionType *>(rt->symbolData), functionType, funDec->firstLine);
         }
         Symbol *definition = symbolTable.searchFunctionDefinitionSymbol(functionName);
         if (definition != nullptr) {
-            checkFunctionArgsType(std::get<FunctionType *>(definition->symbolData), functionType);
+            checkFunctionArgsType(std::get<FunctionType *>(definition->symbolData), functionType, funDec->firstLine);
         }
     }
     return symbol;
@@ -618,8 +597,17 @@ void assignIDArrayType(SyntaxTreeNode *parentVarDec, SyntaxTreeNode *varDec) {
     parentVarDec->symbol = varDec->symbol;
 }
 
+SymbolType getExpDataType(Symbol *exp) {
+    if (exp->symbolType == SymbolType::FUNCTION) {
+        return std::get<FunctionType *>(exp->symbolData)->returnType;
+    } else {
+        return exp->symbolType;
+    }
+}
+
 void checkAssignDataType(SyntaxTreeNode *left, SyntaxTreeNode *right) {
-    if (left->symbol->symbolType != right->symbol->symbolType) {
+
+    if (getExpDataType(left->symbol) != getExpDataType(right->symbol)) {
         std::string errorMessage = "unmatching type on both sides of assignment";
         printErrorMessage(5, left->firstLine, errorMessage);
     } else {
@@ -877,19 +865,10 @@ void checkDotOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
 
 ArrayType *updateArrExpType(SyntaxTreeNode *leftExpNode,
                             SyntaxTreeNode *rightExpNode) {
-    //  int depth = 1;
-    //  while (rightExpNode->getChildren().size() != 1) {
-    //    depth++;
-    //    rightExpNode = rightExpNode->children[0];
-    //  }
+
     Symbol *arraySymbol = rightExpNode->symbol;
     ArrayType *data = std::get<ArrayType *>(arraySymbol->symbolData);
-    //  int remainDepth = data->remainDepth - depth;
-    //  while (data->remainDepth != remainDepth && remainDepth >= 0) {
-    //    data = std::get<ArrayType *>(data->baseType->symbolData);
-    //  }
     leftExpNode->symbol = data->baseType;
-
     return data;
 }
 

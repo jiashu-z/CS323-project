@@ -1,0 +1,12 @@
+//bonus 1: function declaration
+struct A {
+    int a;
+    float b;
+};
+int declare(struct A st1);
+struct B {
+    int c;
+};
+int declare(struct B st2){
+    return st2.c;
+}

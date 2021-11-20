@@ -35,8 +35,8 @@ bool SymbolTable::insertFunctionDefinitionSymbol(std::string name, Symbol *symbo
 
 bool SymbolTable::insertFunctionDeclarationSymbol(std::string name, Symbol *symbol) {
   if (this->currentFunctionDeclarationTable.find(name) ==
-      this->currentFunctionDefinitionTable.end()) {
-    this->currentFunctionDefinitionTable.emplace(name, symbol);
+      this->currentFunctionDeclarationTable.end()) {
+    this->currentFunctionDeclarationTable.emplace(name, symbol);
     return true;
   } else {
     return false;

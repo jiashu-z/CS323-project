@@ -1,18 +1,20 @@
+//bonus4: structure equivalence
 struct Temp1{
     int i;
     float j;
 };
 struct Temp2{
     int x;
-    float y;
 };
-
+struct Temp3{
+    int i_1;
+    float j_1;
+};
 int test_05(){
-    int a[3][5];
-    int b[5][4][6];
     struct Temp1 st1;
     struct Temp2 st2;
-    a=b;
+    struct Temp3 st3;
     st1=st2;
+    st1=st3;
     return 0;
 }

@@ -16,4 +16,5 @@ int test_11811620_5()
   c = d[9];
   a = b[a];
   a = b[c];
+  return 0;
 }

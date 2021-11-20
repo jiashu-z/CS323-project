@@ -28,4 +28,5 @@ int test_11811620_2()
   struct A c;
   func2(a, b, c, f);
   func1(a, b, c, f);
+  return 0;
 }

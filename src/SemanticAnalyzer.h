@@ -73,7 +73,7 @@ bool checkArrayEquivelence(ArrayType *left, ArrayType *right);
 
 bool checkStructEquivelence(StructType *left, StructType *right);
 
-void checkFunctionArgsType(FunctionType *leftFuntionSymbol, FunctionType *rightFunctionSymbol);
+void checkFunctionArgsType(FunctionType *leftFuntionSymbol, FunctionType *rightFunctionSymbol, int firstLine);
 
 void checkArgsType(std::vector<Symbol *> &leftArgs, std::vector<Symbol *> &rightArgs, int firstLine,
                    std::string functionName);

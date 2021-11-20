@@ -32,4 +32,5 @@ int test_11811620_4()
   func3(b, b, c, c);
   func3(c, b);
   a();
+  return 0;
 }

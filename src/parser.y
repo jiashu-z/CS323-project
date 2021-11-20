@@ -85,6 +85,7 @@ ExtDef: Specifier ExtDecList SEMI {
         $$->insert($1);
         $$->insert($2);
         $$->insert($3);
+        insertFunctionSymbol($2,symbolTable,true);
         assignFunctionReturnType($1,$2,symbolTable);
         checkFunctionReturnStatement($1,$3,symbolTable);
     }
@@ -93,7 +94,6 @@ ExtDef: Specifier ExtDecList SEMI {
             $$->insert($1);
             $$->insert($2);
             $$->insert($3);
-            insertFunctionSymbol($2,symbolTable,false);
     }
     | error SEMI {
         error_message("Missing specifier");
@@ -160,12 +160,12 @@ VarDec: ID {
 FunDec: ID LP VarList RP {
         $$ = new SyntaxTreeNode("FunDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3,$4});
-        insertFunctionSymbol($$,symbolTable,true);
+        insertFunctionSymbol($$,symbolTable,false);
     }
     | ID LP RP {
         $$ = new SyntaxTreeNode("FunDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3});
-        insertFunctionSymbol($$,symbolTable,true);
+        insertFunctionSymbol($$,symbolTable,false);
     }
     | ID LP VarList error {
         error_message("Missing closing parenthesis ')'");

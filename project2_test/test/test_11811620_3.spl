@@ -18,17 +18,20 @@ int test_11811620_3()
   struct A f[1][1][1];
   struct B g;
 
-  a = b;
-  c = a;
-  e = f;
-  e = f[0];
-  f[0][0][0] = g;
+  a = b; //error
+  c = a; //error
+  e = f; //error
+  e = f[0]; //error
+  f[0][0][0] = g; //error
+  f[0][0][0] = d;
+  d=f[0][0][0];
   f[0][0][0].num1 = a;
-  f[0][0][0].arr1 = e;
+  f[0][0][0].arr1 = e; //error
   f[0][0][0].arr1 = e[0];
 
-  1 = a;
+  1 = a; //error
 
-  d = 1 + d;
-  e = 1 + e;
+  d = 1 + d; //error
+  e = 1 + e; //error
+  return 0;
 }

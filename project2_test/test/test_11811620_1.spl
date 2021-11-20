@@ -13,4 +13,5 @@ int test_11811620_1()
   int arr3[9];
   int i = instance.arr2[0][0].num;
   arr3 = instance.arr2[0][0].arr1;
+  return 0;
 }
