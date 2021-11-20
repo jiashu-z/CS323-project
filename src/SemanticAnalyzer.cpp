@@ -186,7 +186,7 @@ void useFunctionSymbol(SyntaxTreeNode *expNode, SymbolTable &symbolTable) {
                                            std::to_string(argsActualNum);
                 printErrorMessage(9, expNode->firstLine, errorMessage);
             } else {
-                checkArgsType(actualSymbolVector, functionType->argsType, expNode->firstLine, idNode->attribute_value);
+                checkArgsType(functionType->argsType, actualSymbolVector, expNode->firstLine, idNode->attribute_value);
             }
         }
     }
@@ -497,15 +497,15 @@ void insertVarListToSymbolTable(FunctionType *functionType,
     }
 }
 
-void checkArgsType(std::vector<Symbol *> &leftArgs, std::vector<Symbol *> &rightArgs, int firstLine,
+void checkArgsType(std::vector<Symbol *> &expectArgs, std::vector<Symbol *> &actualArgs, int firstLine,
                    std::string functionName) {
 
-    for (int i = 0; i < leftArgs.size(); ++i) {
-        if (!typeEquiveLence(leftArgs.at(i), rightArgs.at(i))) {
+    for (int i = 0; i < expectArgs.size(); ++i) {
+        if (!typeEquiveLence(expectArgs.at(i), actualArgs.at(i))) {
             std::string errorMessage =
-                    "invalid argument type for " + functionName + ". expected:" + typeToString(leftArgs.at(i)) +
+                    "invalid argument type for " + functionName + ". expected:" + typeToString(expectArgs.at(i)) +
                     ", actual:" +
-                    typeToString(rightArgs.at(i));
+                    typeToString(actualArgs.at(i));
             printErrorMessage(9, firstLine, errorMessage);
             return;
         }
@@ -933,7 +933,7 @@ void assignStructSpecifierType(SyntaxTreeNode *specifier,
     if (iterator != symbolTable.currentStructDefinitionTable.end()) {
         specifier->symbol = iterator->second;
     } else {
-        printErrorMessage(16, specifier->firstLine, "undefined struct type");
+        printErrorMessage(16, specifier->firstLine, "undefined struct type: " + id);
     }
 }
 

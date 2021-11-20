@@ -1,0 +1,1 @@
+Error type 9 at Line 13: invalid argument type for func3. expected:array (dimension:1), actual:array (dimension:2)

@@ -1,5 +1,5 @@
 Error type 8 at Line 7: incompatiable return type
-Error type 16 at Line 10: undefined struct type
+Error type 16 at Line 10: undefined struct type: B
 Error type 3 at Line 10: redefine variable: a1
 Error type 4 at Line 10: redefine function: func1
 Error type 1 at Line 15: undefined variable: e3
@@ -10,4 +10,4 @@ Error type 3 at Line 28: redefine variable: c
 Error type 1 at Line 29: undefined variable: f
 Error type 2 at Line 29: undefined function: func2
 Error type 1 at Line 30: undefined variable: f
-Error type 9 at Line 30: invalid argument type for func1. expected:UNKNOWN, actual:struct
+Error type 9 at Line 30: invalid argument type for func1. expected:struct, actual:UNKNOWN

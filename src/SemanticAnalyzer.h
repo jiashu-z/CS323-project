@@ -75,7 +75,7 @@ bool checkStructEquivelence(StructType *left, StructType *right);
 
 void checkFunctionArgsType(FunctionType *leftFuntionSymbol, FunctionType *rightFunctionSymbol, int firstLine);
 
-void checkArgsType(std::vector<Symbol *> &leftArgs, std::vector<Symbol *> &rightArgs, int firstLine,
+void checkArgsType(std::vector<Symbol *> &expectArgs, std::vector<Symbol *> &actualArgs, int firstLine,
                    std::string functionName);
 
 #endif  // CS323_PROJECT1_SEMANTICANALYZER_H
