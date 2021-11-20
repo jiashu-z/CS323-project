@@ -699,7 +699,7 @@ void insertStructSymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable) {
 
         Symbol *returnPtr = symbolTable.searchVariableSymbol(symbolName);
         if (returnPtr == nullptr) {
-            SymbolType symbolType = SymbolType::STRUCT;
+            SymbolType symbolType = specifier->symbol->symbolType;
             if (isArrayType(node)) {
                 symbolType = SymbolType::ARRAY;
             }
