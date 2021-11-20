@@ -10,4 +10,4 @@ Error type 3 at Line 28: redefine variable: c
 Error type 1 at Line 29: undefined variable: f
 Error type 2 at Line 29: undefined function: func2
 Error type 1 at Line 30: undefined variable: f
-Error type 9 at Line 30: invalid argument type for func1. expected:struct, actual:UNKNOWN
+Error type 9 at Line 30: invalid argument type for func1. expected: struct, actual: UNKNOWN
