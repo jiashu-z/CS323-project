@@ -426,7 +426,6 @@ Exp: Exp ASSIGN Exp {
     | Exp LB Exp RB {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3,$4});
-
         checkAndUpdateExpArray($$,$1,$3,symbolTable);
     }
     | Exp DOT ID {
