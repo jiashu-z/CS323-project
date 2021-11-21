@@ -9,9 +9,9 @@ int func_1(int a,int b)
 {
   return 3+a*b-2/1;
 }
-int func_2(float a[2])
+int func_2(float a_1[2])
 {
-  return 3&&a[1];
+  return 3&&a_1[1];
 }
 
 int test_11811535_9(){
@@ -20,8 +20,8 @@ int test_11811535_9(){
   char test_char_1='1',test_char_2='\xa0';
   struct struct_1 test_struct;
 
-  test_struct.array_1[1]=func1(global_2,3*func_1(global_1, test_int_1)||2);
-  test_struct.array_1[2]=func2(global_2);
+  test_struct.array_1[1]=func_1(global_2,3*func_1(global_1, test_int_1)||2);
+  test_struct.array_1[1]=func_1(global_2,global_2);
 
   while (test_int_1==1234)
   {
