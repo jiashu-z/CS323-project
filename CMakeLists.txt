@@ -43,7 +43,6 @@ ENDIF()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(main
         src/parserMain.cpp
-        src/token.cpp
         src/SyntaxTreeNode.cpp
         ${BisonOutput}
         src/SymbolTable.cpp
@@ -55,26 +54,6 @@ add_dependencies(main lexer parser)
 target_link_libraries(main
 PUBLIC fl)
 
-
-
-#add_executable(CS323-project1
-#        ${BisonOutput}
-#src/token.cpp
-#src/main.cpp
-#        rc/SemanticAnalyzer.cpp
-#        src/SyntaxTreeNode.cpp
-#        )
-#add_dependencies(CS323-project1 lexer parser)
-#target_link_libraries(CS323-project1 PUBLIC fl)
-
-add_executable(test_token
-        test_executable/test_token.cpp
-  src/token.cpp)
-
-target_include_directories(test_token
-  PUBLIC src)
-
-add_test(test_token test_token)
 
 add_executable(test_syntaxTree
         test_executable/test_syntaxTree.cpp

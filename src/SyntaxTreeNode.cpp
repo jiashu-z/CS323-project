@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "token.h"
 #define DEBUG 0
 
 SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName) {

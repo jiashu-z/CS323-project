@@ -74,7 +74,7 @@ ExtDefList: ExtDef ExtDefList {
 ExtDef: Specifier ExtDecList SEMI {
         $$ = new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3});
-	insertStructSymbol($$,symbolTable);
+	insertExtPrimarySymbol($$,symbolTable);
     }
     | Specifier SEMI {
         $$=new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
@@ -87,7 +87,7 @@ ExtDef: Specifier ExtDecList SEMI {
         $$->insert($3);
         insertFunctionSymbol($2,symbolTable,true);
         assignFunctionReturnType($1,$2,symbolTable);
-        checkFunctionReturnStatement($1,$3,symbolTable);
+        checkIfExistFunctionReturnStatement($1,$3,symbolTable);
     }
     | Specifier FunDec SEMI {
             $$ = new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
@@ -414,13 +414,13 @@ Exp: Exp ASSIGN Exp {
     | ID LP Args RP {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3,$4});
-        useFunctionSymbol($$,symbolTable);
+        getFunctionSymbol($$,symbolTable);
     updateSyntaxTreeNodeSymbol($$,$1);
     }
     | ID LP RP {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3});
-        useFunctionSymbol($$,symbolTable);
+        getFunctionSymbol($$,symbolTable);
     updateSyntaxTreeNodeSymbol($$,$1);
     }
     | Exp LB Exp RB {
@@ -438,7 +438,7 @@ Exp: Exp ASSIGN Exp {
     | ID {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert($1);
-        usePrimarySymbol($1,symbolTable);
+        getVariableSymbol($1,symbolTable);
         updateSyntaxTreeNodeSymbol($$, $1);
     }
     | INT {

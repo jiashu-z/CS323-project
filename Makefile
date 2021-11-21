@@ -16,7 +16,6 @@ CPP = $(GPP) $(CXX_FLAGS)
 splc: .lex  .syntax
 	mkdir -p bin
 	$(CPP) $(SRC_PATH)/parserMain.cpp \
-    $(SRC_PATH)/token.cpp \
     $(SRC_PATH)/SyntaxTreeNode.cpp \
     $(SRC_PATH)/parser.cpp \
     $(SRC_PATH)/SymbolTable.cpp \

@@ -26,13 +26,16 @@ std::string typeToString(Symbol *symbol) {
         case SymbolType::STRUCT: {
             return "struct";
         }
-        case SymbolType::UNKNOWN: {
+        case SymbolType::FUNCTION: {
+            return "function";
+        }
+        default: {
             return "UNKNOWN";
         }
     }
 }
 
-bool typeEquiveLence(Symbol *left, Symbol *right) {
+bool ifTypeEquiveLence(Symbol *left, Symbol *right) {
     if (left->symbolType != right->symbolType) {
         return false;
     } else {
@@ -85,7 +88,7 @@ bool checkStructEquivelence(StructType *left, StructType *right) {
         return false;
     } else {
         for (int i = 0; i < left->fieldType.size(); ++i) {
-            if (!typeEquiveLence(left->fieldType.at(i), right->fieldType.at(i))) {
+            if (!ifTypeEquiveLence(left->fieldType.at(i), right->fieldType.at(i))) {
                 return false;
             }
         }
@@ -120,7 +123,7 @@ bool checkArrayEquivelence(ArrayType *left, ArrayType *right) {
     }
 }
 
-void usePrimarySymbol(SyntaxTreeNode *idNode, SymbolTable &symbolTable) {
+void getVariableSymbol(SyntaxTreeNode *idNode, SymbolTable &symbolTable) {
     std::string name = idNode->attribute_value;
     Symbol *symbol = symbolTable.searchVariableSymbol(name);
     if (symbol == nullptr) {
@@ -134,7 +137,6 @@ void usePrimarySymbol(SyntaxTreeNode *idNode, SymbolTable &symbolTable) {
 
 void getArgsVector(SyntaxTreeNode *args, std::vector<Symbol *> &argsSymbolVector) {
     SyntaxTreeNode *currentArgs = args;
-    int argNum = 0;
     while (true) {
         SyntaxTreeNode *exp = currentArgs->getChildren().at(0);
         argsSymbolVector.push_back(exp->symbol);
@@ -146,7 +148,7 @@ void getArgsVector(SyntaxTreeNode *args, std::vector<Symbol *> &argsSymbolVector
     }
 }
 
-void useFunctionSymbol(SyntaxTreeNode *expNode, SymbolTable &symbolTable) {
+void getFunctionSymbol(SyntaxTreeNode *expNode, SymbolTable &symbolTable) {
     SyntaxTreeNode *idNode = expNode->children[0];
     Symbol *functionSymbol =
             symbolTable.searchFunctionDefinitionSymbol(idNode->attribute_value);
@@ -224,7 +226,6 @@ bool isArrayType(SyntaxTreeNode *node) {
     if (node->getChildren().empty()) {
         return false;
     }
-
     while (!node->getChildren().empty()) {
         node = node->children[0];
     }
@@ -384,6 +385,74 @@ void insertPrimarySymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable) {
     }
 }
 
+void insertExtPrimarySymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable) {
+    SyntaxTreeNode *specifier = extDefNode->children[0];
+    SyntaxTreeNode *decList = extDefNode->children[1];
+
+    auto *varDecs = new std::vector<SyntaxTreeNode *>();
+    getDecs(decList, varDecs);
+    for (auto &varDec: *varDecs) {
+        SyntaxTreeNode *idNode = varDec->children[0];
+        std::string symbolName = idNode->attribute_value;
+
+        Symbol *returnPtr = symbolTable.searchVariableSymbol(symbolName);
+        if (returnPtr == nullptr) {
+            SymbolType symbolType = specifier->symbol->symbolType;
+            if (isArrayType(idNode)) {
+                symbolType = SymbolType::ARRAY;
+            }
+            Symbol *symbol = nullptr;
+            switch (symbolType) {
+                case SymbolType::INT: {
+                    IntType *data = new IntType;
+                    symbol = new Symbol(symbolName, symbolType, data);
+                    symbolTable.insertVariableSymbol(symbolName, symbol);
+                    break;
+                }
+                case SymbolType::FLOAT: {
+                    FloatType *data = new FloatType;
+                    symbol = new Symbol(symbolName, symbolType, data);
+                    symbolTable.insertVariableSymbol(symbolName, symbol);
+                    break;
+                }
+                case SymbolType::CHAR: {
+                    CharType *data = new CharType;
+                    symbol = new Symbol(symbolName, symbolType, data);
+                    symbolTable.insertVariableSymbol(symbolName, symbol);
+                    break;
+                }
+                case SymbolType::STRUCT: {
+                    const std::string &structTypeName =
+                            specifier->children[0]->children[1]->attribute_value;
+                    auto &structDefinitionTable =
+                            symbolTable.currentStructDefinitionTable;
+                    if (structDefinitionTable.find(structTypeName) ==
+                        structDefinitionTable.end()) {
+                        printErrorMessage(16, extDefNode->firstLine,
+                                          "Undefined struct error.");
+                    } else {
+                        symbol = structDefinitionTable[structTypeName];
+                        symbolTable.insertVariableSymbol(symbolName, symbol);
+                        extDefNode->symbol = symbol;
+                    }
+                    break;
+                }
+                case SymbolType::ARRAY: {
+                    symbol = getArrSymbol(idNode, specifier, symbolName, symbolTable);
+                    symbolTable.insertVariableSymbol(symbolName, symbol);
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        } else {
+            std::string errorMessage = "redefine variable: " + symbolName;
+            printErrorMessage(3, idNode->firstLine, errorMessage);
+        }
+    }
+}
+
 Symbol *insertFunctionSymbolWithoutArgs(SyntaxTreeNode *funDec,
                                         SymbolTable &symbolTable,
                                         bool hasDefinition
@@ -501,7 +570,7 @@ void checkArgsType(std::vector<Symbol *> &expectArgs, std::vector<Symbol *> &act
                    std::string functionName) {
 
     for (int i = 0; i < expectArgs.size(); ++i) {
-        if (!typeEquiveLence(expectArgs.at(i), actualArgs.at(i))) {
+        if (!ifTypeEquiveLence(expectArgs.at(i), actualArgs.at(i))) {
             std::string errorMessage =
                     "invalid argument type for " + functionName + ". expected: " + typeToString(expectArgs.at(i)) +
                     ", actual: " +
@@ -519,7 +588,7 @@ void checkFunctionArgsType(FunctionType *leftFuntionSymbol, FunctionType *rightF
         printErrorMessage(18, firstLine, errorMessage);
     } else {
         for (int i = 0; i < leftFuntionSymbol->argsType.size(); ++i) {
-            if (!typeEquiveLence(leftFuntionSymbol->argsType.at(i), rightFunctionSymbol->argsType.at(i))) {
+            if (!ifTypeEquiveLence(leftFuntionSymbol->argsType.at(i), rightFunctionSymbol->argsType.at(i))) {
                 std::string errorMessage = "unmatched function declaration";
                 printErrorMessage(18, firstLine, errorMessage);
                 return;
@@ -537,10 +606,8 @@ Symbol *insertFunctionSymbolWithArgs(SyntaxTreeNode *funDec,
     std::string functionName = funDec->children[0]->attribute_value;
     SyntaxTreeNode *varList = funDec->children[2];
     Symbol *symbol;
-
     if (hasDefinition) {
         symbol = funDec->symbol;
-        FunctionType *functionType = std::get<FunctionType *>(symbol->symbolData);
         Symbol *rt = symbolTable.searchFunctionDefinitionSymbol(functionName);
         symbol = funDec->symbol;
         if (rt == nullptr) {
@@ -652,7 +719,6 @@ void insertStructDefinitionSymbol(SyntaxTreeNode *structSpecifierNode,
                 new std::vector<SyntaxTreeNode *>();
         std::vector<SyntaxTreeNode *> *decs = new std::vector<SyntaxTreeNode *>();
         getDefNodes(defListNode, defNodes);
-
         for (int i = 0; i < defNodes->size(); ++i) {
             SyntaxTreeNode *def = defNodes->at(i);
             SyntaxTreeNode *specifier = def->children[0];
@@ -818,14 +884,13 @@ void preOrderCheckStmt(SyntaxTreeNode *node, Symbol *rtType, int &returnCount) {
     }
 }
 
-void checkFunctionReturnStatement(SyntaxTreeNode *specifier,
-                                  SyntaxTreeNode *compSt,
-                                  SymbolTable &symbolTable
+void checkIfExistFunctionReturnStatement(SyntaxTreeNode *specifier,
+                                         SyntaxTreeNode *compSt,
+                                         SymbolTable &symbolTable
 ) {
     int returnCount = 0;
     SyntaxTreeNode *stmtList = compSt->children[2];
     preOrderCheckStmt(stmtList, specifier->symbol, returnCount);
-    //std::cout<<"return count:"<<returnCount<<std::endl;
     if (returnCount == 0) {
         std::string message = "missing return statement";
         printErrorMessage(17, specifier->firstLine, message);

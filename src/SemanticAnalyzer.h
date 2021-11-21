@@ -9,9 +9,9 @@
 #include "SymbolTable.h"
 #include "SyntaxTreeNode.h"
 
-void usePrimarySymbol(SyntaxTreeNode *idNode, SymbolTable &symbolTable);
+void getVariableSymbol(SyntaxTreeNode *idNode, SymbolTable &symbolTable);
 
-void useFunctionSymbol(SyntaxTreeNode *expNode, SymbolTable &symbolTable);
+void getFunctionSymbol(SyntaxTreeNode *expNode, SymbolTable &symbolTable);
 
 void insertSymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable);
 
@@ -39,9 +39,9 @@ void checkReturnType(SyntaxTreeNode *rtExp);
 void printErrorMessage(int errorType, int errorLine,
                        const std::string &errorMessage);
 
-void checkFunctionReturnStatement(SyntaxTreeNode *specifier,
-                                  SyntaxTreeNode *CompSt,
-                                  SymbolTable &symbolTable
+void checkIfExistFunctionReturnStatement(SyntaxTreeNode *specifier,
+                                         SyntaxTreeNode *compSt,
+                                         SymbolTable &symbolTable
 );
 
 void assignFunctionReturnType(SyntaxTreeNode *specifier,
@@ -78,4 +78,5 @@ void checkFunctionArgsType(FunctionType *leftFuntionSymbol, FunctionType *rightF
 void checkArgsType(std::vector<Symbol *> &expectArgs, std::vector<Symbol *> &actualArgs, int firstLine,
                    std::string functionName);
 
+void insertExtPrimarySymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable);
 #endif  // CS323_PROJECT1_SEMANTICANALYZER_H
