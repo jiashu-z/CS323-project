@@ -203,8 +203,8 @@ void getDecs(SyntaxTreeNode *decList, std::vector<SyntaxTreeNode *> *decs) {
     decs->push_back(decList->children[0]);
     return;
   } else {
-    std::cerr << "fatal error! please check out" << std::endl;
-    exit(0);
+      std::cerr << "syntax error at " << decList->firstLine << std::endl;
+      exit(0);
   }
 }
 
@@ -217,8 +217,8 @@ void getDefNodes(SyntaxTreeNode *defList,
   } else if (defList->children.size() == 0) {
     return;
   } else {
-    std::cerr << "fatal error! please check out" << std::endl;
-    exit(0);
+      std::cerr << "syntax error at " << defList->firstLine << std::endl;
+      exit(0);
   }
 }
 
@@ -517,19 +517,19 @@ void insertVarListToFunctionType(FunctionType *functionType,
     }
     case SymbolType::ARRAY: {
       Symbol *symbol = getArrSymbol(id, specifier, varName, symbolTable);
-      functionType->argsType.push_back(symbol);
-      break;
+        functionType->argsType.push_back(symbol);
+        break;
     }
-    case SymbolType::STRUCT: {
-      StructType *structType =
-              std::get<StructType *>(specifier->symbol->symbolData);
-      Symbol *symbol = new Symbol(varName, expType, structType);
-      functionType->argsType.push_back(symbol);
-      break;
-    }
-    default: {
-      std::cout << "fatal error!" << __LINE__ << std::endl;
-    }
+      case SymbolType::STRUCT: {
+          StructType *structType =
+                  std::get<StructType *>(specifier->symbol->symbolData);
+          Symbol *symbol = new Symbol(varName, expType, structType);
+          functionType->argsType.push_back(symbol);
+          break;
+      }
+      default: {
+          printErrorMessage(21, varList->firstLine, "unknown variable type");
+      }
   }
   if (varList->children.size() == 3) {
     SyntaxTreeNode *childVarList = varList->getChildren()[2];
@@ -556,7 +556,7 @@ void insertVarListToSymbolTable(FunctionType *functionType,
         break;
       }
       default: {
-        std::cout << "fatal error!" << __LINE__ << std::endl;
+          printErrorMessage(21, varList->firstLine, "unknown variable type");
       }
     }
     if (!rt) {
@@ -567,7 +567,7 @@ void insertVarListToSymbolTable(FunctionType *functionType,
 }
 
 void checkArgsType(std::vector<Symbol *> &expectArgs, std::vector<Symbol *> &actualArgs, int firstLine,
-                   std::string functionName) {
+                   const std::string &functionName) {
 
     for (std::vector<Symbol *>::size_type i = 0; i < expectArgs.size(); ++i) {
         if (!ifTypeEquiveLence(expectArgs.at(i), actualArgs.at(i))) {
@@ -749,63 +749,6 @@ void insertStructDefinitionSymbol(SyntaxTreeNode *structSpecifierNode,
   }
 }
 
-void insertStructSymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable) {
-  /*
-   * handle definition below
-   * struct A{} a1, a2[1], a3[1][1];
-   */
-
-  SyntaxTreeNode *specifier = extDefNode->children[0];
-  SyntaxTreeNode *extDecList = extDefNode->children[1];
-  if (specifier->symbol->symbolType == SymbolType::STRUCT) {
-    auto *extDecs = new std::vector<SyntaxTreeNode *>();
-    getDecs(extDecList, extDecs);
-    for (auto &varDec: *extDecs) {
-      SyntaxTreeNode *node = varDec->children[0];
-      std::string symbolName = node->attribute_value;
-
-      Symbol *returnPtr = symbolTable.searchVariableSymbol(symbolName);
-      if (returnPtr == nullptr) {
-        SymbolType symbolType = specifier->symbol->symbolType;
-        if (isArrayType(node)) {
-          symbolType = SymbolType::ARRAY;
-        }
-
-        Symbol *symbol = nullptr;
-        switch (symbolType) {
-          case SymbolType::STRUCT: {
-            const std::string &structTypeName =
-                    specifier->children[0]->children[1]->attribute_value;
-            auto &structDefinitionTable =
-                    symbolTable.currentStructDefinitionTable;
-            if (structDefinitionTable.find(structTypeName) ==
-                structDefinitionTable.end()) {
-              printErrorMessage(16, extDefNode->firstLine,
-                                "Undefined struct error.");
-            } else {
-              symbol = structDefinitionTable[structTypeName];
-              symbolTable.insertVariableSymbol(symbolName, symbol);
-              extDefNode->symbol = symbol;
-            }
-            break;
-          }
-          case SymbolType::ARRAY: {
-            symbol = getArrSymbol(node, specifier, symbolName, symbolTable);
-            symbolTable.insertVariableSymbol(symbolName, symbol);
-            break;
-          }
-          default: {
-            break;
-          }
-        }
-      } else {
-        std::string errorMessage = "redefine variable: " + symbolName;
-        printErrorMessage(3, node->firstLine, errorMessage);
-      }
-    }
-  }
-}
-
 void assignSpecifierType(SyntaxTreeNode *specifier) {
   SyntaxTreeNode *type = specifier->getChildren()[0];
   if (type->attribute_value == "int") {
@@ -820,9 +763,6 @@ void assignSpecifierType(SyntaxTreeNode *specifier) {
     CharType *charType = new CharType;
     specifier->symbol =
             new Symbol(specifier->attribute_value, SymbolType::CHAR, charType);
-  } else {
-    std::cout << "fatal error!" << __LINE__ << std::endl;
-    exit(0);
   }
 }
 
@@ -1018,18 +958,17 @@ void assignConstantSymbol(SyntaxTreeNode *node, const SymbolType &symbolType) {
       node->symbol = new Symbol(node->attribute_value, symbolType, intType);
       break;
     }
-    case SymbolType::FLOAT: {
-      FloatType *floatType = new FloatType;
-      node->symbol = new Symbol(node->attribute_value, symbolType, floatType);
-      break;
-    }
-    case SymbolType::CHAR: {
-      CharType *charType = new CharType;
-      node->symbol = new Symbol(node->attribute_value, symbolType, charType);
-      break;
-    }
-    default:
-      std::cout << "unhandled error!" << std::endl;
-      exit(0);
+      case SymbolType::FLOAT: {
+          FloatType *floatType = new FloatType;
+          node->symbol = new Symbol(node->attribute_value, symbolType, floatType);
+          break;
+      }
+      case SymbolType::CHAR: {
+          CharType *charType = new CharType;
+          node->symbol = new Symbol(node->attribute_value, symbolType, charType);
+          break;
+      }
+      default:
+          break;
   }
 }

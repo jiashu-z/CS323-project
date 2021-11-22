@@ -73,7 +73,7 @@ bool checkStructEquivelence(StructType *left, StructType *right);
 void checkFunctionArgsType(FunctionType *leftFuntionSymbol, FunctionType *rightFunctionSymbol, int firstLine);
 
 void checkArgsType(std::vector<Symbol *> &expectArgs, std::vector<Symbol *> &actualArgs, int firstLine,
-                   std::string functionName);
+                   const std::string &functionName);
 
 void insertExtPrimarySymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable);
 #endif  // CS323_PROJECT1_SEMANTICANALYZER_H
