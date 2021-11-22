@@ -17,7 +17,7 @@ void error_message(const char* message){
 
 void yyerror(const char* s){
     has_error = true;
-    error_message("Syntax error");
+    error_message(s);
     error_cnt += 1;
     printf("Error type B at Line %d: ", yylineno);
 }
@@ -86,8 +86,8 @@ ExtDef: Specifier ExtDecList SEMI {
         $$->insert($2);
         $$->insert($3);
         insertFunctionSymbol($2,symbolTable,true);
-        assignFunctionReturnType($1,$2,symbolTable);
-        checkIfExistFunctionReturnStatement($1,$3,symbolTable);
+        assignFunctionReturnType($1,$2);
+        checkIfExistFunctionReturnStatement($1,$3);
     }
     | Specifier FunDec SEMI {
             $$ = new SyntaxTreeNode("ExtDef",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
@@ -434,13 +434,13 @@ Exp: Exp ASSIGN Exp {
     | Exp LB Exp RB {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3,$4});
-        checkAndUpdateExpArray($$,$1,$3,symbolTable);
+        checkAndUpdateExpArray($$,$1,$3);
     }
     | Exp DOT ID {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3});
 //        updateSyntaxTreeNodeSymbol($$,$1);
-        checkDotOperator($$, $1, $3, symbolTable);
+        checkDotOperator($$, $1, $3);
     }
     | ID {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);

@@ -5,6 +5,7 @@ CXX_STD = -std=c++17
 
 CXX_DEBUG = -g -Wall -Wextra
 SRC_PATH=src
+TEST_FILE_PATH=project2_test
 CXX_FLAGS = -O3 $(CXX_DEBUG) $(CXX_STD)
 CPP = $(GPP) $(CXX_FLAGS)
 
@@ -30,4 +31,5 @@ clean:
 	$(SRC_PATH)/*.o \
 	$(SRC_PATH)/*.a \
 	$(SRC_PATH)/*.so \
+	$(TEST_FILE_PATH)/*/*.test.out \
 	bin/splc

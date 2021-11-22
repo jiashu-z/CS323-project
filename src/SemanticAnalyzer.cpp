@@ -87,10 +87,10 @@ bool checkStructEquivelence(StructType *left, StructType *right) {
   if (left->fieldType.size() != right->fieldType.size()) {
     return false;
   } else {
-    for (int i = 0; i < left->fieldType.size(); ++i) {
-      if (!ifTypeEquiveLence(left->fieldType.at(i), right->fieldType.at(i))) {
-        return false;
-      }
+    for (std::vector<Symbol *>::size_type i = 0; i < left->fieldType.size(); ++i) {
+        if (!ifTypeEquiveLence(left->fieldType.at(i), right->fieldType.at(i))) {
+            return false;
+        }
     }
     return true;
   }
@@ -541,17 +541,17 @@ void insertVarListToSymbolTable(FunctionType *functionType,
                                 SyntaxTreeNode *varList,
                                 SymbolTable &symbolTable
 ) {
-  for (int i = 0; i < functionType->argsType.size(); ++i) {
-    Symbol *argSymbol = functionType->argsType.at(i);
+    for (std::vector<Symbol *>::size_type i = 0; i < functionType->argsType.size(); ++i) {
+        Symbol *argSymbol = functionType->argsType.at(i);
 
-    SymbolType expType = argSymbol->symbolType;
-    bool rt = true;
-    switch (expType) {
-      case SymbolType::INT:
-      case SymbolType::FLOAT:
-      case SymbolType::CHAR:
-      case SymbolType::ARRAY:
-      case SymbolType::STRUCT: {
+        SymbolType expType = argSymbol->symbolType;
+        bool rt = true;
+        switch (expType) {
+            case SymbolType::INT:
+            case SymbolType::FLOAT:
+            case SymbolType::CHAR:
+            case SymbolType::ARRAY:
+            case SymbolType::STRUCT: {
         rt = symbolTable.insertVariableSymbol(argSymbol->name, argSymbol);
         break;
       }
@@ -569,16 +569,16 @@ void insertVarListToSymbolTable(FunctionType *functionType,
 void checkArgsType(std::vector<Symbol *> &expectArgs, std::vector<Symbol *> &actualArgs, int firstLine,
                    std::string functionName) {
 
-  for (int i = 0; i < expectArgs.size(); ++i) {
-    if (!ifTypeEquiveLence(expectArgs.at(i), actualArgs.at(i))) {
-      std::string errorMessage =
-              "invalid argument type for " + functionName + ". expected: " + typeToString(expectArgs.at(i)) +
-              ", actual: " +
-              typeToString(actualArgs.at(i));
-      printErrorMessage(9, firstLine, errorMessage);
-      return;
+    for (std::vector<Symbol *>::size_type i = 0; i < expectArgs.size(); ++i) {
+        if (!ifTypeEquiveLence(expectArgs.at(i), actualArgs.at(i))) {
+            std::string errorMessage =
+                    "invalid argument type for " + functionName + ". expected: " + typeToString(expectArgs.at(i)) +
+                    ", actual: " +
+                    typeToString(actualArgs.at(i));
+            printErrorMessage(9, firstLine, errorMessage);
+            return;
+        }
     }
-  }
 
 }
 
@@ -587,13 +587,13 @@ void checkFunctionArgsType(FunctionType *leftFuntionSymbol, FunctionType *rightF
     std::string errorMessage = "unmatched function declaration";
     printErrorMessage(18, firstLine, errorMessage);
   } else {
-    for (int i = 0; i < leftFuntionSymbol->argsType.size(); ++i) {
-      if (!ifTypeEquiveLence(leftFuntionSymbol->argsType.at(i), rightFunctionSymbol->argsType.at(i))) {
-        std::string errorMessage = "unmatched function declaration";
-        printErrorMessage(18, firstLine, errorMessage);
-        return;
+      for (std::vector<Symbol *>::size_type i = 0; i < leftFuntionSymbol->argsType.size(); ++i) {
+          if (!ifTypeEquiveLence(leftFuntionSymbol->argsType.at(i), rightFunctionSymbol->argsType.at(i))) {
+              std::string errorMessage = "unmatched function declaration";
+              printErrorMessage(18, firstLine, errorMessage);
+              return;
+          }
       }
-    }
   }
 }
 
@@ -719,22 +719,22 @@ void insertStructDefinitionSymbol(SyntaxTreeNode *structSpecifierNode,
             new std::vector<SyntaxTreeNode *>();
     std::vector<SyntaxTreeNode *> *decs = new std::vector<SyntaxTreeNode *>();
     getDefNodes(defListNode, defNodes);
-    for (int i = 0; i < defNodes->size(); ++i) {
-      SyntaxTreeNode *def = defNodes->at(i);
-      SyntaxTreeNode *specifier = def->children[0];
-      SyntaxTreeNode *decList = def->children[1];
-      getDecs(decList, decs);
-      for (int j = 0; j < decs->size(); ++j) {
-        SyntaxTreeNode *dec = decs->at(j);
-        std::string id = dec->children[0]->attribute_value;
-        SyntaxTreeNode *idNode = dec->children[0]->children[0];
-        if (dec->symbol->symbolType == SymbolType::UNKNOWN) {
-          dec->symbol = specifier->symbol;
-          Symbol *symbol = new Symbol(id, specifier->symbol->symbolType,
-                                      specifier->symbol->symbolData);
-          data->fieldType.push_back(symbol);
-        } else if (dec->symbol->symbolType == SymbolType::ARRAY) {
-          Symbol *symbol = getArrSymbol(idNode, specifier, id, symbolTable);
+      for (std::vector<Symbol *>::size_type i = 0; i < defNodes->size(); ++i) {
+          SyntaxTreeNode *def = defNodes->at(i);
+          SyntaxTreeNode *specifier = def->children[0];
+          SyntaxTreeNode *decList = def->children[1];
+          getDecs(decList, decs);
+          for (std::vector<SyntaxTreeNode *>::size_type j = 0; j < decs->size(); ++j) {
+              SyntaxTreeNode *dec = decs->at(j);
+              std::string id = dec->children[0]->attribute_value;
+              SyntaxTreeNode *idNode = dec->children[0]->children[0];
+              if (dec->symbol->symbolType == SymbolType::UNKNOWN) {
+                  dec->symbol = specifier->symbol;
+                  Symbol *symbol = new Symbol(id, specifier->symbol->symbolType,
+                                              specifier->symbol->symbolData);
+                  data->fieldType.push_back(symbol);
+              } else if (dec->symbol->symbolType == SymbolType::ARRAY) {
+                  Symbol *symbol = getArrSymbol(idNode, specifier, id, symbolTable);
           data->fieldType.push_back(symbol);
         }
       }
@@ -896,8 +896,7 @@ void preOrderCheckStmt(SyntaxTreeNode *node, Symbol *rtType, int &returnCount, b
 }
 
 void checkIfExistFunctionReturnStatement(SyntaxTreeNode *specifier,
-                                         SyntaxTreeNode *compSt,
-                                         SymbolTable &symbolTable
+                                         SyntaxTreeNode *compSt
 ) {
   int returnCount = 0;
   SyntaxTreeNode *stmtList = compSt->children[2];
@@ -909,29 +908,28 @@ void checkIfExistFunctionReturnStatement(SyntaxTreeNode *specifier,
 }
 
 void assignFunctionReturnType(SyntaxTreeNode *specifier,
-                              SyntaxTreeNode *funcDec,
-                              SymbolTable &symbolTable) {
-  Symbol *functionSymbol = funcDec->symbol;
-  FunctionType *functionType =
-          std::get<FunctionType *>(functionSymbol->symbolData);
-  functionType->returnType = specifier->symbol->symbolType;
+                              SyntaxTreeNode *funcDec) {
+    Symbol *functionSymbol = funcDec->symbol;
+    FunctionType *functionType =
+            std::get<FunctionType *>(functionSymbol->symbolData);
+    functionType->returnType = specifier->symbol->symbolType;
 }
 
 void checkDotOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
-                      SyntaxTreeNode *rightOperand, SymbolTable &symbolTable) {
-  if (leftOperand->symbol->symbolType != SymbolType::STRUCT) {
-    printErrorMessage(13, parentExp->firstLine,
-                      "accessing with non-struct variable");
-    parentExp->symbol->symbolType = SymbolType::UNKNOWN;
-  } else {
-    const Symbol *symbol = leftOperand->symbol;
-    const StructType *symbolData = std::get<StructType *>(symbol->symbolData);
-    const std::string &varName = rightOperand->attribute_value;
-    std::unordered_map<std::string, Symbol *> nameTypeMap;
-    for (auto i = 0; i < symbolData->fieldType.size(); ++i) {
-      nameTypeMap.insert(std::make_pair(symbolData->fieldType[i]->name,
-                                        symbolData->fieldType[i]));
-    }
+                      SyntaxTreeNode *rightOperand) {
+    if (leftOperand->symbol->symbolType != SymbolType::STRUCT) {
+        printErrorMessage(13, parentExp->firstLine,
+                          "accessing with non-struct variable");
+        parentExp->symbol->symbolType = SymbolType::UNKNOWN;
+    } else {
+        const Symbol *symbol = leftOperand->symbol;
+        const StructType *symbolData = std::get<StructType *>(symbol->symbolData);
+        const std::string &varName = rightOperand->attribute_value;
+        std::unordered_map<std::string, Symbol *> nameTypeMap;
+        for (std::vector<Symbol *>::size_type i = 0; i < symbolData->fieldType.size(); ++i) {
+            nameTypeMap.insert(std::make_pair(symbolData->fieldType[i]->name,
+                                              symbolData->fieldType[i]));
+        }
     if (nameTypeMap.find(varName) == nameTypeMap.end()) {
       printErrorMessage(14, parentExp->firstLine,
                         "no such member: " + rightOperand->attribute_value);
@@ -957,7 +955,6 @@ bool isNumber(const std::string &s) {
 }
 
 void checkIndexTypeAndRange(SyntaxTreeNode *indexExpNode, ArrayType *data,
-                            SymbolTable &symbolTable,
                             SyntaxTreeNode *headExpNode) {
   if (indexExpNode->symbol->symbolType != SymbolType::INT) {
     std::string name = headExpNode->symbol->name;
@@ -978,22 +975,21 @@ void checkIndexTypeAndRange(SyntaxTreeNode *indexExpNode, ArrayType *data,
 
 void checkAndUpdateExpArray(SyntaxTreeNode *headExpNode,
                             SyntaxTreeNode *arrayIdExpNode,
-                            SyntaxTreeNode *indexExpNode,
-                            SymbolTable &symbolTable) {
-  headExpNode->attribute_value = arrayIdExpNode->attribute_value;
-  std::string arrayName;
-  if (arrayIdExpNode->getChildren().size() == 1) {
-    arrayName = arrayIdExpNode->children[0]->attribute_value;
-  } else {
-    arrayName = arrayIdExpNode->attribute_value;
-  }
-  Symbol *arraySymbol = arrayIdExpNode->symbol;
-  if (arraySymbol == nullptr || arraySymbol->symbolType != SymbolType::ARRAY) {
-    printErrorMessage(10, arrayIdExpNode->firstLine,
+                            SyntaxTreeNode *indexExpNode) {
+    headExpNode->attribute_value = arrayIdExpNode->attribute_value;
+    std::string arrayName;
+    if (arrayIdExpNode->getChildren().size() == 1) {
+        arrayName = arrayIdExpNode->children[0]->attribute_value;
+    } else {
+        arrayName = arrayIdExpNode->attribute_value;
+    }
+    Symbol *arraySymbol = arrayIdExpNode->symbol;
+    if (arraySymbol == nullptr || arraySymbol->symbolType != SymbolType::ARRAY) {
+        printErrorMessage(10, arrayIdExpNode->firstLine,
                       "indexing on non-array variable");
   } else {
     ArrayType *data = updateArrExpType(headExpNode, arrayIdExpNode);
-    checkIndexTypeAndRange(indexExpNode, data, symbolTable, headExpNode);
+        checkIndexTypeAndRange(indexExpNode, data, headExpNode);
   }
 }
 

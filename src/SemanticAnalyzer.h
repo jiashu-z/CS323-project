@@ -40,24 +40,21 @@ void printErrorMessage(int errorType, int errorLine,
                        const std::string &errorMessage);
 
 void checkIfExistFunctionReturnStatement(SyntaxTreeNode *specifier,
-                                         SyntaxTreeNode *compSt,
-                                         SymbolTable &symbolTable
+                                         SyntaxTreeNode *compSt
 );
 
 void assignFunctionReturnType(SyntaxTreeNode *specifier,
-                              SyntaxTreeNode *funcDec,
-                              SymbolTable &symbolTable);
+                              SyntaxTreeNode *funcDec);
 
 void checkBinaryOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
                          SyntaxTreeNode *rightOperand);
 
 void checkDotOperator(SyntaxTreeNode *parentExp, SyntaxTreeNode *leftOperand,
-                      SyntaxTreeNode *rightOperand, SymbolTable &symbolTable);
+                      SyntaxTreeNode *rightOperand);
 
 void checkAndUpdateExpArray(SyntaxTreeNode *headExpNode,
                             SyntaxTreeNode *arrayIdExpNode,
-                            SyntaxTreeNode *indexExpNode,
-                            SymbolTable &symbolTable);
+                            SyntaxTreeNode *indexExpNode);
 
 void updateSyntaxTreeNodeSymbol(SyntaxTreeNode *to, SyntaxTreeNode *from);
 
