@@ -1,0 +1,21 @@
+//bonus 5: break and continue check
+int test_1_r10()
+{
+  int a=10;
+  int i = 0;
+  break;
+  continue;
+  while (i < a)
+  {
+    i = i + 1;
+    if(i<5){
+        continue;
+    }
+    else{
+        break;
+    }
+   }
+   break;
+   continue;
+   return 0;
+}

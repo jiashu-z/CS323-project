@@ -37,6 +37,8 @@ IF if
 ELSE else
 WHILE while
 FOR for
+BREAK break
+CONTINUE continue
 RETURN return
 DOT \.
 SEMI ;
@@ -163,6 +165,14 @@ INVALID_HEX_CHAR ('\\x[0-9a-fA-F]*[g-zG-Z][0-9a-fA-F]*')|('\\x[0-9a-fA-F]{3,}')
 {FOR} {
   yylval.node_type=new SyntaxTreeNode("FOR",yytext,line_number);
   return FOR;
+}
+{BREAK} {
+  yylval.node_type=new SyntaxTreeNode("BREAK",yytext,line_number);
+  return BREAK;
+}
+{CONTINUE} {
+  yylval.node_type=new SyntaxTreeNode("CONTINUE",yytext,line_number);
+  return CONTINUE;
 }
 {RETURN} {
   yylval.node_type=new SyntaxTreeNode("RETURN",yytext,line_number);

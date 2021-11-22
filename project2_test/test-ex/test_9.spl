@@ -1,0 +1,23 @@
+//bonus4: structure equivalence
+struct A{
+    int a1;
+    float a2[5];
+};
+struct B{
+    struct A b[10];
+};
+struct C{
+    int c1;
+    float c2[5];
+};
+struct D{
+    struct C d[10];
+};
+int test_05(){
+    struct A st1;
+    struct B st2;
+    struct C st3;
+    st1=st2;
+    st1=st3;
+    return 0;
+}

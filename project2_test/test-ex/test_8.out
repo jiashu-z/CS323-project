@@ -1,0 +1,4 @@
+Error type 19 at Line 6: can not break in non-loop statement
+Error type 19 at Line 7: can not continue in non-loop statement
+Error type 19 at Line 18: can not break in non-loop statement
+Error type 19 at Line 19: can not continue in non-loop statement

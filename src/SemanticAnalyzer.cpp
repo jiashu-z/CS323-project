@@ -871,16 +871,27 @@ void checkReturnType(Symbol *expected, Symbol *actual, int line) {
   }
 }
 
-void preOrderCheckStmt(SyntaxTreeNode *node, Symbol *rtType, int &returnCount) {
-  if (node->children.empty()) {
-    return;
-  } else if (node->children[0]->attribute_name == "RETURN") {
-    returnCount++;
-    SyntaxTreeNode *exp = node->children[1];
-    checkReturnType(rtType, exp->symbol, exp->firstLine);
-  }
+void preOrderCheckStmt(SyntaxTreeNode *node, Symbol *rtType, int &returnCount, bool inForOrWhileScope) {
+    bool flag = inForOrWhileScope;
+    if (node->children.empty()) {
+        return;
+    } else if (node->children[0]->attribute_name == "RETURN") {
+        returnCount++;
+        SyntaxTreeNode *exp = node->children[1];
+        checkReturnType(rtType, exp->symbol, exp->firstLine);
+    } else if (node->children[0]->attribute_name == "FOR" || node->children[0]->attribute_name == "WHILE") {
+        flag = true;
+    } else if (node->children[0]->attribute_name == "BREAK") {
+        if (!flag) {
+            printErrorMessage(19, node->firstLine, "can not break in non-loop statement");
+        }
+    } else if (node->children[0]->attribute_name == "CONTINUE") {
+        if (!flag) {
+            printErrorMessage(19, node->firstLine, "can not continue in non-loop statement");
+        }
+    }
   for (auto &i: node->children) {
-    preOrderCheckStmt(i, rtType, returnCount);
+      preOrderCheckStmt(i, rtType, returnCount, flag);
   }
 }
 
@@ -890,10 +901,10 @@ void checkIfExistFunctionReturnStatement(SyntaxTreeNode *specifier,
 ) {
   int returnCount = 0;
   SyntaxTreeNode *stmtList = compSt->children[2];
-  preOrderCheckStmt(stmtList, specifier->symbol, returnCount);
+    preOrderCheckStmt(stmtList, specifier->symbol, returnCount, false);
   if (returnCount == 0) {
     std::string message = "missing return statement";
-    printErrorMessage(17, specifier->firstLine, message);
+      printErrorMessage(20, specifier->firstLine, message);
   }
 }
 

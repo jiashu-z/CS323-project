@@ -32,10 +32,10 @@ void yyerror(const char* s){
 %nonassoc <node_type> LOWER_THAN_ELSE
 %nonassoc <node_type> ELSE
 %token <node_type> TYPE STRUCT
-%token <node_type> IF WHILE RETURN FOR
 %token <node_type> CHAR
 %token <node_type> INT
 %token <node_type> FLOAT
+%token <node_type> IF WHILE RETURN FOR BREAK CONTINUE
 %token <node_type> ID
 %right <node_type> ASSIGN
 %left <node_type> OR
@@ -44,7 +44,7 @@ void yyerror(const char* s){
 %nonassoc LOWER_NEGA
 %left <node_type> MINUS PLUS
 %left <node_type> MUL DIV
-%right <node_type> NOT //todo: negative
+%right <node_type> NOT
 %left <node_type> LP RP LB RB DOT
 %token <node_type> SEMI COMMA
 %token <node_type> LC RC
@@ -259,6 +259,14 @@ Stmt: Exp SEMI {
     | WHILE LP Exp RP Stmt {
         $$ = new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3,$4,$5});
+    }
+    | BREAK SEMI{
+            $$ = new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+            $$->insert({$1,$2});
+    }
+    | CONTINUE SEMI{
+                $$ = new SyntaxTreeNode("Stmt",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
+                $$->insert({$1,$2});
     }
     | WHILE LP Exp error Stmt {
         error_message("Missing closing parenthesis ')'");

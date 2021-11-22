@@ -96,12 +96,4 @@ class FunctionType {
   FunctionType() = default;
 };
 
-// class StructDefinitionType {
-//  public:
-//   std::string name;
-//   StructType structDefinition;
-
-//   StructDefinitionType() = default;
-// };
-
 #endif  // CS323_PROJECT1_SYMBOLTABLE_H
