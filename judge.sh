@@ -82,7 +82,7 @@ other_test(){
 output_ir() {
   TEST_DIR="project3_test/test"
   PREFIX="test_3_r"
-  able=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10")
+  able=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11")
   for i in "${able[@]}"; do
     echo "begin output ${PREFIX}${i}:"
     bin/splc ./${TEST_DIR}/${PREFIX}${i}.spl > ./${TEST_DIR}/${PREFIX}"${i}".ir 2>&1
@@ -93,7 +93,7 @@ output_ir() {
 output_compare() {
   TEST_DIR="project3_test/test"
   PREFIX="test_3_r"
-  able=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10")
+  able=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11")
   for i in "${able[@]}"; do
     echo "begin compare output ${PREFIX}${i}:"
     bin/compare ./${TEST_DIR}/${PREFIX}${i}.spl > ./${TEST_DIR}/${PREFIX}"${i}".ir.compare 2>&1
