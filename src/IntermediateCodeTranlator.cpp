@@ -291,7 +291,7 @@ translate_Args(SyntaxTreeNode *argsNode, SymbolTable &symbolTable, std::vector<s
         SyntaxTreeNode *exp = argsNode->children.at(0);
         std::string temp = new_temp();
         std::vector<IntermediateCode *> &code1 = translate_Exp(exp, symbolTable, temp);
-        argList.push_back(temp);
+        argList.insert(argList.begin(), temp);
         std::vector<IntermediateCode *> &code2 = translate_Args(argsNode->children.at(2), symbolTable, argList);
         for (int i = 0; i < code1.size(); ++i) {
             argsNode->selfAndChildrenCodes.push_back(code1.at(i));
@@ -304,7 +304,7 @@ translate_Args(SyntaxTreeNode *argsNode, SymbolTable &symbolTable, std::vector<s
         SyntaxTreeNode *exp = argsNode->children.at(0);
         std::string temp = new_temp();
         std::vector<IntermediateCode *> &code1 = translate_Exp(exp, symbolTable, temp);
-        argList.push_back(temp);
+        argList.insert(argList.begin(), temp);
         for (int i = 0; i < code1.size(); ++i) {
             argsNode->selfAndChildrenCodes.push_back(code1.at(i));
         }
