@@ -3,6 +3,7 @@
 //
 
 #include "IntermediateCodeTranlator.h"
+#include "IntermediateCode.h"
 
 std::string zero = "0";
 std::string one = "1";
@@ -376,8 +377,9 @@ std::vector<IntermediateCode *> &translate_stmt(SyntaxTreeNode *stmt, SymbolTabl
             stmt->selfAndChildrenCodes.push_back(codelabel2);
             mergeInterCode(stmt, code2);
             stmt->selfAndChildrenCodes.push_back(gotolabel1);
-            IntermediateCode *gotolabel3 = createGOTOCode(label3);
-            stmt->selfAndChildrenCodes.push_back(gotolabel3);
+            IntermediateCode *codelabel3 = createLabelCode(label3);
+            // IntermediateCode *gotolabel3 = createGOTOCode(label3);
+            stmt->selfAndChildrenCodes.push_back(codelabel3);
             return stmt->selfAndChildrenCodes;
         }
         case ProductionEnum::STMT_FROM_COMPST: {
