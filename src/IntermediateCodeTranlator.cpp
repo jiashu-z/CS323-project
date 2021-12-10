@@ -186,6 +186,9 @@ std::vector<IntermediateCode *> &translate_Exp(SyntaxTreeNode *exp, SymbolTable 
             mergeInterCode(exp, code1);
             return exp->selfAndChildrenCodes;
         }
+        default:
+            std::cout << "warning: this case is not handled!" << std::endl;
+            return exp->selfAndChildrenCodes;
     }
 }
 
@@ -291,6 +294,9 @@ std::vector<IntermediateCode *> &translate_stmt(SyntaxTreeNode *stmt, SymbolTabl
             mergeInterCode(stmt, code1);
             return stmt->selfAndChildrenCodes;
         }
+        default:
+            std::cout << "warning: this case is not handled!" << std::endl;
+            return stmt->selfAndChildrenCodes;
     }
 }
 
@@ -344,7 +350,7 @@ translate_cond_Exp(SyntaxTreeNode *exp, SymbolTable &symbolTable, std::string &l
             return exp->selfAndChildrenCodes;
         }
         default:
-            std::cout << "bugs!" << std::endl;
+            std::cout << "warning: this case is not handled!" << std::endl;
             return exp->selfAndChildrenCodes;
     }
 }

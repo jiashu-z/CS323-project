@@ -214,7 +214,7 @@ void getDecs(SyntaxTreeNode *decList, std::vector<SyntaxTreeNode *> *decs) {
         decs->push_back(decList->children[0]);
         return;
     } else {
-        std::cerr << "syntax error at " << decList->firstLine << std::endl;
+        std::cout << "syntax error at " << decList->firstLine << std::endl;
         exit(0);
     }
 }
@@ -228,7 +228,7 @@ void getDefNodes(SyntaxTreeNode *defList,
     } else if (defList->children.size() == 0) {
         return;
     } else {
-        std::cerr << "syntax error at " << defList->firstLine << std::endl;
+        std::cout << "syntax error at " << defList->firstLine << std::endl;
         exit(0);
     }
 }
