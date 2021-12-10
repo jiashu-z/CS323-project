@@ -292,7 +292,7 @@ translate_Args(SyntaxTreeNode *argsNode, SymbolTable &symbolTable, std::vector<s
         std::string temp = new_temp();
         std::vector<IntermediateCode *> &code1 = translate_Exp(exp, symbolTable, temp);
         argList.push_back(temp);
-        std::vector<IntermediateCode *> &code2 = translate_Args(exp, symbolTable, argList);
+        std::vector<IntermediateCode *> &code2 = translate_Args(argsNode->children.at(2), symbolTable, argList);
         for (int i = 0; i < code1.size(); ++i) {
             argsNode->selfAndChildrenCodes.push_back(code1.at(i));
         }
@@ -318,8 +318,9 @@ std::vector<IntermediateCode *> &translate_stmt(SyntaxTreeNode *stmt, SymbolTabl
     // std::cout<<__func__<<":"<<__LINE__<<std::endl;
     switch (stmt->productionEnum) {
         case ProductionEnum::STMT_FROM_EXP_SEMI: {
-            std::string str = "null";
-            mergeInterCode(stmt, translate_Exp(stmt->children.at(0), symbolTable, str));
+            std::string str = new_temp();
+            std::vector<IntermediateCode *> &code = translate_Exp(stmt->children.at(0), symbolTable, str);
+            mergeInterCode(stmt, code);
             return stmt->selfAndChildrenCodes;
         }
         case ProductionEnum::STMT_FROM_RETURN_EXP_SEMI: {

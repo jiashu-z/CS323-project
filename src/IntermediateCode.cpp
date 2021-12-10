@@ -16,7 +16,11 @@ void IntermediateCode::print() {
             break;
         }
         case IntermediateCodeType::CALL: {
-            std::cout << this->result->variName << " := CALL " << this->op1->variName << std::endl;
+            if (this->result->variName != "null") {
+                std::cout << this->result->variName << " := CALL " << this->op1->variName << std::endl;
+            } else {
+                std::cout << "CALL " << this->op1->variName << std::endl;
+            }
             break;
         }
         case IntermediateCodeType::CONSTANT: {
