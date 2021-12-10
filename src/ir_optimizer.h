@@ -16,8 +16,10 @@ class IROptimizer {
   std::list<BasicBlock> basic_block_list_;
 
   void GenerateBasicBlocks();
+  void DoLocalOptimization();
  public:
   explicit IROptimizer(const std::vector<IntermediateCode>& ir_vector);
+  std::list<IntermediateCode> GenerateOptimizedIR();
 };
 
 #endif
