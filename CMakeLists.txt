@@ -49,6 +49,7 @@ add_executable(main
         src/SemanticAnalyzer.cpp
         src/IntermediateCode.cpp
         src/IntermediateCodeTranlator.cpp
+        src/ir_optimizer.cpp
         )
 add_dependencies(main lexer parser)
 target_link_libraries(main
