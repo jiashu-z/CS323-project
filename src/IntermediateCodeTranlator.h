@@ -25,6 +25,12 @@ std::vector<IntermediateCode *> &translate_fundec(SyntaxTreeNode *fundec, Symbol
 
 std::vector<IntermediateCode *> &translate_fundec_without_args(SyntaxTreeNode *fundec, SymbolTable &symbolTable);
 
+std::vector<IntermediateCode *> &translate_fundec_with_args(SyntaxTreeNode *fundec, SymbolTable &symbolTable);
+
+std::vector<IntermediateCode *> &translate_VarList(SyntaxTreeNode *varList);
+
+std::vector<IntermediateCode *> &translate_dec(SyntaxTreeNode *pNode, SymbolTable &table);
+
 void translateFunctionAndPrint(SyntaxTreeNode *program, SymbolTable &symboltable);
 
 void getStmtNodes(SyntaxTreeNode *stmtList, std::vector<SyntaxTreeNode *> &stmts);

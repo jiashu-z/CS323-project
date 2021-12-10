@@ -89,7 +89,19 @@ output_ir() {
     echo "========================================================================="
   done
 }
+
+output_compare() {
+  TEST_DIR="project3_test/test"
+  PREFIX="test_3_r"
+  able=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10")
+  for i in "${able[@]}"; do
+    echo "begin compare output ${PREFIX}${i}:"
+    bin/compare ./${TEST_DIR}/${PREFIX}${i}.spl > ./${TEST_DIR}/${PREFIX}"${i}".ir.compare 2>&1
+    echo "========================================================================="
+  done
+}
 make clean splc
+output_compare
 output_ir
 #echo "==================demo_test begin"
 #demo_test

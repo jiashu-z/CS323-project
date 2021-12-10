@@ -16,7 +16,7 @@ void IntermediateCode::print() {
             break;
         }
         case IntermediateCodeType::CALL: {
-            std::cout << "CALL " << this->op1->variName << std::endl;
+            std::cout << this->result->variName << " := CALL " << this->op1->variName << std::endl;
             break;
         }
         case IntermediateCodeType::CONSTANT: {
@@ -65,6 +65,10 @@ void IntermediateCode::print() {
                       << this->result->variName << std::endl;
             break;
         }
+        case IntermediateCodeType::PARAM: {
+            std::cout << "PARAM " << this->op1->variName << std::endl;
+            break;
+        }
         default: {
             std::cout << "error!" << std::endl;
             break;
@@ -85,6 +89,12 @@ Operand::Operand(OperandType type, std::string &variableName) {
 IntermediateCode *createFuntionDecCode(std::string &funtionName) {
     IntermediateCode *intermediateCode = new IntermediateCode(IntermediateCodeType::FUNCTION);
     intermediateCode->op1 = new Operand(OperandType::VARIABLE, funtionName);
+    return intermediateCode;
+}
+
+IntermediateCode *createParamCode(std::string &varName) {
+    IntermediateCode *intermediateCode = new IntermediateCode(IntermediateCodeType::PARAM);
+    intermediateCode->op1 = new Operand(OperandType::VARIABLE, varName);
     return intermediateCode;
 }
 

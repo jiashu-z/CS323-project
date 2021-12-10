@@ -80,4 +80,6 @@ IntermediateCode *createMinusCode(std::string &result, std::string &oprand1);
 
 IntermediateCode *createFuntionDecCode(std::string &funtionName);
 
+IntermediateCode *createParamCode(std::string &varName);
+
 #endif //CS323_PROJECT1_INTERMEDIATECODE_H

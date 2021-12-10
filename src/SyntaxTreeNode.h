@@ -47,7 +47,18 @@ enum class ProductionEnum {
 //
     ARGS_FROM_EXP,
     ARGS_FROM_EXP_COMMA_ARGS,
+
     EXTDEF_FROM_FUNC,
+
+    DEC_FROM_VARDEC,
+    DEC_FROM_VARDEC_ASSIGN_EXP,
+
+    VARDEC_FROM_ID,
+    VARDEC_FROM_LB_INT_RB,
+
+    FUNDEC_FROM_ID_LP_VARLIST_RP,
+    FUNDEC_FROM_ID_LP_RP,
+
     OTHER //do nothing
 };
 

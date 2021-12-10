@@ -7,8 +7,9 @@
 std::string zero = "0";
 std::string one = "1";
 
+
 static std::string new_temp() {
-    static int tempValueTemp = 1;
+    static int tempValueTemp = 0;
     return std::string("t").append(std::to_string(tempValueTemp++));
 }
 
@@ -44,7 +45,17 @@ void translateFunctionAndPrint(SyntaxTreeNode *program, SymbolTable &symboltable
 
 std::vector<IntermediateCode *> &translate_fundec(SyntaxTreeNode *fundec, SymbolTable &symbolTable) {
     //  std::cout<<__func__<<":"<<__LINE__<<std::endl;
-    return translate_fundec_without_args(fundec, symbolTable);
+    switch (fundec->productionEnum) {
+        case ProductionEnum::FUNDEC_FROM_ID_LP_VARLIST_RP: {
+            return translate_fundec_with_args(fundec, symbolTable);
+        }
+        case ProductionEnum::FUNDEC_FROM_ID_LP_RP: {
+            return translate_fundec_without_args(fundec, symbolTable);
+        }
+        default:
+            return fundec->selfAndChildrenCodes;
+    }
+
 }
 
 std::vector<IntermediateCode *> &translate_fundec_without_args(SyntaxTreeNode *fundec, SymbolTable &symbolTable) {
@@ -56,16 +67,90 @@ std::vector<IntermediateCode *> &translate_fundec_without_args(SyntaxTreeNode *f
 
 }
 
+void getParamDecs(SyntaxTreeNode *varList, std::vector<SyntaxTreeNode *> &paramDecs) {
+    if (varList->children.size() == 3) {
+        paramDecs.push_back(varList->children.at(0));
+        getParamDecs(varList->children.at(2), paramDecs);
+    } else if (varList->children.size() == 1) {
+        paramDecs.push_back(varList->children.at(0));
+    }
+}
+
+std::vector<IntermediateCode *> &translate_VarList(SyntaxTreeNode *varList) {
+    std::vector<SyntaxTreeNode *> paramDecs;
+    getParamDecs(varList, paramDecs);
+    for (int i = 0; i < paramDecs.size(); ++i) {
+        SyntaxTreeNode *varDec = paramDecs.at(i)->children.at(1);
+        if (varDec->productionEnum == ProductionEnum::VARDEC_FROM_ID) {
+            std::string varName = varDec->children.at(0)->attribute_value;
+            IntermediateCode *intermediateCode = createParamCode(varName);
+            varList->selfAndChildrenCodes.push_back(intermediateCode);
+        }
+    }
+    return varList->selfAndChildrenCodes;
+}
+
+std::vector<IntermediateCode *> &translate_fundec_with_args(SyntaxTreeNode *fundec, SymbolTable &symbolTable) {
+    //   std::cout<<__func__<<":"<<__LINE__<<std::endl;
+    std::string functionName = fundec->symbol->name;
+    IntermediateCode *functionCode = createFuntionDecCode(functionName);
+    fundec->selfAndChildrenCodes.push_back(functionCode);
+    SyntaxTreeNode *varList = fundec->children.at(2);
+    std::vector<IntermediateCode *> &code1 = translate_VarList(varList);
+    mergeInterCode(fundec, code1);
+    return fundec->selfAndChildrenCodes;
+}
+
+void getDefs(SyntaxTreeNode *defList, std::vector<SyntaxTreeNode *> &defs) {
+    if (defList->children.size() == 2) {
+        defs.push_back(defList->children.at(0));
+        getDefs(defList->children.at(1), defs);
+    }
+}
+
+void getDecs(SyntaxTreeNode *decList, std::vector<SyntaxTreeNode *> &decs) {
+    if (decList->children.size() == 3) {
+        decs.push_back(decList->children.at(0));
+        getDecs(decList->children.at(2), decs);
+    } else if (decList->children.size() == 1) {
+        decs.push_back(decList->children.at(0));
+    }
+}
+
 std::vector<IntermediateCode *> &translate_Compst(SyntaxTreeNode *compst, SymbolTable &symbolTable) {
     // std::cout<<__func__<<":"<<__LINE__<<std::endl;
     SyntaxTreeNode *stmtList = compst->children.at(2);
+    SyntaxTreeNode *defList = compst->children.at(1);
+    std::vector<SyntaxTreeNode *> defs;
+    std::vector<SyntaxTreeNode *> decs;
     std::vector<SyntaxTreeNode *> stmts;
     getStmtNodes(stmtList, stmts);
+    getDefs(defList, defs);
+    for (int i = 0; i < defs.size(); ++i) {
+        SyntaxTreeNode *decList = defs.at(i)->children.at(1);
+        getDecs(decList, decs);
+    }
+    for (int i = 0; i < decs.size(); ++i) {
+        std::vector<IntermediateCode *> &codes = translate_dec(decs.at(i), symbolTable);
+        mergeInterCode(compst, codes);
+    }
     for (int i = 0; i < stmts.size(); ++i) {
         std::vector<IntermediateCode *> &codes = translate_stmt(stmts.at(i), symbolTable);
         mergeInterCode(compst, codes);
     }
     return compst->selfAndChildrenCodes;
+}
+
+std::vector<IntermediateCode *> &translate_dec(SyntaxTreeNode *dec, SymbolTable &symbolTable) {
+    switch (dec->productionEnum) {
+        case ProductionEnum::DEC_FROM_VARDEC_ASSIGN_EXP: {
+            std::string temp = "null";
+            translate_Exp(dec, symbolTable, temp);
+            return dec->selfAndChildrenCodes;
+        }
+        default:
+            return dec->selfAndChildrenCodes;
+    }
 }
 
 void getStmtNodes(SyntaxTreeNode *stmtList, std::vector<SyntaxTreeNode *> &stmts) {
@@ -127,11 +212,17 @@ std::vector<IntermediateCode *> &translate_Exp(SyntaxTreeNode *exp, SymbolTable 
             exp->selfAndChildrenCodes.push_back(code);
             return exp->selfAndChildrenCodes;
         }
-        case ProductionEnum::EXP_FROM_EXP_ASSIGNOP_EXP: {
-            SyntaxTreeNode *operatorNode = exp->children.at(1);
+        case ProductionEnum::EXP_FROM_EXP_ASSIGNOP_EXP:
+        case ProductionEnum::DEC_FROM_VARDEC_ASSIGN_EXP: {
             SyntaxTreeNode *leftExp = exp->children.at(0);
             SyntaxTreeNode *rightExp = exp->children.at(2);
-            std::string variableName = leftExp->symbol->name; //the symbol is reserved in semantic analyzer, so we just get it, not using symbol table
+            std::string variableName = "";
+            if (leftExp->productionEnum == ProductionEnum::EXP_FROM_ID ||
+                leftExp->productionEnum == ProductionEnum::VARDEC_FROM_ID) {
+                variableName = leftExp->children.at(0)->attribute_value;
+            } else {
+                variableName = leftExp->symbol->name; //struct or array, not tested
+            }
             std::string temp = new_temp();
             std::vector<IntermediateCode *> &code1 = translate_Exp(rightExp, symbolTable, temp);
             IntermediateCode *code2 = createAssignCode(variableName, temp);

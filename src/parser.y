@@ -155,22 +155,26 @@ StructSpecifier: STRUCT ID LC DefList RC {
 VarDec: ID {
         $$ = new SyntaxTreeNode("VarDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert($1);
+        $$->productionEnum=ProductionEnum::VARDEC_FROM_ID;
     }
     | VarDec LB INT RB {
         $$ = new SyntaxTreeNode("VarDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3,$4});
         assignIDArrayType($$,$1);
+        $$->productionEnum=ProductionEnum::VARDEC_FROM_LB_INT_RB;
     }
     ;
 FunDec: ID LP VarList RP {
         $$ = new SyntaxTreeNode("FunDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3,$4});
         insertFunctionSymbol($$,symbolTable,false);
+       	$$->productionEnum=ProductionEnum::FUNDEC_FROM_ID_LP_VARLIST_RP;
     }
     | ID LP RP {
         $$ = new SyntaxTreeNode("FunDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3});
         insertFunctionSymbol($$,symbolTable,false);
+        $$->productionEnum=ProductionEnum::FUNDEC_FROM_ID_LP_RP;
     }
     | ID LP VarList error {
         error_message("Missing closing parenthesis ')'");
@@ -335,11 +339,13 @@ Dec: VarDec {
         $$ = new SyntaxTreeNode("Dec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert($1);
         updateSyntaxTreeNodeSymbol($$,$1);
+        $$->productionEnum=ProductionEnum::DEC_FROM_VARDEC;
     }
     | VarDec ASSIGN Exp {
         $$ = new SyntaxTreeNode("Dec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3});
         updateSyntaxTreeNodeSymbol($$,$1);
+        $$->productionEnum=ProductionEnum::DEC_FROM_VARDEC_ASSIGN_EXP;
     };
 
 // expression
