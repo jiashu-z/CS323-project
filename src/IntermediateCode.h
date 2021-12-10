@@ -10,9 +10,7 @@
 enum class OperandType {
     VARIABLE,
     CONSTANT,
-    ADDRESS,
-    POINTER,
-    JUMP_LABEL
+    ADDRESS
 };
 
 enum class IntermediateCodeType {
@@ -39,8 +37,6 @@ public:
     OperandType operandEnum;
 
     std::string variName;
-    std::string constant;
-    std::string jumpLabel;
 };
 
 class IntermediateCode {
