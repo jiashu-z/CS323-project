@@ -1,0 +1,9 @@
+int main()
+{
+    int v1;
+    v1 = read();
+    if (v1 > 0) write(1);
+    else if (v1 < 0) write (-1);
+    else write(0);
+    return 0;
+}

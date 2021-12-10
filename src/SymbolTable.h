@@ -87,13 +87,13 @@ class StructType {
 };
 
 class FunctionType {
- public:
-  std::string functionName;
-  std::vector<Symbol*> argsType;
-    SymbolType returnType;
+public:
+    std::string functionName;
+    std::vector<Symbol *> argsType;
+    Symbol *returnType;
     bool hasDefinition = true;
 
-  FunctionType() = default;
+    FunctionType() = default;
 };
 
 #endif  // CS323_PROJECT1_SYMBOLTABLE_H

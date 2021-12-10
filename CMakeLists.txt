@@ -47,8 +47,8 @@ add_executable(main
         ${BisonOutput}
         src/SymbolTable.cpp
         src/SemanticAnalyzer.cpp
-
-
+        src/IntermediateCode.cpp
+        src/IntermediateCodeTranlator.cpp
         )
 add_dependencies(main lexer parser)
 target_link_libraries(main

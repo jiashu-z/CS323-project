@@ -79,17 +79,24 @@ other_test(){
       done
 }
 
-new_feature() {
-    ./splc.out ./demo_test/test_SID_2.spl
-    ./splc.out ./demo_test/test_1_r12.spl
+output_ir() {
+  TEST_DIR="project3_test/test"
+  PREFIX="test_3_r"
+  able=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10")
+  for i in "${able[@]}"; do
+    echo "begin output ${PREFIX}${i}:"
+    bin/splc ./${TEST_DIR}/${PREFIX}${i}.spl > ./${TEST_DIR}/${PREFIX}"${i}".ir 2>&1
+    echo "========================================================================="
+  done
 }
 make clean splc
-echo "==================demo_test begin"
-demo_test
-echo "==================own_test begin"
-own_test
-echo "==================ex_test begin"
-ex_test
+output_ir
+#echo "==================demo_test begin"
+#demo_test
+#echo "==================own_test begin"
+#own_test
+#echo "==================ex_test begin"
+#ex_test
 #other_test
 #make_test_stdoutput
 #new_feature

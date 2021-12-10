@@ -21,6 +21,8 @@ splc: .lex  .syntax
     $(SRC_PATH)/parser.cpp \
     $(SRC_PATH)/SymbolTable.cpp \
     $(SRC_PATH)/SemanticAnalyzer.cpp \
+    $(SRC_PATH)/IntermediateCodeTranlator.cpp\
+    $(SRC_PATH)/IntermediateCode.cpp\
     -L$(SRC_PATH) -lfl -ly \
     -o bin/splc
 clean:

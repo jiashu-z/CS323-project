@@ -4,6 +4,7 @@
 
 #ifndef CS323_PROJECT1_SEMANTICANALYZER_H
 #define CS323_PROJECT1_SEMANTICANALYZER_H
+
 #include <iostream>
 
 #include "SymbolTable.h"
@@ -76,4 +77,7 @@ void checkArgsType(std::vector<Symbol *> &expectArgs, std::vector<Symbol *> &act
                    const std::string &functionName);
 
 void insertExtPrimarySymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable);
+
+void initFunction(SymbolTable &symbolTable);
+
 #endif  // CS323_PROJECT1_SEMANTICANALYZER_H
