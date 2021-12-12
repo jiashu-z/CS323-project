@@ -21,7 +21,7 @@ class IROptimizer {
   };
 
   const std::vector<IntermediateCode> original_ir_vector_;
-  std::list<BasicBlock> basic_block_list_;
+  std::vector<BasicBlock> basic_blocks_;
 
   static BasicBlock EliminateCommonSubexpressions(BasicBlock basic_block);
   static std::set<std::string> ComputeDef(const BasicBlock& basic_block);
@@ -29,9 +29,10 @@ class IROptimizer {
   void GenerateBasicBlocks();
   void BuildBasicBlockDAG();
   void DoLocalOptimization();
+  bool CheckIfTempVarCrossBasicBlock();
  public:
   explicit IROptimizer(const std::vector<IntermediateCode>& ir_vector);
-  std::list<IntermediateCode> GenerateOptimizedIR();
+  std::vector<IntermediateCode> GenerateOptimizedIR();
 };
 
 #endif

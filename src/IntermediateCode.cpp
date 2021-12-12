@@ -7,6 +7,9 @@
 
 IntermediateCode::IntermediateCode(IntermediateCodeType type) {
     this->intermediateCodeEnum = type;
+    this->result = nullptr;
+    this->op1 = nullptr;
+    this->op2 = nullptr;
 }
 
 void IntermediateCode::print() {
@@ -78,11 +81,6 @@ void IntermediateCode::print() {
             break;
         }
     }
-}
-
-
-Operand::Operand(OperandType type) {
-    this->operandEnum = type;
 }
 
 Operand::Operand(OperandType type, std::string &variableName) {

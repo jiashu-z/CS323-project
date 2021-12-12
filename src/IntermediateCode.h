@@ -30,8 +30,6 @@ enum class IntermediateCodeType {
 
 class Operand {
 public:
-    Operand(OperandType type);
-
     Operand(OperandType type, std::string &variableName);
 
     OperandType operandEnum;
