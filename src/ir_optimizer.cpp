@@ -17,7 +17,6 @@ void IROptimizer::GenerateBasicBlocks() {
         basic_blocks_.push_back(block);
       }
       block = BasicBlock();
-      block.ir_vector_.push_back(*iter);
     }
     block.ir_vector_.push_back(*iter);
     if (iter != original_ir_vector_.end()
@@ -123,4 +122,8 @@ bool IROptimizer::CheckIfTempVarCrossBasicBlock() {
     }
   }
   return false;
+}
+
+IROptimizer::BasicBlock IROptimizer::EliminateLocalTempVar(BasicBlock basic_block) {
+
 }
