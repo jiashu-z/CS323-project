@@ -13,6 +13,15 @@ IntermediateCode::IntermediateCode(IntermediateCodeType type) {
 }
 
 void IntermediateCode::print() const {
+    if (this->result != nullptr && this->result->var_name_[0] == '_') {
+        this->result->var_name_ = this->result->var_name_.substr(1, result->var_name_.size() - 1);
+    }
+    if (this->op1 != nullptr && this->op1->var_name_[0] == '_') {
+        this->op1->var_name_ = this->op1->var_name_.substr(1, op1->var_name_.size() - 1);
+    }
+    if (this->op2 != nullptr && this->op2->var_name_[0] == '_') {
+        this->op2->var_name_ = this->op2->var_name_.substr(1, op2->var_name_.size() - 1);
+    }
     switch (this->intermediateCodeEnum) {
         case IntermediateCodeType::ASSIGN: {
             std::cout << this->op1->var_name_ << " := " << this->op2->var_name_ << std::endl;

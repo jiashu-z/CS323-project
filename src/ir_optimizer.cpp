@@ -128,7 +128,7 @@ bool IROptimizer::CheckIfTempVarCrossBasicBlock() {
   return false;
 }
 
-IROptimizer::BasicBlock IROptimizer::PropagateConstant(const BasicBlock& basic_block) {
+IROptimizer::BasicBlock IROptimizer::PropagateConstant(const BasicBlock &basic_block) {
   std::vector<IntermediateCode> ir_vec;
   std::map<std::string, int> const_map;
   for (const auto &ir: basic_block.ir_vector_) {
@@ -153,8 +153,10 @@ IROptimizer::BasicBlock IROptimizer::PropagateConstant(const BasicBlock& basic_b
           std::string val_str = std::to_string(const_map[ir.op1->var_name_]);
           auto new_ir_ptr = createConstantCode(ir.op1->var_name_, val_str);
           ir_vec.push_back(*new_ir_ptr);
-        } else if (const_map.find(ir.op1->var_name_) != const_map.end()) {
-          const_map.erase(ir.op1->var_name_);
+        } else {
+          if (const_map.find(ir.op1->var_name_) != const_map.end()) {
+            const_map.erase(ir.op1->var_name_);
+          }
           ir_vec.push_back(ir);
         }
         break;
