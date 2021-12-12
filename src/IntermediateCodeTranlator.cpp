@@ -293,13 +293,23 @@ std::vector<IntermediateCode *> &translate_Exp(SyntaxTreeNode *exp, SymbolTable 
 
         }
         case ProductionEnum::EXP_FROM_EXP_BINARY_EXP: {
-            std::string temp1 = new_temp();
-            std::string temp2 = new_temp();
-            std::vector<IntermediateCode *> &code1 = translate_Exp(exp->children.at(0), symbolTable, temp1);
-            std::vector<IntermediateCode *> &code2 = translate_Exp(exp->children.at(2), symbolTable, temp2);
+            std::string temp1 = "null";
+            std::string temp2 = "null";
+            if (exp->children.at(0)->productionEnum != ProductionEnum::EXP_FROM_ID) {
+                temp1 = new_temp();
+                std::vector<IntermediateCode *> &code1 = translate_Exp(exp->children.at(0), symbolTable, temp1);
+                mergeInterCode(exp, code1);
+            } else {
+                temp1 = exp->children.at(0)->children.at(0)->attribute_value;
+            }
+            if (exp->children.at(2)->productionEnum != ProductionEnum::EXP_FROM_ID) {
+                temp2 = new_temp();
+                std::vector<IntermediateCode *> &code2 = translate_Exp(exp->children.at(2), symbolTable, temp2);
+                mergeInterCode(exp, code2);
+            } else {
+                temp2 = exp->children.at(2)->children.at(0)->attribute_value;
+            }
             IntermediateCode *code3 = createBinaryCode(place, temp1, temp2, exp->children.at(1)->attribute_value);
-            mergeInterCode(exp, code1);
-            mergeInterCode(exp, code2);
             exp->selfAndChildrenCodes.push_back(code3);
             return exp->selfAndChildrenCodes;
         }
