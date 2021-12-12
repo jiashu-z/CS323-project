@@ -1,6 +1,7 @@
 #include "ir_optimizer.h"
 #include <map>
 #include <algorithm>
+#include <iostream>
 
 IROptimizer::IROptimizer(const std::vector<IntermediateCode> &ir_vector) : original_ir_vector_(
     ir_vector) {}
@@ -25,6 +26,7 @@ void IROptimizer::GenerateBasicBlocks() {
       basic_blocks_.push_back(block);
       block = BasicBlock();
     }
+    iter++;
   }
   basic_blocks_.push_back(block);
 }
@@ -86,13 +88,13 @@ bool IROptimizer::CheckIfTempVarCrossBasicBlock() {
     auto &basic_block = basic_blocks_[i];
     std::set<std::string> var_name_set;
     for (const auto &ir: basic_block.ir_vector_) {
-      if (ir.result != nullptr && ir.result->var_name_[0] == 't') {
+      if (ir.result != nullptr && ir.result->var_name_[0] == '_') {
         var_name_set.insert(ir.result->var_name_);
       }
-      if (ir.op1 != nullptr && ir.op1->var_name_[0] == 't') {
+      if (ir.op1 != nullptr && ir.op1->var_name_[0] == '_') {
         var_name_set.insert(ir.op1->var_name_);
       }
-      if (ir.op2 != nullptr && ir.op2->var_name_[0] == 't') {
+      if (ir.op2 != nullptr && ir.op2->var_name_[0] == '_') {
         var_name_set.insert(ir.op2->var_name_);
       }
     }
@@ -109,11 +111,16 @@ bool IROptimizer::CheckIfTempVarCrossBasicBlock() {
                             iter1.second.end(),
                             iter2.second.begin(),
                             iter2.second.end(),
-                            intersection.begin());
+                            std::back_inserter(intersection));
       if (!intersection.empty()) {
-        return false;
+        std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+        for (const auto &iter : intersection) {
+          std::cout << iter << std::endl;
+        }
+        std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+        return true;
       }
     }
   }
-  return true;
+  return false;
 }

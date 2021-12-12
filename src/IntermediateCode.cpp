@@ -12,7 +12,7 @@ IntermediateCode::IntermediateCode(IntermediateCodeType type) {
     this->op2 = nullptr;
 }
 
-void IntermediateCode::print() {
+void IntermediateCode::print() const {
     switch (this->intermediateCodeEnum) {
         case IntermediateCodeType::ASSIGN: {
             std::cout << this->op1->var_name_ << " := " << this->op2->var_name_ << std::endl;

@@ -45,9 +45,9 @@ public:
     Operand *op2;
     std::string relation;
 
-    IntermediateCode(IntermediateCodeType type);
+    explicit IntermediateCode(IntermediateCodeType type);
 
-    void print();
+    void print() const;
 };
 
 IntermediateCode *createCallFuntionCode(std::string &rtName, std::string &funtionName);

@@ -4,6 +4,7 @@
 
 #include "IntermediateCodeTranlator.h"
 #include "IntermediateCode.h"
+#include "ir_optimizer.h"
 
 std::string zero = "0";
 std::string one = "1";
@@ -11,7 +12,7 @@ std::string one = "1";
 
 static std::string new_temp() {
     static int tempValueTemp = 0;
-    return std::string("t").append(std::to_string(tempValueTemp++));
+    return std::string("_t").append(std::to_string(tempValueTemp++));
 }
 
 static std::string new_label() {
@@ -39,8 +40,17 @@ void translateFunctionAndPrint(SyntaxTreeNode *program, SymbolTable &symboltable
             std::vector<IntermediateCode *> &code2 = translate_Compst(extDef->children.at(1), symboltable);
             mergeInterCode(extDef, code1);
             mergeInterCode(extDef, code2);
-            extDef->printInterCode();
+            mergeInterCode(program, extDef->selfAndChildrenCodes);
         }
+    }
+    std::vector<IntermediateCode> ir_vec;
+    for (const auto& iter : program->selfAndChildrenCodes) {
+      ir_vec.push_back(*iter);
+    }
+    IROptimizer optimizer(ir_vec);
+    ir_vec = optimizer.GenerateOptimizedIR();
+    for (const auto& ir : ir_vec) {
+      ir.print();
     }
 }
 
