@@ -31,8 +31,11 @@ void IROptimizer::GenerateBasicBlocks() {
 }
 
 void IROptimizer::DoLocalOptimization() {
-  for (auto i = 0; i < basic_blocks_.size(); ++i) {
-    basic_blocks_[i] = PropagateConstant(basic_blocks_[i]);
+  for (auto & basic_block : basic_blocks_) {
+    basic_block = PropagateConstant(basic_block);
+  }
+  for (auto & basic_block : basic_blocks_) {
+    basic_block = EliminateLocalDeadCode(basic_block);
   }
 }
 
@@ -193,6 +196,168 @@ IROptimizer::BasicBlock IROptimizer::PropagateConstant(const BasicBlock &basic_b
         ir_vec.push_back(ir);
       }
     }
+  }
+  BasicBlock basic_block1;
+  basic_block1.ir_vector_ = ir_vec;
+  return basic_block1;
+}
+
+IROptimizer::BasicBlock IROptimizer::EliminateLocalDeadCode(const BasicBlock &basic_block) {
+  typedef IntermediateCode IR;
+  auto is_var_name = [](const std::string &str) -> bool {
+    return !(str[0] == '-' || std::isdigit(str[0]));
+  };
+  std::set<size_t> eliminate_index;
+  std::set<std::string> use;
+  std::vector<IR> ir_vec;
+  /*
+   * 
+    enum class IntermediateCodeType {
+    ASSIGN,
+    BINARY,
+    MINUS,
+    RETURN,
+    ARG,
+    WRITE,
+    DEC,
+    IF_GOTO,
+    ARRAY_OFFSET,
+    GET_VALUE_IN_ADDRESS,
+    ASSIGN_VALUE_IN_ADDRESS,
+    ADDRESS_ASSIGN_ADDRESS
+};
+   */
+  for (size_t i = basic_block.ir_vector_.size(); i > 0; --i) {
+    IR ir = basic_block.ir_vector_[i - 1];
+    switch (ir.intermediateCodeEnum) {
+      case IntermediateCodeType::CONSTANT:
+      case IntermediateCodeType::ASSIGN: {
+        if (is_var_name(ir.op1->var_name_)) {
+//          lhs is a var name
+          if (ir.op1->var_name_[0] != '_') {
+//            lhs is not tmp
+            if (is_var_name(ir.op2->var_name_)) {
+              use.insert(ir.op2->var_name_);
+            }
+          } else {
+//            lhs is tmp
+            if (use.find(ir.op1->var_name_) != use.end()) {
+//              lhs will be used
+              use.erase(ir.op1->var_name_);
+              if (is_var_name(ir.op2->var_name_)) {
+                use.insert(ir.op2->var_name_);
+              }
+            } else {
+//              lhs will not be used.
+              use.erase(ir.op1->var_name_);
+              eliminate_index.insert(i - 1);
+            }
+          }
+        } else {
+          std::cerr << __FILE__ << ":" << __LINE__ << std::endl;
+        }
+        break;
+      }
+      case IntermediateCodeType::CALL: {
+        use.insert(ir.result->var_name_);
+        break;
+      }
+      case IntermediateCodeType::BINARY: {
+        if (is_var_name(ir.result->var_name_)) {
+          if (ir.result->var_name_[0] != '_') {
+            if (is_var_name(ir.op1->var_name_)) {
+              use.insert(ir.op1->var_name_);
+            }
+            if (is_var_name(ir.op2->var_name_)) {
+              use.insert(ir.op2->var_name_);
+            }
+          } else {
+            if (use.find(ir.result->var_name_) != use.end()) {
+              use.erase(ir.result->var_name_);
+              if (is_var_name(ir.op1->var_name_)) {
+                use.insert(ir.op1->var_name_);
+              }
+              if (is_var_name(ir.op2->var_name_)) {
+                use.insert(ir.op2->var_name_);
+              } else {
+                use.erase(ir.result->var_name_);
+                eliminate_index.insert(i - 1);
+              }
+            }
+          }
+        } else {
+          std::cerr << __FILE__ << ":" << __LINE__ << std::endl;
+        }
+        break;
+      };
+      case IntermediateCodeType::MINUS: {
+        if (is_var_name(ir.result->var_name_)) {
+//          lhs is a var name
+          if (ir.result->var_name_[0] != '_') {
+//            lhs is not tmp
+            if (is_var_name(ir.op1->var_name_)) {
+              use.insert(ir.op1->var_name_);
+            }
+          } else {
+//            lhs is tmp
+            if (use.find(ir.result->var_name_) != use.end()) {
+//              lhs will be used
+              use.erase(ir.result->var_name_);
+              if (is_var_name(ir.op1->var_name_)) {
+                use.insert(ir.op1->var_name_);
+              }
+            } else {
+//              lhs will not be used.
+              use.erase(ir.result->var_name_);
+              eliminate_index.insert(i - 1);
+            }
+          }
+        } else {
+          std::cerr << __FILE__ << ":" << __LINE__ << std::endl;
+        }
+        break;
+      }
+      case IntermediateCodeType::LABEL:
+      case IntermediateCodeType::GOTO:
+      case IntermediateCodeType::FUNCTION: {
+        break;
+      }
+      case IntermediateCodeType::PARAM:
+      case IntermediateCodeType::ARG:
+      case IntermediateCodeType::WRITE:
+      case IntermediateCodeType::RETURN: {
+        if (is_var_name(ir.op1->var_name_)) {
+          use.insert(ir.op1->var_name_);
+        }
+        break;
+      }
+      case IntermediateCodeType::READ: {
+        if (is_var_name(ir.op1->var_name_)) {
+          use.erase(ir.op1->var_name_);
+        }
+        break;
+      }
+      case IntermediateCodeType::DEC:break;
+      case IntermediateCodeType::IF_GOTO: {
+        if (is_var_name(ir.op1->var_name_)) {
+          use.insert(ir.op1->var_name_);
+        }
+        if (is_var_name(ir.op2->var_name_)) {
+          use.insert(ir.op2->var_name_);
+        }
+        break;
+      }
+      case IntermediateCodeType::ARRAY_OFFSET:break;
+      case IntermediateCodeType::GET_VALUE_IN_ADDRESS:break;
+      case IntermediateCodeType::ASSIGN_VALUE_IN_ADDRESS:break;
+      case IntermediateCodeType::ADDRESS_ASSIGN_ADDRESS:break;
+    }
+  }
+  for (size_t i = 0; i < basic_block.ir_vector_.size(); ++i) {
+    if (eliminate_index.find(i) != eliminate_index.end()) {
+      continue;
+    }
+    ir_vec.push_back(basic_block.ir_vector_[i]);
   }
   BasicBlock basic_block1;
   basic_block1.ir_vector_ = ir_vec;

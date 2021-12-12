@@ -84,7 +84,7 @@ createBinaryCode(std::string &result, std::string &oprand1, std::string &oprand2
 
 IntermediateCode *createMinusCode(std::string &result, std::string &oprand1);
 
-IntermediateCode *createFuntionDecCode(std::string &funtionName);
+IntermediateCode *createFunctionDecCode(std::string &funtionName);
 
 IntermediateCode *createParamCode(std::string &varName);
 

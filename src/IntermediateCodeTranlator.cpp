@@ -72,7 +72,7 @@ std::vector<IntermediateCode *> &translate_fundec(SyntaxTreeNode *fundec, Symbol
 std::vector<IntermediateCode *> &translate_fundec_without_args(SyntaxTreeNode *fundec, SymbolTable &symbolTable) {
     //   std::cout<<__func__<<":"<<__LINE__<<std::endl;
     std::string functionName = fundec->symbol->name;
-    IntermediateCode *functionCode = createFuntionDecCode(functionName);
+    IntermediateCode *functionCode = createFunctionDecCode(functionName);
     fundec->selfAndChildrenCodes.push_back(functionCode);
     return fundec->selfAndChildrenCodes;
 
@@ -104,7 +104,7 @@ std::vector<IntermediateCode *> &translate_VarList(SyntaxTreeNode *varList) {
 std::vector<IntermediateCode *> &translate_fundec_with_args(SyntaxTreeNode *fundec, SymbolTable &symbolTable) {
     //   std::cout<<__func__<<":"<<__LINE__<<std::endl;
     std::string functionName = fundec->symbol->name;
-    IntermediateCode *functionCode = createFuntionDecCode(functionName);
+    IntermediateCode *functionCode = createFunctionDecCode(functionName);
     fundec->selfAndChildrenCodes.push_back(functionCode);
     SyntaxTreeNode *varList = fundec->children.at(2);
     std::vector<IntermediateCode *> &code1 = translate_VarList(varList);

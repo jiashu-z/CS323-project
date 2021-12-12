@@ -122,7 +122,7 @@ Operand::Operand(OperandType type, std::string &variableName) {
     this->var_name_ = variableName;
 }
 
-IntermediateCode *createFuntionDecCode(std::string &funtionName) {
+IntermediateCode *createFunctionDecCode(std::string &funtionName) {
     IntermediateCode *intermediateCode = new IntermediateCode(IntermediateCodeType::FUNCTION);
     intermediateCode->op1 = new Operand(OperandType::VARIABLE, funtionName);
     return intermediateCode;
