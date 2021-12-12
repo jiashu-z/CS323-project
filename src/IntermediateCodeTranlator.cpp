@@ -485,14 +485,28 @@ translate_cond_Exp(SyntaxTreeNode *exp, SymbolTable &symbolTable, std::string &l
     // std::cout<<__func__<<":"<<__LINE__<<std::endl;
     switch (exp->productionEnum) {
         case ProductionEnum::EXP_FROM_EXP_RELOP_EXP: {
-            std::string temp1 = new_temp();
-            std::string temp2 = new_temp();
-            std::vector<IntermediateCode *> &code1 = translate_Exp(exp->children.at(0), symbolTable, temp1);
-            std::vector<IntermediateCode *> &code2 = translate_Exp(exp->children.at(2), symbolTable, temp2);
+
+
+            std::string temp1 = "null";
+            std::string temp2 = "null";
+
+            if (exp->children.at(0)->productionEnum != ProductionEnum::EXP_FROM_ID) {
+                temp1 = new_temp();
+                std::vector<IntermediateCode *> &code1 = translate_Exp(exp->children.at(0), symbolTable, temp1);
+                mergeInterCode(exp, code1);
+            } else {
+                temp1 = exp->children.at(0)->children.at(0)->attribute_value;
+            }
+            if (exp->children.at(2)->productionEnum != ProductionEnum::EXP_FROM_ID) {
+                temp2 = new_temp();
+                std::vector<IntermediateCode *> &code2 = translate_Exp(exp->children.at(2), symbolTable, temp2);
+                mergeInterCode(exp, code2);
+            } else {
+                temp2 = exp->children.at(2)->children.at(0)->attribute_value;
+            }
+
             IntermediateCode *ifGOTOCode = createIfGOTOCode(temp1, temp2, exp->children.at(1)->attribute_value, lb_t);
             IntermediateCode *GOTOcode = createGOTOCode(lb_f);
-            mergeInterCode(exp, code1);
-            mergeInterCode(exp, code2);
             exp->selfAndChildrenCodes.push_back(ifGOTOCode);
             exp->selfAndChildrenCodes.push_back(GOTOcode);
             return exp->selfAndChildrenCodes;
