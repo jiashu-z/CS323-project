@@ -153,7 +153,7 @@ IROptimizer::BasicBlock IROptimizer::PropagateConstant(const BasicBlock& basic_b
           std::string val_str = std::to_string(const_map[ir.op1->var_name_]);
           auto new_ir_ptr = createConstantCode(ir.op1->var_name_, val_str);
           ir_vec.push_back(*new_ir_ptr);
-        } else if (const_map.find(ir.result->var_name_) != const_map.end()) {
+        } else if (const_map.find(ir.op1->var_name_) != const_map.end()) {
           const_map.erase(ir.op1->var_name_);
           ir_vec.push_back(ir);
         }
