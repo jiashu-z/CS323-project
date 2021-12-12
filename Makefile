@@ -23,6 +23,7 @@ splc: .lex  .syntax
     $(SRC_PATH)/SemanticAnalyzer.cpp \
     $(SRC_PATH)/IntermediateCodeTranlator.cpp\
     $(SRC_PATH)/IntermediateCode.cpp\
+    $(SRC_PATH)/ir_optimizer.cpp\
     -L$(SRC_PATH) -lfl -ly \
     -o bin/splc
 clean:
