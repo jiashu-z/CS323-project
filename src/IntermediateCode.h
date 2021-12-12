@@ -24,8 +24,11 @@ enum class IntermediateCodeType {
     FUNCTION,
     RETURN, PARAM, ARG, READ, WRITE,
     DEC,
-    IF_GOTO, IF_ELSE,
-    ASSIGN_ADDRESS, ASSIGN_VALUE_IN_ADDRESS, COPY_VALUE_TO_ADDRESS
+    IF_GOTO,
+    ARRAY_OFFSET,
+    GET_VALUE_IN_ADDRESS,
+    ASSIGN_VALUE_IN_ADDRESS,
+    ADDRESS_ASSIGN_ADDRESS
 };
 
 class Operand {
@@ -84,5 +87,24 @@ IntermediateCode *createMinusCode(std::string &result, std::string &oprand1);
 IntermediateCode *createFuntionDecCode(std::string &funtionName);
 
 IntermediateCode *createParamCode(std::string &varName);
+
+IntermediateCode *
+createArrayOffsetCode(std::string &result, std::string &oprand1, std::string &oprand2, std::string &binaryOperator);
+
+IntermediateCode *
+createGetValueInAddressCode(std::string &result, std::string &oprand1);
+
+IntermediateCode *
+createAssignValueInAddressCode(std::string &result, std::string &oprand1);
+
+IntermediateCode *
+createIntMultiF4Code(std::string &result, std::string &oprand1);
+
+IntermediateCode *
+createADDRESS_ASSIGN_ADDRESSCode(std::string &result, std::string &oprand1);
+
+IntermediateCode *
+createArrayDecCode(std::string &arrayName, int size); //can just handle one dim array
+
 
 #endif //CS323_PROJECT1_INTERMEDIATECODE_H

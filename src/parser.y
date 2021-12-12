@@ -161,7 +161,7 @@ VarDec: ID {
         $$ = new SyntaxTreeNode("VarDec",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3,$4});
         assignIDArrayType($$,$1);
-        $$->productionEnum=ProductionEnum::VARDEC_FROM_LB_INT_RB;
+        $$->productionEnum=ProductionEnum::VARDEC_FROM_VARDEC_LB_INT_RB;
     }
     ;
 FunDec: ID LP VarList RP {
@@ -470,6 +470,7 @@ Exp: Exp ASSIGN Exp {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);
         $$->insert({$1,$2,$3,$4});
         checkAndUpdateExpArray($$,$1,$3);
+        $$->productionEnum=ProductionEnum::EXP_FROM_EXP_LB_EXP_RB;
     }
     | Exp DOT ID {
         $$ = new SyntaxTreeNode("Exp",yytext,@$.first_line,@$.first_column,TreeNodeType::Non_Terminal);

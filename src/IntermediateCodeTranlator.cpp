@@ -159,6 +159,19 @@ std::vector<IntermediateCode *> &translate_dec(SyntaxTreeNode *dec, SymbolTable 
             translate_Exp(dec, symbolTable, temp);
             return dec->selfAndChildrenCodes;
         }
+        case ProductionEnum::DEC_FROM_VARDEC: {
+            SyntaxTreeNode *vardec = dec->children.at(0);
+            if (vardec->productionEnum == ProductionEnum::VARDEC_FROM_VARDEC_LB_INT_RB) {
+                SyntaxTreeNode *childrenVardec = vardec->children.at(0);
+                SyntaxTreeNode *intNode = vardec->children.at(2);
+                if (childrenVardec->productionEnum == ProductionEnum::VARDEC_FROM_ID) {
+                    std::string varName = childrenVardec->children.at(0)->attribute_value;
+                    IntermediateCode *intermediateCode = createArrayDecCode(varName, stoi(intNode->attribute_value));
+                    dec->selfAndChildrenCodes.push_back(intermediateCode);
+                    return dec->selfAndChildrenCodes;
+                }
+            }
+        }
         default:
             return dec->selfAndChildrenCodes;
     }
@@ -227,25 +240,57 @@ std::vector<IntermediateCode *> &translate_Exp(SyntaxTreeNode *exp, SymbolTable 
         case ProductionEnum::DEC_FROM_VARDEC_ASSIGN_EXP: {
             SyntaxTreeNode *leftExp = exp->children.at(0);
             SyntaxTreeNode *rightExp = exp->children.at(2);
-            std::string variableName = "";
+
+            if (leftExp->productionEnum == ProductionEnum::EXP_FROM_EXP_LB_EXP_RB &&
+                rightExp->productionEnum != ProductionEnum::EXP_FROM_EXP_LB_EXP_RB) {
+                std::string temp = new_temp();
+                std::string temp2 = new_temp();
+                std::vector<IntermediateCode *> &code1 = translate_Exp(rightExp, symbolTable, temp);
+                std::vector<IntermediateCode *> &code2 = translate_Exp(leftExp, symbolTable, temp2);
+                IntermediateCode *code3 = createAssignValueInAddressCode(temp2, temp);
+                mergeInterCode(exp, code1);
+                mergeInterCode(exp, code2);
+                exp->selfAndChildrenCodes.push_back(code3);
+                return exp->selfAndChildrenCodes;
+            }
+            if (leftExp->productionEnum == ProductionEnum::EXP_FROM_ID &&
+                rightExp->productionEnum == ProductionEnum::EXP_FROM_EXP_LB_EXP_RB) {
+                std::string temp = new_temp();
+                std::vector<IntermediateCode *> &code1 = translate_Exp(rightExp, symbolTable, temp);
+                std::string name = leftExp->children.at(0)->attribute_value;
+                IntermediateCode *code3 = createGetValueInAddressCode(name, temp);
+                mergeInterCode(exp, code1);
+                exp->selfAndChildrenCodes.push_back(code3);
+                return exp->selfAndChildrenCodes;
+            }
+            if (leftExp->productionEnum == ProductionEnum::EXP_FROM_EXP_LB_EXP_RB &&
+                rightExp->productionEnum == ProductionEnum::EXP_FROM_EXP_LB_EXP_RB) {
+                std::string temp = new_temp();
+                std::string temp2 = new_temp();
+                std::vector<IntermediateCode *> &code1 = translate_Exp(rightExp, symbolTable, temp);
+                std::vector<IntermediateCode *> &code2 = translate_Exp(leftExp, symbolTable, temp2);
+                IntermediateCode *code3 = createADDRESS_ASSIGN_ADDRESSCode(temp2, temp);
+                mergeInterCode(exp, code1);
+                mergeInterCode(exp, code2);
+                exp->selfAndChildrenCodes.push_back(code3);
+                return exp->selfAndChildrenCodes;
+            }
             if (leftExp->productionEnum == ProductionEnum::EXP_FROM_ID ||
                 leftExp->productionEnum == ProductionEnum::VARDEC_FROM_ID) {
-                variableName = leftExp->children.at(0)->attribute_value;
-            } else {
-                variableName = leftExp->symbol->name; //struct or array, not tested
-            }
-            std::string temp = new_temp();
-            std::vector<IntermediateCode *> &code1 = translate_Exp(rightExp, symbolTable, temp);
-            IntermediateCode *code2 = createAssignCode(variableName, temp);
-            for (int i = 0; i < code1.size(); ++i) {
-                exp->selfAndChildrenCodes.push_back(code1.at(i));
-            }
-            exp->selfAndChildrenCodes.push_back(code2);
-            if (place != "null") {
-                IntermediateCode *code3 = createAssignCode(place, variableName);
-                exp->selfAndChildrenCodes.push_back(code3);
+                std::string variableName = leftExp->children.at(0)->attribute_value;
+                std::string temp = new_temp();
+                std::vector<IntermediateCode *> &code1 = translate_Exp(rightExp, symbolTable, temp);
+                IntermediateCode *code2 = createAssignCode(variableName, temp);
+                mergeInterCode(exp, code1);
+                exp->selfAndChildrenCodes.push_back(code2);
+                if (place != "null") {
+                    IntermediateCode *code3 = createAssignCode(place, variableName);
+                    exp->selfAndChildrenCodes.push_back(code3);
+                }
+                return exp->selfAndChildrenCodes;
             }
             return exp->selfAndChildrenCodes;
+
         }
         case ProductionEnum::EXP_FROM_EXP_BINARY_EXP: {
             std::string temp1 = new_temp();
@@ -286,6 +331,20 @@ std::vector<IntermediateCode *> &translate_Exp(SyntaxTreeNode *exp, SymbolTable 
         case ProductionEnum::EXP_FROM_LP_EXP_RP: {
             std::vector<IntermediateCode *> &code1 = translate_Exp(exp->children.at(1), symbolTable, place);
             mergeInterCode(exp, code1);
+            return exp->selfAndChildrenCodes;
+        }
+        case ProductionEnum::EXP_FROM_EXP_LB_EXP_RB: {
+            std::string arrayId = exp->children.at(0)->attribute_value;
+            std::string temp1 = new_temp();
+            std::string temp2 = new_temp();
+            //std::string temp3 = new_temp();
+            std::vector<IntermediateCode *> &code2 = translate_Exp(exp->children.at(2), symbolTable, temp1);
+            IntermediateCode *code1 = createIntMultiF4Code(temp2, temp1);
+            IntermediateCode *code3 = createArrayOffsetCode(place, arrayId, temp2,
+                                                            exp->children.at(1)->attribute_value);
+            mergeInterCode(exp, code2);
+            exp->selfAndChildrenCodes.push_back(code1);
+            exp->selfAndChildrenCodes.push_back(code3);
             return exp->selfAndChildrenCodes;
         }
         default:

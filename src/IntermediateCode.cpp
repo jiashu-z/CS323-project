@@ -77,12 +77,37 @@ void IntermediateCode::print() const {
             break;
         }
         case IntermediateCodeType::IF_GOTO: {
-            std::cout << "IF " << this->op1->var_name_ << " " << this->relation << " " << this->op2->var_name_ << " GOTO "
+            std::cout << "IF " << this->op1->var_name_ << " " << this->relation << " " << this->op2->var_name_
+                      << " GOTO "
                       << this->result->var_name_ << std::endl;
             break;
         }
         case IntermediateCodeType::PARAM: {
             std::cout << "PARAM " << this->op1->var_name_ << std::endl;
+            break;
+        }
+        case IntermediateCodeType::ARRAY_OFFSET: {
+            //  std::cout<<"!!!!!!!!!"<<std::endl;
+            std::cout << this->result->var_name_ << " := &" << this->op1->var_name_ << " " << "+" << " "
+                      << this->op2->var_name_ << std::endl;
+            break;
+        }
+        case IntermediateCodeType::GET_VALUE_IN_ADDRESS: {
+            //   std::cout<<"!!!!!!!!!"<<std::endl;
+            std::cout << this->result->var_name_ << " := *" << this->op1->var_name_ << std::endl;
+            break;
+        }
+        case IntermediateCodeType::ASSIGN_VALUE_IN_ADDRESS: {
+            //   std::cout<<"!!!!!!!!!"<<std::endl;
+            std::cout << "*" << this->result->var_name_ << " := " << this->op1->var_name_ << std::endl;
+            break;
+        }
+        case IntermediateCodeType::ADDRESS_ASSIGN_ADDRESS: {
+            std::cout << "*" << this->result->var_name_ << " := *" << this->op1->var_name_ << std::endl;
+            break;
+        }
+        case IntermediateCodeType::DEC: {
+            std::cout << "DEC " << this->op1->var_name_ << " " << this->op2->var_name_ << std::endl;
             break;
         }
         default: {
@@ -185,6 +210,61 @@ createBinaryCode(std::string &result, std::string &oprand1, std::string &oprand2
     intermediateCode->relation = binaryOperator;
     return intermediateCode;
 }
+
+IntermediateCode *
+createArrayOffsetCode(std::string &result, std::string &oprand1, std::string &oprand2, std::string &binaryOperator) {
+    IntermediateCode *intermediateCode = new IntermediateCode(IntermediateCodeType::ARRAY_OFFSET);
+    intermediateCode->op1 = new Operand(OperandType::VARIABLE, oprand1);
+    intermediateCode->op2 = new Operand(OperandType::VARIABLE, oprand2);
+    intermediateCode->result = new Operand(OperandType::VARIABLE, result);
+    intermediateCode->relation = binaryOperator;
+    return intermediateCode;
+}
+
+IntermediateCode *
+createGetValueInAddressCode(std::string &result, std::string &oprand1) {
+    IntermediateCode *intermediateCode = new IntermediateCode(IntermediateCodeType::GET_VALUE_IN_ADDRESS);
+    intermediateCode->result = new Operand(OperandType::VARIABLE, result);
+    intermediateCode->op1 = new Operand(OperandType::VARIABLE, oprand1);
+    return intermediateCode;
+}
+
+IntermediateCode *
+createADDRESS_ASSIGN_ADDRESSCode(std::string &result, std::string &oprand1) {
+    IntermediateCode *intermediateCode = new IntermediateCode(IntermediateCodeType::ADDRESS_ASSIGN_ADDRESS);
+    intermediateCode->result = new Operand(OperandType::VARIABLE, result);
+    intermediateCode->op1 = new Operand(OperandType::VARIABLE, oprand1);
+    return intermediateCode;
+}
+
+IntermediateCode *
+createAssignValueInAddressCode(std::string &result, std::string &oprand1) {
+    IntermediateCode *intermediateCode = new IntermediateCode(IntermediateCodeType::ASSIGN_VALUE_IN_ADDRESS);
+    intermediateCode->result = new Operand(OperandType::VARIABLE, result);
+    intermediateCode->op1 = new Operand(OperandType::VARIABLE, oprand1);
+    return intermediateCode;
+}
+
+IntermediateCode *
+createIntMultiF4Code(std::string &result, std::string &oprand1) {
+    IntermediateCode *intermediateCode = new IntermediateCode(IntermediateCodeType::BINARY);
+    intermediateCode->result = new Operand(OperandType::VARIABLE, result);
+    intermediateCode->op1 = new Operand(OperandType::VARIABLE, oprand1);
+    std::string four = "#4";
+    intermediateCode->relation = "*";
+    intermediateCode->op2 = new Operand(OperandType::VARIABLE, four);
+    return intermediateCode;
+}
+
+IntermediateCode *
+createArrayDecCode(std::string &arrayName, int size) {
+    IntermediateCode *intermediateCode = new IntermediateCode(IntermediateCodeType::DEC);
+    std::string arraySizeInBytes = std::to_string(size * 4);
+    intermediateCode->op1 = new Operand(OperandType::VARIABLE, arrayName);
+    intermediateCode->op2 = new Operand(OperandType::VARIABLE, arraySizeInBytes);
+    return intermediateCode;
+}
+
 
 IntermediateCode *createMinusCode(std::string &result, std::string &oprand1) {
     IntermediateCode *intermediateCode = new IntermediateCode(IntermediateCodeType::MINUS);
