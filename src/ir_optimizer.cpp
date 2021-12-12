@@ -30,7 +30,7 @@ void IROptimizer::GenerateBasicBlocks() {
 }
 
 void IROptimizer::DoLocalOptimization() {
-  for (const auto& iter : basic_block_list_) {
+  for (const auto &iter: basic_block_list_) {
 
   }
 }
@@ -38,10 +38,44 @@ void IROptimizer::DoLocalOptimization() {
 std::list<IntermediateCode> IROptimizer::GenerateOptimizedIR() {
   DoLocalOptimization();
   std::list<IntermediateCode> optimizedIRList;
-  for (const auto& iter : basic_block_list_) {
-    for (const auto& ir_iter : iter.ir_vector_) {
+  for (const auto &iter: basic_block_list_) {
+    for (const auto &ir_iter: iter.ir_vector_) {
       optimizedIRList.push_back(ir_iter);
     }
   }
   return optimizedIRList;
+}
+
+std::set<std::string> IROptimizer::ComputeDef(const BasicBlock& basic_block) {
+  std::set<std::string> used;
+  std::set<std::string> def;
+  for (const auto &ir: basic_block.ir_vector_) {
+    if (ir.op1 != nullptr) {
+      used.insert(ir.op1->var_name_);
+    }
+    if (ir.op2 != nullptr) {
+      used.insert(ir.op2->var_name_);
+    }
+    if (ir.result != nullptr && used.find(ir.result->var_name_) != used.end()) {
+      def.insert(ir.result->var_name_);
+    }
+  }
+  return def;
+}
+
+std::set<std::string> IROptimizer::ComputeUse(const BasicBlock& basic_block) {
+  std::set<std::string> defined;
+  std::set<std::string> use;
+  for (const auto &ir: basic_block.ir_vector_) {
+    if (ir.result != nullptr) {
+      defined.insert(ir.result->var_name_);
+    }
+    if (ir.op1 != nullptr && defined.find(ir.op1->var_name_) != defined.end()) {
+      use.insert(ir.op1->var_name_);
+    }
+    if (ir.op2 != nullptr && defined.find(ir.op2->var_name_) != defined.end()) {
+      use.insert(ir.op2->var_name_);
+    }
+  }
+  return use;
 }
