@@ -23,8 +23,9 @@ class IROptimizer {
   const std::vector<IntermediateCode> original_ir_vector_;
   std::vector<BasicBlock> basic_blocks_;
 
-  static BasicBlock EliminateLocalTempVar(BasicBlock basic_block);
+  static BasicBlock EliminateLocalTempVar(const BasicBlock& basic_block);
   static BasicBlock EliminateCommonSubexpressions(BasicBlock basic_block);
+  static BasicBlock PropagateConstant(const BasicBlock& basic_block);
   static std::set<std::string> ComputeDef(const BasicBlock& basic_block);
   static std::set<std::string> ComputeUse(const BasicBlock& basic_block);
   void GenerateBasicBlocks();

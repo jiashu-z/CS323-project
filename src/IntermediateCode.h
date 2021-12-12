@@ -35,6 +35,11 @@ public:
     OperandType operandEnum;
 
     std::string var_name_;
+
+    Operand(const Operand& operand) {
+      operandEnum = operand.operandEnum;
+      var_name_ = operand.var_name_;
+    }
 };
 
 class IntermediateCode {
