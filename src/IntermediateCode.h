@@ -36,7 +36,7 @@ public:
 
     OperandType operandEnum;
 
-    std::string variName;
+    std::string var_name_;
 };
 
 class IntermediateCode {

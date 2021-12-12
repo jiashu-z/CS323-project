@@ -12,65 +12,65 @@ IntermediateCode::IntermediateCode(IntermediateCodeType type) {
 void IntermediateCode::print() {
     switch (this->intermediateCodeEnum) {
         case IntermediateCodeType::ASSIGN: {
-            std::cout << this->op1->variName << " := " << this->op2->variName << std::endl;
+            std::cout << this->op1->var_name_ << " := " << this->op2->var_name_ << std::endl;
             break;
         }
         case IntermediateCodeType::CALL: {
-            if (this->result->variName != "null") {
-                std::cout << this->result->variName << " := CALL " << this->op1->variName << std::endl;
+            if (this->result->var_name_ != "null") {
+                std::cout << this->result->var_name_ << " := CALL " << this->op1->var_name_ << std::endl;
             } else {
-                std::cout << "CALL " << this->op1->variName << std::endl;
+                std::cout << "CALL " << this->op1->var_name_ << std::endl;
             }
             break;
         }
         case IntermediateCodeType::CONSTANT: {
-            std::cout << this->op1->variName << " := #" << this->op2->variName << std::endl;
+            std::cout << this->op1->var_name_ << " := #" << this->op2->var_name_ << std::endl;
             break;
         }
         case IntermediateCodeType::BINARY: {
-            std::cout << this->result->variName << " := " << this->op1->variName << " " << this->relation << " "
-                      << this->op2->variName << std::endl;
+            std::cout << this->result->var_name_ << " := " << this->op1->var_name_ << " " << this->relation << " "
+                      << this->op2->var_name_ << std::endl;
             break;
         }
         case IntermediateCodeType::MINUS: {
-            std::cout << this->result->variName << " := #0 - " << this->op1->variName << std::endl;
+            std::cout << this->result->var_name_ << " := #0 - " << this->op1->var_name_ << std::endl;
             break;
         }
         case IntermediateCodeType::LABEL: {
-            std::cout << "LABEL " << this->op1->variName << " :" << std::endl;
+            std::cout << "LABEL " << this->op1->var_name_ << " :" << std::endl;
             break;
         }
         case IntermediateCodeType::GOTO: {
-            std::cout << "GOTO " << this->op1->variName << std::endl;
+            std::cout << "GOTO " << this->op1->var_name_ << std::endl;
             break;
         }
         case IntermediateCodeType::FUNCTION: {
-            std::cout << "FUNCTION " << this->op1->variName << " :" << std::endl;
+            std::cout << "FUNCTION " << this->op1->var_name_ << " :" << std::endl;
             break;
         }
         case IntermediateCodeType::RETURN: {
-            std::cout << "RETURN " << this->op1->variName << std::endl;
+            std::cout << "RETURN " << this->op1->var_name_ << std::endl;
             break;
         }
         case IntermediateCodeType::ARG: {
-            std::cout << "ARG " << this->op1->variName << std::endl;
+            std::cout << "ARG " << this->op1->var_name_ << std::endl;
             break;
         }
         case IntermediateCodeType::READ: {
-            std::cout << "READ " << this->op1->variName << std::endl;
+            std::cout << "READ " << this->op1->var_name_ << std::endl;
             break;
         }
         case IntermediateCodeType::WRITE: {
-            std::cout << "WRITE " << this->op1->variName << std::endl;
+            std::cout << "WRITE " << this->op1->var_name_ << std::endl;
             break;
         }
         case IntermediateCodeType::IF_GOTO: {
-            std::cout << "IF " << this->op1->variName << " " << this->relation << " " << this->op2->variName << " GOTO "
-                      << this->result->variName << std::endl;
+            std::cout << "IF " << this->op1->var_name_ << " " << this->relation << " " << this->op2->var_name_ << " GOTO "
+                      << this->result->var_name_ << std::endl;
             break;
         }
         case IntermediateCodeType::PARAM: {
-            std::cout << "PARAM " << this->op1->variName << std::endl;
+            std::cout << "PARAM " << this->op1->var_name_ << std::endl;
             break;
         }
         default: {
@@ -87,7 +87,7 @@ Operand::Operand(OperandType type) {
 
 Operand::Operand(OperandType type, std::string &variableName) {
     this->operandEnum = type;
-    this->variName = variableName;
+    this->var_name_ = variableName;
 }
 
 IntermediateCode *createFuntionDecCode(std::string &funtionName) {
