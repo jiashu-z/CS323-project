@@ -339,20 +339,29 @@ IROptimizer::BasicBlock IROptimizer::EliminateLocalDeadCode(const BasicBlock &ba
         }
         break;
       }
-      case IntermediateCodeType::DEC:break;
-      case IntermediateCodeType::IF_GOTO: {
-        if (is_var_name(ir.op1->var_name_)) {
-          use.insert(ir.op1->var_name_);
+        case IntermediateCodeType::DEC:
+            break;
+        case IntermediateCodeType::IF_GOTO: {
+            if (is_var_name(ir.op1->var_name_)) {
+                use.insert(ir.op1->var_name_);
+            }
+            if (is_var_name(ir.op2->var_name_)) {
+                use.insert(ir.op2->var_name_);
+            }
+            break;
         }
-        if (is_var_name(ir.op2->var_name_)) {
-          use.insert(ir.op2->var_name_);
+        case IntermediateCodeType::ARRAY_OFFSET: {
+            use.insert(ir.op2->var_name_);
+            break;
         }
-        break;
-      }
-      case IntermediateCodeType::ARRAY_OFFSET:break;
-      case IntermediateCodeType::GET_VALUE_IN_ADDRESS:break;
-      case IntermediateCodeType::ASSIGN_VALUE_IN_ADDRESS:break;
-      case IntermediateCodeType::ADDRESS_ASSIGN_ADDRESS:break;
+        case IntermediateCodeType::GET_VALUE_IN_ADDRESS:
+            break;
+        case IntermediateCodeType::ASSIGN_VALUE_IN_ADDRESS: {
+            use.insert(ir.op1->var_name_);
+            break;
+        }
+        case IntermediateCodeType::ADDRESS_ASSIGN_ADDRESS:
+            break;
     }
   }
   for (size_t i = 0; i < basic_block.ir_vector_.size(); ++i) {

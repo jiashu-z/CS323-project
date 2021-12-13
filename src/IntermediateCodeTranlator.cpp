@@ -241,38 +241,19 @@ std::vector<IntermediateCode *> &translate_Exp(SyntaxTreeNode *exp, SymbolTable 
             SyntaxTreeNode *leftExp = exp->children.at(0);
             SyntaxTreeNode *rightExp = exp->children.at(2);
 
-            if (leftExp->productionEnum == ProductionEnum::EXP_FROM_EXP_LB_EXP_RB &&
-                rightExp->productionEnum != ProductionEnum::EXP_FROM_EXP_LB_EXP_RB) {
+            if (leftExp->productionEnum == ProductionEnum::EXP_FROM_EXP_LB_EXP_RB) {
                 std::string temp = new_temp();
                 std::string temp2 = new_temp();
                 std::vector<IntermediateCode *> &code1 = translate_Exp(rightExp, symbolTable, temp);
                 std::vector<IntermediateCode *> &code2 = translate_Exp(leftExp, symbolTable, temp2);
-                IntermediateCode *code3 = createAssignValueInAddressCode(temp2, temp);
                 mergeInterCode(exp, code1);
                 mergeInterCode(exp, code2);
-                exp->selfAndChildrenCodes.push_back(code3);
-                return exp->selfAndChildrenCodes;
-            }
-            if (leftExp->productionEnum == ProductionEnum::EXP_FROM_ID &&
-                rightExp->productionEnum == ProductionEnum::EXP_FROM_EXP_LB_EXP_RB) {
-                std::string temp = new_temp();
-                std::vector<IntermediateCode *> &code1 = translate_Exp(rightExp, symbolTable, temp);
-                std::string name = leftExp->children.at(0)->attribute_value;
-                IntermediateCode *code3 = createGetValueInAddressCode(name, temp);
-                mergeInterCode(exp, code1);
-                exp->selfAndChildrenCodes.push_back(code3);
-                return exp->selfAndChildrenCodes;
-            }
-            if (leftExp->productionEnum == ProductionEnum::EXP_FROM_EXP_LB_EXP_RB &&
-                rightExp->productionEnum == ProductionEnum::EXP_FROM_EXP_LB_EXP_RB) {
-                std::string temp = new_temp();
-                std::string temp2 = new_temp();
-                std::vector<IntermediateCode *> &code1 = translate_Exp(rightExp, symbolTable, temp);
-                std::vector<IntermediateCode *> &code2 = translate_Exp(leftExp, symbolTable, temp2);
-                IntermediateCode *code3 = createADDRESS_ASSIGN_ADDRESSCode(temp2, temp);
-                mergeInterCode(exp, code1);
-                mergeInterCode(exp, code2);
-                exp->selfAndChildrenCodes.push_back(code3);
+                IntermediateCode *lastCode = code2.back();
+                if (lastCode->intermediateCodeEnum == IntermediateCodeType::GET_VALUE_IN_ADDRESS) {
+                    std::string &arrayAddress = lastCode->op1->var_name_;
+                    IntermediateCode *code3 = createAssignValueInAddressCode(arrayAddress, temp);
+                    exp->selfAndChildrenCodes.push_back(code3);
+                }
                 return exp->selfAndChildrenCodes;
             }
             if (leftExp->productionEnum == ProductionEnum::EXP_FROM_ID ||
@@ -345,19 +326,21 @@ std::vector<IntermediateCode *> &translate_Exp(SyntaxTreeNode *exp, SymbolTable 
             std::string arrayId = exp->children.at(0)->attribute_value;
             std::string temp1 = "";
             std::string temp2 = new_temp();
-            if (exp->children.at(2)->productionEnum != ProductionEnum::EXP_FROM_ID) {
+            std::string arrayAddress = new_temp();
+            if (exp->children.at(2)->productionEnum == ProductionEnum::EXP_FROM_ID) {
+                temp1 = exp->children.at(2)->attribute_value;
+            } else {
                 temp1 = new_temp();
                 std::vector<IntermediateCode *> &code2 = translate_Exp(exp->children.at(2), symbolTable, temp1);
                 mergeInterCode(exp, code2);
-            } else {
-                temp1 = exp->children.at(2)->attribute_value;
             }
             IntermediateCode *code1 = createIntMultiF4Code(temp2, temp1);
-            IntermediateCode *code3 = createArrayOffsetCode(place, arrayId, temp2,
+            IntermediateCode *code3 = createArrayOffsetCode(arrayAddress, arrayId, temp2,
                                                             exp->children.at(1)->attribute_value);
-
+            IntermediateCode *code4 = createGetValueInAddressCode(place, arrayAddress);
             exp->selfAndChildrenCodes.push_back(code1);
             exp->selfAndChildrenCodes.push_back(code3);
+            exp->selfAndChildrenCodes.push_back(code4);
             return exp->selfAndChildrenCodes;
         }
         default:
@@ -505,14 +488,7 @@ translate_cond_Exp(SyntaxTreeNode *exp, SymbolTable &symbolTable, std::string &l
                 temp2 = exp->children.at(2)->children.at(0)->attribute_value;
             }
             IntermediateCode *ifGOTOCode;
-            if (exp->children.at(0)->productionEnum == ProductionEnum::EXP_FROM_EXP_LB_EXP_RB) {
-                std::string temp3 = new_temp();
-                IntermediateCode *intermediateCode2 = createGetValueInAddressCode(temp3, temp1);
-                exp->selfAndChildrenCodes.push_back(intermediateCode2);
-                ifGOTOCode = createIfGOTOCode(temp3, temp2, exp->children.at(1)->attribute_value, lb_t);
-            } else {
-                ifGOTOCode = createIfGOTOCode(temp1, temp2, exp->children.at(1)->attribute_value, lb_t);
-            }
+            ifGOTOCode = createIfGOTOCode(temp1, temp2, exp->children.at(1)->attribute_value, lb_t);
             IntermediateCode *GOTOcode = createGOTOCode(lb_f);
             exp->selfAndChildrenCodes.push_back(ifGOTOCode);
             exp->selfAndChildrenCodes.push_back(GOTOcode);
