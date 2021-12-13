@@ -183,6 +183,8 @@ IROptimizer::BasicBlock IROptimizer::PropagateConstant(const BasicBlock &basic_b
           }
           if (const_map.find(ir.result->var_name_) == const_map.end()) {
             const_map.insert(std::make_pair(ir.result->var_name_, res));
+          } else {
+            const_map[ir.result->var_name_] = res;
           }
           std::string val_str = std::to_string(res);
           auto new_ir_ptr = createConstantCode(ir.result->var_name_, val_str);
