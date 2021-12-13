@@ -52,9 +52,7 @@ public:
     Operand *op1;
     Operand *op2;
     std::string relation;
-
     explicit IntermediateCode(IntermediateCodeType type);
-
     void print() const;
 };
 

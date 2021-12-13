@@ -43,14 +43,17 @@ void translateFunctionAndPrint(SyntaxTreeNode *program, SymbolTable &symboltable
             mergeInterCode(program, extDef->selfAndChildrenCodes);
         }
     }
+//    for (const auto& iter : program->selfAndChildrenCodes) {
+//        iter->print();
+//    }
     std::vector<IntermediateCode> ir_vec;
-    for (const auto& iter : program->selfAndChildrenCodes) {
-      ir_vec.push_back(*iter);
+    for (const auto &iter: program->selfAndChildrenCodes) {
+        ir_vec.push_back(*iter);
     }
     IROptimizer optimizer(ir_vec);
     ir_vec = optimizer.GenerateOptimizedIR();
-    for (const auto& ir : ir_vec) {
-      ir.print();
+    for (const auto &ir: ir_vec) {
+        ir.print();
     }
 }
 
@@ -240,7 +243,6 @@ std::vector<IntermediateCode *> &translate_Exp(SyntaxTreeNode *exp, SymbolTable 
         case ProductionEnum::DEC_FROM_VARDEC_ASSIGN_EXP: {
             SyntaxTreeNode *leftExp = exp->children.at(0);
             SyntaxTreeNode *rightExp = exp->children.at(2);
-
             if (leftExp->productionEnum == ProductionEnum::EXP_FROM_EXP_LB_EXP_RB) {
                 std::string temp = new_temp();
                 std::string temp2 = new_temp();
