@@ -1,10 +1,10 @@
 #include "ir_optimizer.h"
-#include <map>
 #include <algorithm>
 #include <iostream>
+#include <map>
 
-IROptimizer::IROptimizer(const std::vector<IntermediateCode> &ir_vector) : original_ir_vector_(
-    ir_vector) {}
+IROptimizer::IROptimizer(const std::vector<IntermediateCode> &ir_vector)
+    : original_ir_vector_(ir_vector) {}
 
 void IROptimizer::GenerateBasicBlocks() {
   BasicBlock block;
@@ -19,9 +19,9 @@ void IROptimizer::GenerateBasicBlocks() {
       block = BasicBlock();
     }
     block.ir_vector_.push_back(*iter);
-    if (iter != original_ir_vector_.end()
-        && (iter->intermediateCodeEnum == IntermediateCodeType::GOTO
-            || iter->intermediateCodeEnum == IntermediateCodeType::IF_GOTO)) {
+    if (iter != original_ir_vector_.end() &&
+        (iter->intermediateCodeEnum == IntermediateCodeType::GOTO ||
+         iter->intermediateCodeEnum == IntermediateCodeType::IF_GOTO)) {
       basic_blocks_.push_back(block);
       block = BasicBlock();
     }
@@ -31,10 +31,10 @@ void IROptimizer::GenerateBasicBlocks() {
 }
 
 void IROptimizer::DoLocalOptimization() {
-  for (auto & basic_block : basic_blocks_) {
+  for (auto &basic_block : basic_blocks_) {
     basic_block = PropagateConstant(basic_block);
   }
-  for (auto & basic_block : basic_blocks_) {
+  for (auto &basic_block : basic_blocks_) {
     basic_block = EliminateLocalDeadCode(basic_block);
   }
 }
@@ -46,8 +46,8 @@ std::vector<IntermediateCode> IROptimizer::GenerateOptimizedIR() {
   }
   DoLocalOptimization();
   std::vector<IntermediateCode> optimized_ir_vec;
-  for (const auto &iter: basic_blocks_) {
-    for (const auto &ir_iter: iter.ir_vector_) {
+  for (const auto &iter : basic_blocks_) {
+    for (const auto &ir_iter : iter.ir_vector_) {
       optimized_ir_vec.push_back(ir_iter);
     }
   }
@@ -57,7 +57,7 @@ std::vector<IntermediateCode> IROptimizer::GenerateOptimizedIR() {
 std::set<std::string> IROptimizer::ComputeDef(const BasicBlock &basic_block) {
   std::set<std::string> used;
   std::set<std::string> def;
-  for (const auto &ir: basic_block.ir_vector_) {
+  for (const auto &ir : basic_block.ir_vector_) {
     if (ir.op1 != nullptr) {
       used.insert(ir.op1->var_name_);
     }
@@ -74,7 +74,7 @@ std::set<std::string> IROptimizer::ComputeDef(const BasicBlock &basic_block) {
 std::set<std::string> IROptimizer::ComputeUse(const BasicBlock &basic_block) {
   std::set<std::string> defined;
   std::set<std::string> use;
-  for (const auto &ir: basic_block.ir_vector_) {
+  for (const auto &ir : basic_block.ir_vector_) {
     if (ir.result != nullptr) {
       defined.insert(ir.result->var_name_);
     }
@@ -93,7 +93,7 @@ bool IROptimizer::CheckIfTempVarCrossBasicBlock() {
   for (size_t i = 0; i < basic_blocks_.size(); ++i) {
     auto &basic_block = basic_blocks_[i];
     std::set<std::string> var_name_set;
-    for (const auto &ir: basic_block.ir_vector_) {
+    for (const auto &ir : basic_block.ir_vector_) {
       if (ir.result != nullptr && ir.result->var_name_[0] == '_') {
         var_name_set.insert(ir.result->var_name_);
       }
@@ -107,20 +107,18 @@ bool IROptimizer::CheckIfTempVarCrossBasicBlock() {
     basic_block_var_names_map.insert(std::make_pair(i, var_name_set));
   }
 
-  for (const auto &iter1: basic_block_var_names_map) {
-    for (const auto &iter2: basic_block_var_names_map) {
+  for (const auto &iter1 : basic_block_var_names_map) {
+    for (const auto &iter2 : basic_block_var_names_map) {
       if (iter1.first == iter2.first) {
         continue;
       }
       std::vector<std::string> intersection;
-      std::set_intersection(iter1.second.begin(),
-                            iter1.second.end(),
-                            iter2.second.begin(),
-                            iter2.second.end(),
+      std::set_intersection(iter1.second.begin(), iter1.second.end(),
+                            iter2.second.begin(), iter2.second.end(),
                             std::back_inserter(intersection));
       if (!intersection.empty()) {
         std::cout << __FILE__ << ":" << __LINE__ << std::endl;
-        for (const auto &iter: intersection) {
+        for (const auto &iter : intersection) {
           std::cout << iter << std::endl;
         }
         std::cout << __FILE__ << ":" << __LINE__ << std::endl;
@@ -131,25 +129,29 @@ bool IROptimizer::CheckIfTempVarCrossBasicBlock() {
   return false;
 }
 
-IROptimizer::BasicBlock IROptimizer::PropagateConstant(const BasicBlock &basic_block) {
+IROptimizer::BasicBlock IROptimizer::PropagateConstant(
+    const BasicBlock &basic_block) {
   std::vector<IntermediateCode> ir_vec;
   std::map<std::string, int> const_map;
-  for (const auto &ir: basic_block.ir_vector_) {
+  for (const auto &ir : basic_block.ir_vector_) {
     switch (ir.intermediateCodeEnum) {
       case IntermediateCodeType::CONSTANT: {
         if (const_map.find(ir.op1->var_name_) == const_map.end()) {
-          const_map.insert(std::make_pair(ir.op1->var_name_, std::stoi(ir.op2->var_name_)));
+          const_map.insert(
+              std::make_pair(ir.op1->var_name_, std::stoi(ir.op2->var_name_)));
         } else {
           const_map[ir.op1->var_name_] = std::stoi(ir.op2->var_name_);
         }
-        auto new_ir_ptr = createConstantCode(ir.op1->var_name_, ir.op2->var_name_);
+        auto new_ir_ptr =
+            createConstantCode(ir.op1->var_name_, ir.op2->var_name_);
         ir_vec.push_back(*new_ir_ptr);
         break;
       }
       case IntermediateCodeType::ASSIGN: {
         if (const_map.find(ir.op2->var_name_) != const_map.end()) {
           if (const_map.find(ir.op1->var_name_) == const_map.end()) {
-            const_map.insert(std::make_pair(ir.op1->var_name_, const_map[ir.op2->var_name_]));
+            const_map.insert(std::make_pair(ir.op1->var_name_,
+                                            const_map[ir.op2->var_name_]));
           } else {
             const_map[ir.op1->var_name_] = const_map[ir.op2->var_name_];
           }
@@ -165,8 +167,8 @@ IROptimizer::BasicBlock IROptimizer::PropagateConstant(const BasicBlock &basic_b
         break;
       }
       case IntermediateCodeType::BINARY: {
-        if (const_map.find(ir.op1->var_name_) != const_map.end()
-            && const_map.find(ir.op2->var_name_) != const_map.end()) {
+        if (const_map.find(ir.op1->var_name_) != const_map.end() &&
+            const_map.find(ir.op2->var_name_) != const_map.end()) {
           int val_1 = const_map[ir.op1->var_name_];
           int val_2 = const_map[ir.op2->var_name_];
           int res = 0;
@@ -179,7 +181,8 @@ IROptimizer::BasicBlock IROptimizer::PropagateConstant(const BasicBlock &basic_b
           } else if (ir.relation == "/") {
             res = val_1 / val_2;
           } else {
-            std::cerr << "Invalid binary operator " << ir.relation << "." << std::endl;
+            std::cerr << "Invalid binary operator " << ir.relation << "."
+                      << std::endl;
           }
           if (const_map.find(ir.result->var_name_) == const_map.end()) {
             const_map.insert(std::make_pair(ir.result->var_name_, res));
@@ -194,9 +197,7 @@ IROptimizer::BasicBlock IROptimizer::PropagateConstant(const BasicBlock &basic_b
         }
         break;
       }
-      default: {
-        ir_vec.push_back(ir);
-      }
+      default: { ir_vec.push_back(ir); }
     }
   }
   BasicBlock basic_block1;
@@ -204,7 +205,8 @@ IROptimizer::BasicBlock IROptimizer::PropagateConstant(const BasicBlock &basic_b
   return basic_block1;
 }
 
-IROptimizer::BasicBlock IROptimizer::EliminateLocalDeadCode(const BasicBlock &basic_block) {
+IROptimizer::BasicBlock IROptimizer::EliminateLocalDeadCode(
+    const BasicBlock &basic_block) {
   typedef IntermediateCode IR;
   auto is_var_name = [](const std::string &str) -> bool {
     return !(str[0] == '-' || std::isdigit(str[0]));
@@ -213,7 +215,7 @@ IROptimizer::BasicBlock IROptimizer::EliminateLocalDeadCode(const BasicBlock &ba
   std::set<std::string> use;
   std::vector<IR> ir_vec;
   /*
-   * 
+   *
     enum class IntermediateCodeType {
     ASSIGN,
     BINARY,
@@ -235,22 +237,22 @@ IROptimizer::BasicBlock IROptimizer::EliminateLocalDeadCode(const BasicBlock &ba
       case IntermediateCodeType::CONSTANT:
       case IntermediateCodeType::ASSIGN: {
         if (is_var_name(ir.op1->var_name_)) {
-//          lhs is a var name
+          //          lhs is a var name
           if (ir.op1->var_name_[0] != '_') {
-//            lhs is not tmp
+            //            lhs is not tmp
             if (is_var_name(ir.op2->var_name_)) {
               use.insert(ir.op2->var_name_);
             }
           } else {
-//            lhs is tmp
+            //            lhs is tmp
             if (use.find(ir.op1->var_name_) != use.end()) {
-//              lhs will be used
+              //              lhs will be used
               use.erase(ir.op1->var_name_);
               if (is_var_name(ir.op2->var_name_)) {
                 use.insert(ir.op2->var_name_);
               }
             } else {
-//              lhs will not be used.
+              //              lhs will not be used.
               use.erase(ir.op1->var_name_);
               eliminate_index.insert(i - 1);
             }
@@ -294,22 +296,22 @@ IROptimizer::BasicBlock IROptimizer::EliminateLocalDeadCode(const BasicBlock &ba
       };
       case IntermediateCodeType::MINUS: {
         if (is_var_name(ir.result->var_name_)) {
-//          lhs is a var name
+          //          lhs is a var name
           if (ir.result->var_name_[0] != '_') {
-//            lhs is not tmp
+            //            lhs is not tmp
             if (is_var_name(ir.op1->var_name_)) {
               use.insert(ir.op1->var_name_);
             }
           } else {
-//            lhs is tmp
+            //            lhs is tmp
             if (use.find(ir.result->var_name_) != use.end()) {
-//              lhs will be used
+              //              lhs will be used
               use.erase(ir.result->var_name_);
               if (is_var_name(ir.op1->var_name_)) {
                 use.insert(ir.op1->var_name_);
               }
             } else {
-//              lhs will not be used.
+              //              lhs will not be used.
               use.erase(ir.result->var_name_);
               eliminate_index.insert(i - 1);
             }
@@ -339,29 +341,29 @@ IROptimizer::BasicBlock IROptimizer::EliminateLocalDeadCode(const BasicBlock &ba
         }
         break;
       }
-        case IntermediateCodeType::DEC:
-            break;
-        case IntermediateCodeType::IF_GOTO: {
-            if (is_var_name(ir.op1->var_name_)) {
-                use.insert(ir.op1->var_name_);
-            }
-            if (is_var_name(ir.op2->var_name_)) {
-                use.insert(ir.op2->var_name_);
-            }
-            break;
+      case IntermediateCodeType::DEC:
+        break;
+      case IntermediateCodeType::IF_GOTO: {
+        if (is_var_name(ir.op1->var_name_)) {
+          use.insert(ir.op1->var_name_);
         }
-        case IntermediateCodeType::ARRAY_OFFSET: {
-            use.insert(ir.op2->var_name_);
-            break;
+        if (is_var_name(ir.op2->var_name_)) {
+          use.insert(ir.op2->var_name_);
         }
-        case IntermediateCodeType::GET_VALUE_IN_ADDRESS:
-            break;
-        case IntermediateCodeType::ASSIGN_VALUE_IN_ADDRESS: {
-            use.insert(ir.op1->var_name_);
-            break;
-        }
-        case IntermediateCodeType::ADDRESS_ASSIGN_ADDRESS:
-            break;
+        break;
+      }
+      case IntermediateCodeType::ARRAY_OFFSET: {
+        use.insert(ir.op2->var_name_);
+        break;
+      }
+      case IntermediateCodeType::GET_VALUE_IN_ADDRESS:
+        break;
+      case IntermediateCodeType::ASSIGN_VALUE_IN_ADDRESS: {
+        use.insert(ir.op1->var_name_);
+        break;
+      }
+      case IntermediateCodeType::ADDRESS_ASSIGN_ADDRESS:
+        break;
     }
   }
   for (size_t i = 0; i < basic_block.ir_vector_.size(); ++i) {
@@ -375,7 +377,8 @@ IROptimizer::BasicBlock IROptimizer::EliminateLocalDeadCode(const BasicBlock &ba
   return basic_block1;
 }
 
-IROptimizer::BasicBlock IROptimizer::EliminateLocalTempVar(const BasicBlock &basic_block) {
+IROptimizer::BasicBlock IROptimizer::EliminateLocalTempVar(
+    const BasicBlock &basic_block) {
   auto ir_vec = basic_block.ir_vector_;
   typedef IntermediateCode IR;
   typedef struct {
@@ -383,35 +386,32 @@ IROptimizer::BasicBlock IROptimizer::EliminateLocalTempVar(const BasicBlock &bas
     std::string var_name_2_;
     std::string op_;
     int val_ = 0;
-    bool isConst() const {
-      return var_name_1_.empty();
-    }
-    bool IsUnary() const {
-      return !isConst() && var_name_2_.empty();
-    }
+    bool isConst() const { return var_name_1_.empty(); }
+    bool IsUnary() const { return !isConst() && var_name_2_.empty(); }
   } KeyEntry;
   typedef struct {
     std::string var_name_;
   } ValEntry;
-//  c := a + b
-//  c := a
-//  a + b or a is the key
-//  c is the value
+  //  c := a + b
+  //  c := a
+  //  a + b or a is the key
+  //  c is the value
   std::map<std::string, Operand> var_name_op_map;
-  auto insert_if_not_exist = [](std::map<std::string, Operand> &map, Operand *op) {
+  auto insert_if_not_exist = [](std::map<std::string, Operand> &map,
+                                Operand *op) {
     auto var_name = op->var_name_;
     if (map.find(var_name) != map.end()) {
       map.insert(std::make_pair(var_name, Operand(*op)));
     }
   };
-  for (const auto &ir: ir_vec) {
+  for (const auto &ir : ir_vec) {
     switch (ir.intermediateCodeEnum) {
       case IntermediateCodeType::CONSTANT: {
         insert_if_not_exist(var_name_op_map, ir.result);
         break;
       }
       case IntermediateCodeType::ASSIGN: {
-//        TODO: What is lhs? op1? op2? result?
+        //        TODO: What is lhs? op1? op2? result?
         break;
       }
       case IntermediateCodeType::BINARY: {
@@ -433,39 +433,40 @@ IROptimizer::BasicBlock IROptimizer::EliminateLocalTempVar(const BasicBlock &bas
         insert_if_not_exist(var_name_op_map, ir.op1);
         break;
       }
-      default: {
-        continue;
-      }
+      default: { continue; }
     }
   }
   std::map<std::string, KeyEntry> var_name_rhs_map;
-  for (auto ir: ir_vec) {
+  for (auto ir : ir_vec) {
     switch (ir.intermediateCodeEnum) {
       case IntermediateCodeType::CONSTANT: {
         KeyEntry key_entry;
         key_entry.val_ = std::stoi(ir.result->var_name_);
-        if (var_name_rhs_map.find(ir.result->var_name_) == var_name_rhs_map.end()) {
-          var_name_rhs_map.insert(std::make_pair(ir.result->var_name_, key_entry));
+        if (var_name_rhs_map.find(ir.result->var_name_) ==
+            var_name_rhs_map.end()) {
+          var_name_rhs_map.insert(
+              std::make_pair(ir.result->var_name_, key_entry));
         } else {
           var_name_rhs_map[ir.result->var_name_] = key_entry;
         }
         break;
       }
       case IntermediateCodeType::ASSIGN: {
-//        TODO: What is lhs? op1? op2? result?
+        //        TODO: What is lhs? op1? op2? result?
         break;
       }
       case IntermediateCodeType::BINARY: {
         auto &op1 = ir.op1;
         auto &op2 = ir.op2;
         auto &result = ir.result;
-        if (var_name_rhs_map.find(result->var_name_) != var_name_rhs_map.end()) {
+        if (var_name_rhs_map.find(result->var_name_) !=
+            var_name_rhs_map.end()) {
           var_name_rhs_map.erase(result->var_name_);
         }
         if (var_name_rhs_map.find(op1->var_name_) != var_name_rhs_map.end()) {
           auto key_entry = var_name_rhs_map[op1->var_name_];
           if (key_entry.isConst()) {
-//            op1->operandEnum =
+            //            op1->operandEnum =
           }
         }
         break;
@@ -479,9 +480,7 @@ IROptimizer::BasicBlock IROptimizer::EliminateLocalTempVar(const BasicBlock &bas
       case IntermediateCodeType::READ: {
         break;
       }
-      default: {
-        continue;
-      }
+      default: { continue; }
     }
   }
 }

@@ -1,18 +1,18 @@
 #ifndef IR_OPTIMIZER_H
 #define IR_OPTIMIZER_H
 
-#include <vector>
 #include <list>
 #include <set>
+#include <vector>
 #include "IntermediateCode.h"
 
 class IROptimizer {
  private:
-
   class Variable {
-    Operand * op_;
+    Operand* op_;
+
    public:
-    explicit Variable(Operand *op) : op_(op) {}
+    explicit Variable(Operand* op) : op_(op) {}
   };
 
   class BasicBlock {
@@ -33,6 +33,7 @@ class IROptimizer {
   void BuildBasicBlockDAG();
   void DoLocalOptimization();
   bool CheckIfTempVarCrossBasicBlock();
+
  public:
   explicit IROptimizer(const std::vector<IntermediateCode>& ir_vector);
   std::vector<IntermediateCode> GenerateOptimizedIR();

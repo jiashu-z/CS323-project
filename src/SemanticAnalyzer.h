@@ -18,7 +18,8 @@ void insertSymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable);
 
 void insertPrimarySymbol(SyntaxTreeNode *defNode, SymbolTable &symbolTable);
 
-void insertFunctionSymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable, bool hasDeninition);
+void insertFunctionSymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable,
+                          bool hasDeninition);
 
 void insertStructDefinitionSymbol(SyntaxTreeNode *defNode,
                                   SymbolTable &symbolTable);
@@ -41,8 +42,7 @@ void printErrorMessage(int errorType, int errorLine,
                        const std::string &errorMessage);
 
 void checkIfExistFunctionReturnStatement(SyntaxTreeNode *specifier,
-                                         SyntaxTreeNode *compSt
-);
+                                         SyntaxTreeNode *compSt);
 
 void assignFunctionReturnType(SyntaxTreeNode *specifier,
                               SyntaxTreeNode *funcDec);
@@ -71,12 +71,15 @@ bool checkArrayEquivelence(ArrayType *left, ArrayType *right);
 
 bool checkStructEquivelence(StructType *left, StructType *right);
 
-void checkFunctionArgsType(FunctionType *leftFuntionSymbol, FunctionType *rightFunctionSymbol, int firstLine);
+void checkFunctionArgsType(FunctionType *leftFuntionSymbol,
+                           FunctionType *rightFunctionSymbol, int firstLine);
 
-void checkArgsType(std::vector<Symbol *> &expectArgs, std::vector<Symbol *> &actualArgs, int firstLine,
+void checkArgsType(std::vector<Symbol *> &expectArgs,
+                   std::vector<Symbol *> &actualArgs, int firstLine,
                    const std::string &functionName);
 
-void insertExtPrimarySymbol(SyntaxTreeNode *extDefNode, SymbolTable &symbolTable);
+void insertExtPrimarySymbol(SyntaxTreeNode *extDefNode,
+                            SymbolTable &symbolTable);
 
 void initFunction(SymbolTable &symbolTable);
 

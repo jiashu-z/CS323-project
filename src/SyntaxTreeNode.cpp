@@ -22,10 +22,10 @@ SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName,
   this->parent = nullptr;
   this->children = std::vector<SyntaxTreeNode *>();
   this->attribute_name = attributeName;
-    this->attribute_value = attribute_value;
-    this->firstLine = firstLine;
+  this->attribute_value = attribute_value;
+  this->firstLine = firstLine;
   SymbolType type = SymbolType::UNKNOWN;
-  this->symbol=new Symbol(attributeName, type);
+  this->symbol = new Symbol(attributeName, type);
 }
 SyntaxTreeNode::~SyntaxTreeNode() = default;
 std::string SyntaxTreeNode::ToString() const { return attribute_name; }
@@ -111,7 +111,7 @@ SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName, int firstLine,
   this->attribute_name = attributeName;
   this->firstLine = firstLine;
   this->firstColumn = firstColumn;
-  this->symbol=new Symbol(attributeName,SymbolType::UNKNOWN);
+  this->symbol = new Symbol(attributeName, SymbolType::UNKNOWN);
 }
 
 SyntaxTreeNode::SyntaxTreeNode(std::string attributeName,
@@ -124,7 +124,7 @@ SyntaxTreeNode::SyntaxTreeNode(std::string attributeName,
       firstColumn(firstColumn) {
   this->parent = nullptr;
   this->children = std::vector<SyntaxTreeNode *>();
-  this->symbol=new Symbol(attributeName,SymbolType::UNKNOWN);
+  this->symbol = new Symbol(attributeName, SymbolType::UNKNOWN);
 }
 
 SyntaxTreeNode::SyntaxTreeNode(std::string attributeName,
@@ -134,7 +134,7 @@ SyntaxTreeNode::SyntaxTreeNode(std::string attributeName,
       attribute_name(std::move(attributeName)),
       attribute_value(std::move(attributeValue)),
       firstLine(firstLine) {
-    this->symbol=new Symbol(attributeName,SymbolType::UNKNOWN);
+  this->symbol = new Symbol(attributeName, SymbolType::UNKNOWN);
 }
 
 SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName,
@@ -144,5 +144,5 @@ SyntaxTreeNode::SyntaxTreeNode(const std::string &attributeName,
   this->attribute_value = std::to_string(intAttributeValue);
   this->firstLine = firstLine;
   this->nodeType = nodeType;
-  this->symbol=new Symbol(attributeName,SymbolType::UNKNOWN);
+  this->symbol = new Symbol(attributeName, SymbolType::UNKNOWN);
 }

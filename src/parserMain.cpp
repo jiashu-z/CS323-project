@@ -5,8 +5,8 @@
 #include <cstdio>
 #include <iostream>
 
-#include "SyntaxTreeNode.h"
 #include "SemanticAnalyzer.h"
+#include "SyntaxTreeNode.h"
 
 void yyrestart(FILE *pFile);
 
@@ -19,32 +19,32 @@ extern int has_error;
 extern int error_cnt;
 int customDebug = 0;
 int main(int argc, char **argv) {
-    yydebug = 0;
-    if (argc <= 1) {
-        std::cout << "PARSER_error_OUTPUT, no input path";
-        return 1;
-    } else if (argc > 2) {
-        std::cout << "too much input path";
-        return 1;
-    } else {
-        FILE *f = fopen(argv[1], "r");
-        if (!f) {
-            std::cout << "error of path " << argv[1];
-            return 1;
-        }
-        yyrestart(f);
-        initFunction(symbolTable);
-        yyparse();
-        if (customDebug) {
-            std::cout << "=========Syntax Tree============" << std::endl;
-            if (root_node != nullptr && !has_error) {
-                root_node->preOrderPrint(root_node, 0);
-            }
-        }
-        if (error_cnt > 0) {
-            std::cout << "Syntax error\n";
-            error_cnt -= 1;
-        }
+  yydebug = 0;
+  if (argc <= 1) {
+    std::cout << "PARSER_error_OUTPUT, no input path";
+    return 1;
+  } else if (argc > 2) {
+    std::cout << "too much input path";
+    return 1;
+  } else {
+    FILE *f = fopen(argv[1], "r");
+    if (!f) {
+      std::cout << "error of path " << argv[1];
+      return 1;
     }
-    return 0;
+    yyrestart(f);
+    initFunction(symbolTable);
+    yyparse();
+    if (customDebug) {
+      std::cout << "=========Syntax Tree============" << std::endl;
+      if (root_node != nullptr && !has_error) {
+        root_node->preOrderPrint(root_node, 0);
+      }
+    }
+    if (error_cnt > 0) {
+      std::cout << "Syntax error\n";
+      error_cnt -= 1;
+    }
+  }
+  return 0;
 }

@@ -23,7 +23,8 @@ Symbol *SymbolTable::searchVariableSymbol(std::string name) {
   }
 }
 
-bool SymbolTable::insertFunctionDefinitionSymbol(std::string name, Symbol *symbol) {
+bool SymbolTable::insertFunctionDefinitionSymbol(std::string name,
+                                                 Symbol *symbol) {
   if (this->currentFunctionDefinitionTable.find(name) ==
       this->currentFunctionDefinitionTable.end()) {
     this->currentFunctionDefinitionTable.emplace(name, symbol);
@@ -33,7 +34,8 @@ bool SymbolTable::insertFunctionDefinitionSymbol(std::string name, Symbol *symbo
   }
 }
 
-bool SymbolTable::insertFunctionDeclarationSymbol(std::string name, Symbol *symbol) {
+bool SymbolTable::insertFunctionDeclarationSymbol(std::string name,
+                                                  Symbol *symbol) {
   if (this->currentFunctionDeclarationTable.find(name) ==
       this->currentFunctionDeclarationTable.end()) {
     this->currentFunctionDeclarationTable.emplace(name, symbol);
@@ -63,7 +65,7 @@ Symbol *SymbolTable::searchFunctionDeclarationSymbol(std::string name) {
 
 Symbol::Symbol(const std::string &name, const SymbolType &symbolType,
                const Symbol::DATA &data)
-        : name(name), symbolType(symbolType), symbolData(data) {}
+    : name(name), symbolType(symbolType), symbolData(data) {}
 
 Symbol::Symbol(const std::string &name, const SymbolType &symbolType) {
   this->name = name;
