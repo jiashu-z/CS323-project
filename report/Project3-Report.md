@@ -189,7 +189,6 @@ t21 := #103
 WRITE t21
 t22 := #0
 RETURN t22
-
 ```
 
 In summary, our IR optimiztion is simple because it does not involve cross-basic block analysis, but still effective
