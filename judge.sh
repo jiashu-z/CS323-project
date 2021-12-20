@@ -85,7 +85,7 @@ output_ir() {
   able=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11")
   for i in "${able[@]}"; do
     echo "begin output ${PREFIX}${i}:"
-    bin/splc ./${TEST_DIR}/${PREFIX}${i}.spl > ./${TEST_DIR}/${PREFIX}"${i}".ir 2>&1
+    bin/splc ./${TEST_DIR}/${PREFIX}${i}.spl > ./${TEST_DIR}/${PREFIX}"${i}".ir.new 2>&1
     echo "========================================================================="
   done
 }
@@ -102,7 +102,7 @@ output_compare() {
 }
 make clean splc
 output_compare
-output_ir
+#output_ir
 #echo "==================demo_test begin"
 #demo_test
 #echo "==================own_test begin"

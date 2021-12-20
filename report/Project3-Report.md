@@ -17,9 +17,7 @@ public:
 
 We implemented Intermediate code as linear representation. The  `intermediateCodeEnum` will be used to distinguish
 different kind of IR, which will be used in `print` and `optimiztion`. `result`, `op1` `op2` are the three variable used
-in IR;
-
-The operand currently is very simple: just a enum class to tell the kind of oprand (label, function, variable or
+in IR;The operand currently is very simple: just a enum class to tell the kind of oprand (label, function, variable or
 constant), and a string of variable name.
 
 ```c++
@@ -97,11 +95,11 @@ variable is useless. Although there are complete solutions which we can use, sin
 the later lectures, and due to our time budget, we decide to implement IR optimization within single basic blocks. This
 optimization strategy is effective and much simpler than data flow analysis.
 
-Data flow analysis is complex because we have to decide when a variable is useless from the graph of basic blocks.
-However, we oberve that in our case, temporary variables are never accessed across multiple basic blocks. It a temporary
-variable is never accessed from another basic block, then during IR optimization, we can simply regard it useless in all
-other basic blocks. In this case, IR optimiztion within one single block is possible when we only consider the temporary
-variables.
+Data flow analysis is complex because we have to decide when a variable is useless from the graph of basic
+blocks.However, we oberve that in our case, temporary variables are never accessed across multiple basic blocks. It a
+temporary variable is never accessed from another basic block, then during IR optimization, we can simply regard it
+useless in all other basic blocks. In this case, IR optimiztion within one single block is possible when we only
+consider the temporary variables.
 
 The implementation of IR optimization involves constant propagation and dead code elimination. First, we demonstrate how
 we implemented constant propagation. In constant propagation, we traverse the IR of each basic block and consider
