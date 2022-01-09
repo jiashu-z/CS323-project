@@ -2,7 +2,6 @@
 #define MIPS_H
 
 #include "tac.h"
-
 #define FALSE 0
 #define TRUE 1
 typedef unsigned char bool;

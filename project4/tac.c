@@ -30,6 +30,12 @@ char *_str_trim(char *str) {
 
 char **_str_split(char *str, const char delim, int *n) {
     // from: https://stackoverflow.com/questions/9210528/
+    if (*str == '\0' || str == NULL || delim == '\0') {
+        // Either of those will cause problems
+        *n = -1;
+        return NULL;
+    }
+
     char **result = 0;
     size_t count = 0;
     char *tmp = str;
@@ -50,7 +56,7 @@ char **_str_split(char *str, const char delim, int *n) {
     count += last_comma < (str + strlen(str) - 1);
     *n = count;
 
-    result = malloc(sizeof(char *) * count);
+    result = malloc(sizeof(char *) * (count + 1));
     if (result) {
         size_t idx = 0;
         char *token = strtok(str, delims);
@@ -90,6 +96,10 @@ tac *_tac_from_line(char *ln) {
 
     ln = _str_trim(ln);
     tokens = _str_split(ln, ' ', &count);
+
+    if (tokens == NULL) {
+        return tac_init_none();
+    }
 
     if (count == 2) {
         code = tac_init_none();

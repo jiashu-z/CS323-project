@@ -1,0 +1,7 @@
+int main(){
+    int array[2];
+    array[0]=3;
+    array[1]=array[0];
+    write(array[1]);
+    return array[1];
+}

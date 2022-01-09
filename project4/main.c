@@ -1,11 +1,16 @@
 #include "tac.h"
 #include "mips32.h"
+#include "variableLInkedLIst.h"
 
 #define BUF_SIZE 0x10000
 
+struct linklist *linklist;
+struct linklist *a0_a3_list;
 char buf[BUF_SIZE];
 
 int main(int argc, char *argv[]) {
+    linklist = initList();
+    a0_a3_list = initList();
     FILE *fp;
     tac *head;
     char c, *file;

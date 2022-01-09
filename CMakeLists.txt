@@ -74,3 +74,7 @@ target_include_directories(test_syntaxTree
 add_test(test_symbol test_symbolTable)
 
 add_executable(testInitList src/testInitializeList.cpp)
+
+
+add_executable(project4_cmake project4/main.c project4/mips32.c project4/tac.c project4/tac.h project4/mips32.h project4/variableLInkedLIst.h project4/variableLinkedList.c)
+

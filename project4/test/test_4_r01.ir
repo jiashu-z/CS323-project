@@ -7,6 +7,7 @@ v4 := v0
 v5 := #1
 IF v4 == v5 GOTO label0
 GOTO label1
+
 LABEL label0 :
 v9 := v1
 v10 := #10000
@@ -15,6 +16,7 @@ v11 := v3
 v7 := v8 + v11
 WRITE v7
 GOTO label2
+
 LABEL label1 :
 v14 := v0
 v15 := #1
