@@ -1,3 +1,4 @@
+# SPL compiler generated assembly
 .data
 array: .space 400
 _prmpt: .asciiz "Enter an integer: "
@@ -32,10 +33,10 @@ main:
   move $s0, $v0
   sw $s0, array + 0
   lw $t0, array + 0 #### variable: v2, data offset: 0
-  move $s0, $t0 #### v0 = v2
+  move $s0, $t0 #### v0 = v2 
   sw $s0, array + 4 #### store variable:v0
   lw $t0, array + 4 #### variable: v0, data offset: 4
-  move $s0, $t0 #### v3 = v0
+  move $s0, $t0 #### v3 = v0 
   sw $s0, array + 8 #### store variable:v3
   li $s0, 0 #### v4 = 0
   sw $s0, array + 12 #### store variable:v4
@@ -46,18 +47,18 @@ main:
 label0:
   li $s0, 1 #### v6 = 1
   sw $s0, array + 16 #### store variable:v6
-  move $t7,$a0
+  move $t7,$a0 
   move $a0, $s0
   addi $sp, $sp, -4
   sw $ra, 0($sp)
   jal write
   lw $ra, 0($sp)
   addi $sp, $sp, 4
-  move $a0,$t7
+  move $a0,$t7 
   j label2
 label1:
   lw $t0, array + 4 #### variable: v0, data offset: 4
-  move $s0, $t0 #### v7 = v0
+  move $s0, $t0 #### v7 = v0 
   sw $s0, array + 20 #### store variable:v7
   li $s0, 0 #### v8 = 0
   sw $s0, array + 24 #### store variable:v8
@@ -72,26 +73,26 @@ label3:
   neg $t0, $t0
   addi $s0, $t0, 0 ######## v10 = 0 - 
   sw $s0, array + 32 #### store variable:v10
-  move $t7,$a0
+  move $t7,$a0 
   move $a0, $s0
   addi $sp, $sp, -4
   sw $ra, 0($sp)
   jal write
   lw $ra, 0($sp)
   addi $sp, $sp, 4
-  move $a0,$t7
+  move $a0,$t7 
   j label5
 label4:
   li $s0, 0 #### v13 = 0
   sw $s0, array + 36 #### store variable:v13
-  move $t7,$a0
+  move $t7,$a0 
   move $a0, $s0
   addi $sp, $sp, -4
   sw $ra, 0($sp)
   jal write
   lw $ra, 0($sp)
   addi $sp, $sp, 4
-  move $a0,$t7
+  move $a0,$t7 
 label5:
 label2:
   li $s0, 0 #### v14 = 0

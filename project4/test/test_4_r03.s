@@ -1,3 +1,4 @@
+# SPL compiler generated assembly
 .data
 array: .space 400
 _prmpt: .asciiz "Enter an integer: "
@@ -45,19 +46,19 @@ main:
   add $s0, $t0, $t1
   sw $s0, array + 24 #### store variable:v7
   lw $t0, array + 24 #### variable: v7, data offset: 24
-  move $s0, $t0 #### v4 = v7
+  move $s0, $t0 #### v4 = v7 
   sw $s0, array + 8 #### store variable:v4
   lw $t0, array + 8 #### variable: v4, data offset: 8
-  move $s0, $t0 #### v15 = v4
+  move $s0, $t0 #### v15 = v4 
   sw $s0, array + 28 #### store variable:v15
-  move $t7,$a0
+  move $t7,$a0 
   move $a0, $s0
   addi $sp, $sp, -4
   sw $ra, 0($sp)
   jal write
   lw $ra, 0($sp)
   addi $sp, $sp, 4
-  move $a0,$t7
+  move $a0,$t7 
   li $s0, 0 #### v16 = 0
   sw $s0, array + 32 #### store variable:v16
   lw $t0, array + 32 #### variable: v16, data offset: 32
